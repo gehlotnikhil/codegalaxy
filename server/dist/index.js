@@ -8,23 +8,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const dotenv = require("dotenv");
 const app = express();
-const { prismaMain } = require("./test");
-const client_1 = require("@prisma/client");
+// const {prismaMain} = require("./test")
+// import { PrismaClient } from "@prisma/client";
 dotenv.config();
 const PORT = process.env.PORT;
-const prisma = new client_1.PrismaClient();
+// const prisma = new PrismaClient();
 console.log(PORT);
 app.use(express.json());
 app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    prismaMain()
-        .catch((e) => {
-        console.error(e);
-    })
-        .finally(() => __awaiter(void 0, void 0, void 0, function* () { return yield prisma.$disconnect(); }));
+    // prismaMain()
+    // .catch((e:any) => {
+    // console.error(e)
+    // })
+    // .finally(async () => await prisma.$disconnect());
     res.send({ success: true });
 }));
 app.listen(PORT, () => {
