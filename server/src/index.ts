@@ -4,12 +4,16 @@ const app = express();
 const {prismaMain} = require("./test")
 const {PrismaClient} = require("@prisma/client")
 const prisma = new PrismaClient()
+const cors = require("cors");
+
 dotenv.config();  
 const PORT = (process.env.PORT as number|undefined) || 8000 ;
 
 // const prisma = new PrismaClient();
 console.log(PORT);
 app.use(express.json());
+app.use(cors());
+
 app.get("/",(req:any,res:any)=>{
   res.send({success:true})
 })
