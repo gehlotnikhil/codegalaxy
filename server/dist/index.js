@@ -15,7 +15,7 @@ const { prismaMain } = require("./test");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 dotenv.config();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 8000;
 // const prisma = new PrismaClient();
 console.log(PORT);
 app.use(express.json());
@@ -35,3 +35,6 @@ app.get("/test", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 app.listen(PORT, () => {
     console.log(`--> Server running at port ${PORT}`);
 });
+app.use("/api/user", require("./router/User/index"));
+app.use("/api/problemset", require("./router/ProblemSet/index"));
+app.use("/api/contest", require("./router/Contest/index"));

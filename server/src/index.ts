@@ -4,8 +4,8 @@ const app = express();
 const {prismaMain} = require("./test")
 const {PrismaClient} = require("@prisma/client")
 const prisma = new PrismaClient()
-dotenv.config(); 
-const PORT = process.env.PORT as number | unknown;
+dotenv.config();  
+const PORT = (process.env.PORT as number|undefined) || 8000 ;
 
 // const prisma = new PrismaClient();
 console.log(PORT);
@@ -28,3 +28,6 @@ app.get("/test", async(req: any, res: any) => {
 app.listen(PORT, () => {
   console.log(`--> Server running at port ${PORT}`);
 });
+app.use("/api/user",require("./router/User/index"))
+app.use("/api/problemset",require("./router/ProblemSet/index"))
+app.use("/api/contest",require("./router/Contest/index"))
