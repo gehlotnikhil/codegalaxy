@@ -10,33 +10,38 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 const express = require("express");
 const dotenv = require("dotenv");
-const app = express();
+const cors = require("cors");
 const { prismaMain } = require("./test");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const cors = require("cors");
 dotenv.config();
+const app = express();
 const PORT = process.env.PORT || 8000;
-// const prisma = new PrismaClient();
 console.log(PORT);
+// Middleware to parse JSON
 app.use(express.json());
+// Add CORS Middleware
 app.use(cors());
+// Root route
 app.get("/", (req, res) => {
     res.send({ success: true });
 });
+// Test route
 app.get("/test", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const test1 = yield prisma.testing.create({
         data: {
             email: "nikhil.doe@example.com",
             title: "Hello World",
         },
-    }, { unique: true });
+    });
     console.log("Test created:", test1);
     res.send({ success: true });
 }));
-app.listen(PORT, () => {
-    console.log(`--> Server running at port ${PORT}`);
-});
+// Route definitions
 app.use("/api/user", require("./router/User/index"));
 app.use("/api/problemset", require("./router/ProblemSet/index"));
 app.use("/api/contest", require("./router/Contest/index"));
+// Start server
+app.listen(PORT, () => {
+    console.log(`--> Server running at port ${PORT}`);
+});

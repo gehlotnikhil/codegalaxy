@@ -10,6 +10,7 @@ generator client {
 type ContestInfo {
   contestId String
 }
+
 type ProblemSetInfo {
   problemId String
 }
@@ -20,27 +21,32 @@ model testing {
   title     String
   createdAt DateTime @default(now())
 }
-
+type Role{
+  User Boolean
+  Admin Boolean
+}
 // type Test_Type{
 //   input String
 //   output String
 // }
 model User {
-  id                      String       @id @default(auto()) @map("_id") @db.ObjectId
-  name                    String
-  age                     Int
-  email                   String       @unique
-  password                String
-  userName                String @unique
-  totalRank              Int
-  noOfProblemSolved       Int
+  id                      String           @id @default(auto()) @map("_id") @db.ObjectId
+  name                    String? 
+  age                     Int?
+  email                   String          @unique
+  password                String?
+  userName                String?           @unique
+  totalRank               Int?
+  noOfProblemSolved       Int?
   solvedProblemDetails    ProblemSetInfo[]
-  noOfContestParticipated Int
+  noOfContestParticipated Int?
   contestDetails          ContestInfo[]
-  gender                  String
-  collegeName             String
-  state                   String
-  country                 String
+  gender                  String?
+  collegeName             String?
+  state                   String?
+  country                 String?
+  role                    Role?
+  googleLoginAccess       Boolean?
 }
 
 // model Problem_Set{

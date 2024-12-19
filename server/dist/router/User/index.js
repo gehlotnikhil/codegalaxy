@@ -8,11 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const client_1 = require("@prisma/client");
 const express_validator_1 = require("express-validator");
 const router = (0, express_1.Router)();
+const GoogleLogin_1 = __importDefault(require("./GoogleLogin"));
 const prisma = new client_1.PrismaClient();
 router.get("/", (req, res) => {
     res.send({ success: "User Routing is on" });
@@ -55,6 +59,8 @@ router.post("/registeruser", [
                 solvedProblemDetails: [],
                 noOfContestParticipated: 0,
                 contestDetails: [],
+                googleLoginAccess: false,
+                role: { User: true, Admin: false }
             },
         });
         console.log("User created:", result);
@@ -66,4 +72,5 @@ router.post("/registeruser", [
         res.status(500).send({ success, error });
     }
 }));
+router.post("/googlelogin", GoogleLogin_1.default.googleLogin);
 module.exports = router;

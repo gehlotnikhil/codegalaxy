@@ -2,6 +2,7 @@ import { Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import { body, validationResult } from "express-validator";
 const router = Router();
+import GoogleLogin from "./GoogleLogin";
 const prisma = new PrismaClient();
 
 router.get("/", (req: Request, res: Response) => {
@@ -61,9 +62,12 @@ router.post(
           solvedProblemDetails: [],
           noOfContestParticipated: 0,
           contestDetails: [],
+          googleLoginAccess:false,
+          role: {User:true,Admin:false}
+
         },
       });
-
+      
       console.log("User created:", result);
 
       success = true;
@@ -74,6 +78,7 @@ router.post(
     }
   }
 );
+router.post("/googlelogin",GoogleLogin.googleLogin)
 
 
 
