@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const UserFunctions_1 = __importDefault(require("../lib/UserFunctions"));
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const jwt = require("jsonwebtoken");
+let JWT_Secret = "Nikhil123";
 function generateUsername(length = 8) {
     const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let username = "";
@@ -41,6 +43,7 @@ const googleLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         let count = 0;
         console.log("3");
         if (!check1) {
+            console.log("created");
             result = yield prisma.user.create({
                 data: {
                     name: "Lucifer",
@@ -62,9 +65,15 @@ const googleLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 },
             });
         }
+        result = yield prisma.user.findFirst({ where: { email } });
+        console.log("final-", result);
+        let data = {
+            id: result.id
+        };
+        let token = jwt.sign(data, JWT_Secret);
         console.log("4");
         success = true;
-        res.send({ success, result });
+        res.send({ success, result, token });
     }
     catch (error) {
         console.log("Google Login Error - ", error);

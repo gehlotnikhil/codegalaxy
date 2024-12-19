@@ -2,6 +2,9 @@ import { Request, Response, Router } from "express";
 import UserFunctions from "../lib/UserFunctions";
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const jwt = require("jsonwebtoken")
+let JWT_Secret = "Nikhil123"
+
 function generateUsername(length = 8) {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -35,6 +38,8 @@ const googleLogin = async (req: Request, res: Response): Promise<any> => {
 
     console.log("3");
     if (!check1) {
+      console.log("created");
+      
       result = await prisma.user.create({
         data: {
           name: "Lucifer",
@@ -56,9 +61,15 @@ const googleLogin = async (req: Request, res: Response): Promise<any> => {
         },
       });
     }
+    result = await prisma.user.findFirst({where:{email}})
+    console.log("final-",result);
+    let data = {
+      id : result.id
+    }
+    let token = jwt.sign(data,JWT_Secret)
     console.log("4");
     success = true;
-    res.send({ success, result });
+    res.send({ success, result ,token});
   } catch (error) {
     console.log("Google Login Error - ", error);
     res.send({ success, error, msg: "Google Login Error" });
