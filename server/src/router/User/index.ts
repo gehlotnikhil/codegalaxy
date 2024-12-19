@@ -1,11 +1,8 @@
-import { Request, response, Response, Router } from "express";
+import { Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
-import { body, header, validationResult } from "express-validator";
-import fetch from "node-fetch"
+import { body, validationResult } from "express-validator";
 const router = Router();
 const prisma = new PrismaClient();
-const CLIENT_ID = "Ov23li1Ee2cnNpYQGRb5";
-const CLIENT_SECRET = "00af1acbf8e95110f3ef48f5e6ecd562f5e5de3b";
 
 router.get("/", (req: Request, res: Response) => {
   res.send({ success: "User Routing is on" });
@@ -78,78 +75,6 @@ router.post(
   }
 );
 
-// GitHub OAuth Access Token Retrieval
-router.get(
-  "/getaccesstoken",
-  async (req: Request, res: Response): Promise<any> => {
-    const { code } = req.query;
 
-    if (!code) {
-      return res.status(400).send({ error: "Missing code query parameter" });
-    }
 
-    const params = new URLSearchParams({
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET,
-      code: code as string,
-    });
-
-    try {
-      const response = await fetch(
-        `https://github.com/login/oauth/access_token`,
-        {
-          method: "POST",
-          headers: { Accept: "application/json" },
-          body: params,
-        }
-      );
-      
-      const data = await response.json();
-      
-      if (data.error) {
-        return res.status(400).send({ error: data.error_description });
-      }
-      
-      console.log("f",data);
-      res.send(data);
-    } catch (error) {
-      console.error("Error fetching access token:", error);
-      res.status(500).send({ error: "Internal server error" });
-    }
-  }
-);
-router.get("/getuserdata", async (req: Request, res: Response):Promise<any> => {
-  const authHeader = req.get("Authorization");
-
-  if (!authHeader) {
-    return res
-      .status(400)
-      .send({ error: "Authorization header is missing" });
-  }
-
-  try {
-    const response = await fetch("https://api.github.com/user", {
-      method: "GET",
-      headers: {
-        Authorization: authHeader,
-      },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("GitHub API Error:", errorData);
-      return res
-        .status(response.status)
-        .send({ error: "Failed to fetch user data", details: errorData });
-    }
-
-    const data = await response.json();
-    console.log("final-",data);
-    
-    res.json(data);
-  } catch (error) {
-    console.error("Error fetching GitHub user data:", error);
-    res.status(500).send({ error: "Internal server error" });
-  }
-});
 module.exports = router;
