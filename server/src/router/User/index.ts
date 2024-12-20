@@ -211,7 +211,9 @@ router.get("/usernametodata",[
     
     let result = await prisma.user.findFirst({where:{userName}})
     console.log("res-",result);
-    
+    if(!result){
+      return res.send({success,msg:"Username name exist"})
+    }
     success = true
     return res.send({success,result})
   } catch (error) {

@@ -56,3 +56,38 @@ model User {
 //   dislike Int
 
 // }
+type InputOutputType{
+  input String
+  output String
+}
+
+model ProblemSet{
+  id String @id @default(auto()) @db.ObjectId @map("_id")
+  problemNo Int @unique
+  problemName String 
+  description String
+  timeComplexity String
+  spaceComplexity String
+  companies String[]
+  like Int
+  dislike Int
+  sampleInputOutput InputOutputType[]
+  testcases InputOutputType[]
+  constraint String[]
+  topic String[]
+  accepted Int
+  submission Int
+  status String
+  contestProblem Boolean
+}
+model Contest{
+  id String @id @default(auto()) @db.ObjectId @map("_id")
+  contestNo Int
+  contestName String 
+  duration Int
+  startTime DateTime
+  problems Int[]
+  status String
+  noOfParticipated Int
+}
+
