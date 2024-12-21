@@ -197,7 +197,7 @@ router.get("/getspecificproblem/:problemno", (req, res) => __awaiter(void 0, voi
         return res.status(500).send({ success, error });
     }
 }));
-router.get("/executeproblem", [
+router.post("/executeproblem", [
     (0, express_validator_1.body)("problemNo", "Please enter a problemNo").exists(),
     (0, express_validator_1.body)("testcase", "Please enter a testcases").exists(),
     (0, express_validator_1.body)("language", "Please enter a language").exists(),
