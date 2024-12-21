@@ -82,7 +82,7 @@ model ProblemSet{
 }
 model Contest{
   id String @id @default(auto()) @db.ObjectId @map("_id")
-  contestNo Int
+  contestNo Int @unique
   contestName String 
   duration Int
   startTime DateTime
