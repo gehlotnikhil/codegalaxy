@@ -42,13 +42,6 @@ const googleLogin = async (req: Request, res: Response): Promise<any> => {
       
       result = await prisma.user.create({
         data: {
-          name: "Lucifer",
-          age: -1,
-          password: "",
-          gender: "",
-          state: "",
-          country: "",
-          collegeName: "",
           email: email,
           totalRank: 1000,
           noOfProblemSolved: 0,

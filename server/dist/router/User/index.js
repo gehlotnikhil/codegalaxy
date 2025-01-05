@@ -27,20 +27,14 @@ router.get("/", (req, res) => {
 let JWT_Secret = "Nikhil123";
 // User Registration route
 router.post("/registeruser", [
-    (0, express_validator_1.body)("name", "Please Enter Your Name").exists(),
-    (0, express_validator_1.body)("age", "Please Enter Your Age").exists(),
     (0, express_validator_1.body)("email", "Please Enter Your Email").exists(),
     (0, express_validator_1.body)("email", "Enter Valid Email Format").isEmail(),
     (0, express_validator_1.body)("password", "Please Enter Your Password").exists(),
-    (0, express_validator_1.body)("gender", "Please Enter Your Gender").exists(),
     (0, express_validator_1.body)("userName", "Please Enter Your Username").exists(),
-    (0, express_validator_1.body)("collegeName", "Please Enter Your CollegeName").exists(),
-    (0, express_validator_1.body)("state", "Please Enter Your State").exists(),
-    (0, express_validator_1.body)("country", "Please Enter Your Country").exists(),
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
-        const { name, age, email, password, gender, state, country, collegeName, userName, } = req.body;
+        const { email, password, userName, } = req.body;
         // Check for validation errors
         const errors = (0, express_validator_1.validationResult)(req);
         if (!errors.isEmpty()) {
@@ -58,14 +52,8 @@ router.post("/registeruser", [
         // Create the user in the database
         const result = yield prisma.user.create({
             data: {
-                name: name,
-                age: age,
                 email: email,
                 password: hashPassword,
-                gender: gender,
-                state: state,
-                country: country,
-                collegeName: collegeName,
                 userName: userName,
                 totalRank: 1000,
                 noOfProblemSolved: 0,

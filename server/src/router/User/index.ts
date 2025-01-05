@@ -17,29 +17,17 @@ let JWT_Secret = "Nikhil123"
 router.post(
   "/registeruser",
   [
-    body("name", "Please Enter Your Name").exists(),
-    body("age", "Please Enter Your Age").exists(),
     body("email", "Please Enter Your Email").exists(),
     body("email", "Enter Valid Email Format").isEmail(),
     body("password", "Please Enter Your Password").exists(),
-    body("gender", "Please Enter Your Gender").exists(),
     body("userName", "Please Enter Your Username").exists(),
-    body("collegeName", "Please Enter Your CollegeName").exists(),
-    body("state", "Please Enter Your State").exists(),
-    body("country", "Please Enter Your Country").exists(),
   ],
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
     try {
       const {
-        name,
-        age,
         email,
         password,
-        gender,
-        state,
-        country,
-        collegeName,
         userName,
       } = req.body;
 
@@ -61,14 +49,8 @@ router.post(
       // Create the user in the database
       const result = await prisma.user.create({
         data: {
-          name: name,
-          age: age,
           email: email,
           password: hashPassword,
-          gender: gender,
-          state: state,
-          country: country,
-          collegeName: collegeName,
           userName: userName,
           totalRank: 1000,
           noOfProblemSolved: 0,

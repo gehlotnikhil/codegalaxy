@@ -1,0 +1,126 @@
+// src/SignUp.tsx
+import React from "react";
+import { useNavigate } from 'react-router-dom'
+
+import { useForm, SubmitHandler } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
+// Define the form schema using Yup
+const schema = yup.object({
+  username: yup.string().required("Username is required"),
+  password: yup.string().min(6, "Password must be at least 6 characters").required(),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("password")], "Passwords must match")
+    .required("Confirm Password is required"),
+  email: yup.string().email("Invalid email address").required(),
+});
+
+interface SignUpFormValues {
+  username: string;
+  password: string;
+  confirmPassword: string;
+  email: string;
+}
+interface JWTDECODETYPE {
+  email: string;
+}
+
+const SignUp: React.FC = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpFormValues>({
+    resolver: yupResolver(schema),
+  });
+
+  const onSubmit: SubmitHandler<SignUpFormValues> = (data) => {
+    console.log(data);
+    alert("Sign Up Successful!");
+  };
+
+  return (
+    <div className="signup-container">
+      <form onSubmit={handleSubmit(onSubmit)} className="signup-form">
+        <p className="logo">
+        <img  src="./logo.png" height={"50px"} width={"50px"}  />
+        </p>
+        <h1 className="logo"><span style={{color:"#064EAE"}}>Code</span><span style={{color:"#FCB040"}}>Galaxy</span></h1>
+        <div className="form-group">
+          <input
+            type="text"
+            placeholder="Username"
+            {...register("username")}
+            className={errors.username ? "error" : ""}
+          />
+          <p className="error-message">{errors.username?.message}</p>
+        </div>
+        <div className="form-group">
+          <input
+            type="password"
+            placeholder="Password"
+            {...register("password")}
+            className={errors.password ? "error" : ""}
+          />
+          <p className="error-message">{errors.password?.message}</p>
+        </div>
+        <div className="form-group">
+          <input
+            type="password"
+            placeholder="Confirm password"
+            {...register("confirmPassword")}
+            className={errors.confirmPassword ? "error" : ""}
+          />
+          <p className="error-message">{errors.confirmPassword?.message}</p>
+        </div>
+        <div className="form-group">
+          <input
+            type="email"
+            placeholder="E-mail address"
+            {...register("email")}
+            className={errors.email ? "error" : ""}
+          />
+          <p className="error-message">{errors.email?.message}</p>
+        </div>
+        <button type="submit" className="btn-submit">
+          Sign Up
+        </button>
+        <p className="signin-link">
+          Have an account? <a href="/login">Sign In</a>
+        </p>
+        <div>
+        <GoogleOAuthProvider clientId="1046247015186-25rspsek03t24m78r9qme04grrq433ue.apps.googleusercontent.com">
+        <GoogleLogin
+          onSuccess={async (credentialResponse) => {
+            var decode = jwtDecode<JWTDECODETYPE>(
+              credentialResponse.credential as string
+            );
+            console.log(decode.email);
+            let result = await fetch(
+              "http://localhost:8000/api/user/googlelogin",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email: decode.email }),
+              }
+            );
+            let res = await result.json();
+            console.log("res---", res);
+          }}
+          onError={() => {
+            console.log("Login Failed");
+          }} 
+        />
+      </GoogleOAuthProvider>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default SignUp;

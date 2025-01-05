@@ -46,13 +46,6 @@ const googleLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             console.log("created");
             result = yield prisma.user.create({
                 data: {
-                    name: "Lucifer",
-                    age: -1,
-                    password: "",
-                    gender: "",
-                    state: "",
-                    country: "",
-                    collegeName: "",
                     email: email,
                     totalRank: 1000,
                     noOfProblemSolved: 0,
