@@ -1,7 +1,7 @@
 // src/SignUp.tsx
 import React from "react";
-import { useNavigate } from 'react-router-dom'
-
+// import { useNavigate } from 'react-router-dom'
+import { Link, useLocation } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -48,7 +48,7 @@ const SignUp: React.FC = () => {
         <p className="logo">
         <img  src="./logo.png" height={"50px"} width={"50px"}  />
         </p>
-        <h1 className="logo"><span style={{color:"#064EAE"}}>Code</span><span style={{color:"#FCB040"}}>Galaxy</span></h1>
+        <h1 className="logo"><span style={{color:"rgb(0 109 255)"}}>Code</span><span style={{color:"#FCB040"}}>Galaxy</span></h1>
         <div className="form-group">
           <input
             type="text"
@@ -89,7 +89,7 @@ const SignUp: React.FC = () => {
           Sign Up
         </button>
         <p className="signin-link">
-          Have an account? <a href="/login">Sign In</a>
+          Have an account? <Link to="/login">Sign In</Link>
         </p>
         <div>
         <GoogleOAuthProvider clientId="1046247015186-25rspsek03t24m78r9qme04grrq433ue.apps.googleusercontent.com">
