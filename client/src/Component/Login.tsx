@@ -37,6 +37,7 @@ function Login() {
 
   return (
     <>
+    <div className="main">
       <div className="login-container">
         <form onSubmit={handleSubmit(onSubmit)} className="login-form">
           <p className="logo">
@@ -97,6 +98,7 @@ function Login() {
             </GoogleOAuthProvider>
           </div>
         </form>
+      </div>
       </div>
     </>
   );

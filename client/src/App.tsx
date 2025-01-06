@@ -4,7 +4,10 @@ import Login from "./Component/Login";
 import AppNavbar from "./Component/Navbar";
 import SignUp from "./Component/SignUp";
 import Home from "./Component/Home";
-
+import About from "./Component/About";
+import Profile from "./Component/Profile";
+import Error from "./Component/Error";
+import Admin from "./Component/Admin"
 function App() {
  return (
    
@@ -17,6 +20,10 @@ function App() {
           {/* <Route path="/" element={<Home />} /> */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/admin" element={<Admin/>} />
+          <Route path="*" element={<Error />} />
         </Routes>
 
       </BrowserRouter>
