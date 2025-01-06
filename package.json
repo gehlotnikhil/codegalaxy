@@ -1,12 +1,13 @@
+
 {
   "name": "codegalaxy",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "client":"cd client && npm run dev ",
-    "server":"cd server && npm run dev ",
-    "both":"concurrently \" npm run client \" \" npm run server \" "
+    "client": "cd client && npm run dev ",
+    "server": "cd server && npm run dev ",
+    "both": "concurrently \" npm run client \" \" npm run server \" "
   },
   "keywords": [],
   "author": "",
@@ -15,7 +16,9 @@
   "dependencies": {
     "@react-oauth/google": "^0.12.1",
     "axios": "^1.7.9",
+    "concurrently": "^9.1.2",
     "jwt-decode": "^4.0.0",
-    "react-router-dom": "^7.1.1"
+    "react-router-dom": "^7.1.1",
+    "vercel": "^39.2.5"
   }
 }
