@@ -43,8 +43,9 @@ const SignUp: React.FC = () => {
   };
 
   return (
-    <div className="signup-container">
-      <form onSubmit={handleSubmit(onSubmit)} className="signup-form">
+    <div className="main">
+    <div className="signup-container ">
+      <form onSubmit={handleSubmit(onSubmit)} className="signup-form ">
         <p className="logo">
         <img  src="./logo.png" height={"50px"} width={"50px"}  />
         </p>
@@ -54,7 +55,7 @@ const SignUp: React.FC = () => {
             type="text"
             placeholder="Username"
             {...register("username")}
-            className={errors.username ? "error" : ""}
+            className={`{errors.username ? "error" : ""}`}
           />
           <p className="error-message">{errors.username?.message}</p>
         </div>
@@ -119,6 +120,7 @@ const SignUp: React.FC = () => {
       </GoogleOAuthProvider>
         </div>
       </form>
+    </div>
     </div>
   );
 };
