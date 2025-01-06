@@ -8,8 +8,8 @@ import Home from "./Component/Home";
 function App() {
   return (
     <>
-      <AppNavbar />
       <BrowserRouter>
+      <AppNavbar />
         <Routes>
           <Route index element={<Home />} />
           <Route path="/login" element={<Login />} />
