@@ -5,6 +5,7 @@
     /* align-items: center; */
     min-height: 91vh;
     background-color: #f5f5f5;
+    background-image: url();
   }
   
   .signup-form {
@@ -76,3 +77,41 @@
     text-decoration: none;
   }
   
+/* Login.css */
+.login-container {
+  display: flex;
+  justify-content: center;
+  /* align-items: center; */
+  min-height: 50vh;
+  background-color: #f5f5f5;
+}
+
+.login-form {
+  background: white;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 400px;
+}
+
+.login-link {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.login-link a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+
+/* Navbar.css */
+.bg-nav{
+  background: #000000 !important;
+  color: white !important;
+}
+.white{
+  color: #ffffff !important;
+}

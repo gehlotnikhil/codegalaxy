@@ -6,17 +6,22 @@ import SignUp from "./Component/SignUp";
 import Home from "./Component/Home";
 
 function App() {
-  return (
+ return (
+   
     <>
-      <AppNavbar />
       <BrowserRouter>
+      <AppNavbar />
+    
         <Routes>
           <Route index element={<Home />} />
+          {/* <Route path="/" element={<Home />} /> */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
         </Routes>
+
       </BrowserRouter>
-    </>
+      </>
+  
   );
 }
 
