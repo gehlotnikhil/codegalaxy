@@ -2,6 +2,28 @@ import { useState, useEffect } from "react";
 import { string } from "yup";
 
 function Admin() {
+  interface InOutTestCase{
+input:string,
+output:string
+  }
+  interface ProblemSet  {
+    problemNo?:string,
+    problemName?:string,
+    description?: string,
+    timeComplexity?: string,
+    spaceComplexity?: string,
+    companies?: String[],
+    like?: Number,
+    dislike?: Number,
+    testcases?: InOutTestCase[],
+    constraint?: String[],
+    topic?: String[],
+    accepted?: Number,
+    submission?: Number,
+    status?: string,
+    contestProblem?: Boolean,
+    sampleInputOutput?: InOutTestCase[],
+  }
   const [ShowModel, setShowModel] = useState(false);
   const handleCloseModel = () => {
     setShowModel(false);
@@ -242,7 +264,160 @@ function Admin() {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-          }
+          },
+        }
+      );
+      const jsondata = await response.json();
+      console.log(jsondata);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleCreateProblem = async (): Promise<any> => {
+    let {
+      problemName,
+      description,
+      timeComplexity,
+      spaceComplexity,
+      companies,
+      like,
+      dislike,
+      testcases,
+      constraint,
+      topic,
+      accepted,
+      submission,
+      status,
+      contestProblem,
+      sampleInputOutput
+    } = ModalFieldData;
+    if (
+      accepted === null ||
+      companies === null ||
+      problemName === null ||
+      description === null ||
+      timeComplexity === null ||
+      spaceComplexity === null ||
+      like === null ||
+      dislike === null ||
+      testcases === null ||
+      constraint === null ||
+      topic === null ||
+      submission === null ||
+      status === null ||
+      contestProblem === null ||
+      sampleInputOutput === null
+    ) {
+      return alert("Failed to create problem");
+    }
+const bodyData:ProblemSet = {
+  problemName,
+  description,
+  timeComplexity,
+  spaceComplexity,
+  companies: (companies as string).split(","),
+  like:Number(like),
+  dislike:Number(dislike),
+  testcases:JSON.parse(testcases),
+  constraint: (constraint as string).split(","),
+  topic:(topic as string).split(","),
+  accepted:Number(accepted),
+  submission:Number(submission),
+  status,
+  contestProblem : contestProblem==="true"?true:false,
+  sampleInputOutput:JSON.parse(sampleInputOutput),
+}
+
+   
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/problemset/create`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(bodyData),
+        }
+      );
+      const jsondata = await response.json();
+      console.log(jsondata);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleUpdateProblem = async (): Promise<any> => {
+    let { 
+      problemNo, 
+       problemName,
+      description,
+      timeComplexity,
+      spaceComplexity,
+      companies,
+      like,
+      dislike,
+      testcases,
+      constraint,
+      topic,
+      accepted,
+      submission,
+      status,
+      contestProblem,
+      sampleInputOutput, } =
+      ModalFieldData;
+    if (problemNo === null) {
+      return alert("Failed to update problem");
+    }
+    let bodyData: ProblemSet = {};
+    // let problemsData = problems
+    //   ? (problems as string).split(",").map((value) => Number(value))
+    //   : [];
+    if (problemName !== null) bodyData.problemName = problemName;
+    if (description !== null) bodyData.description = description;
+    if (timeComplexity !== null) bodyData.timeComplexity = timeComplexity;
+    if (spaceComplexity !== null) bodyData.spaceComplexity = spaceComplexity;
+    if (companies !== null) bodyData.companies = (companies as string).split(",");
+    if (like !== null) bodyData.like = Number(like);
+    if (dislike !== null) bodyData.dislike = Number(dislike);
+    if (testcases !== null) bodyData.testcases = JSON.parse(testcases);
+    if (constraint !== null) bodyData.constraint = (constraint as string).split(",");
+    if (topic !== null) bodyData.topic = (topic as string).split(",");
+    if (accepted !== null) bodyData.accepted = Number(accepted);
+    if (submission !== null) bodyData.submission = Number(submission);
+    if (contestProblem !== null) bodyData.contestProblem = contestProblem==="true"?true:false;
+    if (sampleInputOutput !== null) bodyData.sampleInputOutput = JSON.parse(sampleInputOutput);
+    if (status !== null) bodyData.status = status;
+    console.log(bodyData);
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/problemset/update/${problemNo}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(bodyData),
+        }
+      );
+      const jsondata = await response.json();
+      console.log(jsondata);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleDeleteProblem = async (): Promise<any> => {
+    let { problemNo } = ModalFieldData;
+    if (problemNo === null) {
+      return alert("Failed to delete problem");
+    }
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/problemset/delete/${problemNo}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
       const jsondata = await response.json();
@@ -258,6 +433,12 @@ function Admin() {
       handleUpdateContest();
     } else if (ModelHeading === "Delete Contest") {
       handleDeleteContest();
+    } else if (ModelHeading === "Create Problem") {
+      handleCreateProblem();
+    } else if (ModelHeading === "Update Problem") {
+      handleUpdateProblem();
+    } else if (ModelHeading === "Delete Problem") {
+      handleDeleteProblem();
     }
   }
 
@@ -572,6 +753,23 @@ function Admin() {
                       type="text"
                       value={ModalFieldData.status || ""}
                       name="status"
+                      onChange={handleFieldValueChange}
+                      className="form-control"
+                      id=""
+                    />
+                  </div>
+                  <div
+                    className={`mb-3 ${
+                      DisplayField.companies ? "d-block" : "d-none"
+                    }`}
+                  >
+                    <label htmlFor="name" className="col-form-label">
+                      Company:
+                    </label>
+                    <input
+                      type="text"
+                      value={ModalFieldData.companies || ""}
+                      name="companies"
                       onChange={handleFieldValueChange}
                       className="form-control"
                       id=""

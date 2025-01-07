@@ -53,11 +53,11 @@ router.post(
         contestProblem,
         sampleInputOutput,
       } = req.body;
-      let no = await prisma.problemSet.count();
-      console.log(no);
+      let t = await prisma.contest.findMany();
+      console.log(t[t.length-1].contestNo);
       let result = await prisma.problemSet.create({
         data: {
-          problemNo: no + 1,
+          problemNo: t[t.length-1].contestNo + 1,
           problemName: problemName,
           description: description,
           timeComplexity: timeComplexity,

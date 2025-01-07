@@ -45,11 +45,11 @@ router.post("/create", [
             return res.status(404).send({ success, error: error.array() });
         }
         let { problemName, description, timeComplexity, spaceComplexity, companies, like, dislike, testcases, constraint, topic, accepted, submission, status, contestProblem, sampleInputOutput, } = req.body;
-        let no = yield prisma.problemSet.count();
-        console.log(no);
+        let t = yield prisma.contest.findMany();
+        console.log(t[t.length - 1].contestNo);
         let result = yield prisma.problemSet.create({
             data: {
-                problemNo: no + 1,
+                problemNo: t[t.length - 1].contestNo + 1,
                 problemName: problemName,
                 description: description,
                 timeComplexity: timeComplexity,
