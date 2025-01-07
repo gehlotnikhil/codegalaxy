@@ -31,11 +31,12 @@ router.post("/create", [
             return res.status(404).send({ success, error: error.array() });
         }
         let { contestName, duration, startTime, problems, status, noOfParticipated, } = req.body;
-        let no = yield prisma.contest.count();
-        console.log(no);
+        let t = yield prisma.contest.findMany();
+        console.log(t[t.length - 1].contestNo);
+        console.log(t);
         let result = yield prisma.contest.create({
             data: {
-                contestNo: no + 1,
+                contestNo: t[t.length - 1].contestNo + 1,
                 contestName,
                 duration,
                 startTime: new Date(startTime),
@@ -65,16 +66,13 @@ router.put("/update/:contestno", [], (req, res) => __awaiter(void 0, void 0, voi
             query.contestName = req.body.contestName;
         }
         if (req.body.startTime) {
-            query.problemName = req.body.startTime;
+            query.startTime = req.body.startTime;
         }
         if (req.body.duration) {
-            query.startTime = req.body.duration;
+            query.duration = req.body.duration;
         }
         if (req.body.status) {
             query.status = req.body.status;
-        }
-        if (req.body.noOfParticipated) {
-            query.noOfParticipated = req.body.noOfParticipated;
         }
         if (req.body.problems) {
             query.problems = req.body.problems;

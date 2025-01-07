@@ -134,7 +134,7 @@ function Admin() {
       });
     }
   };
-  const abc = "";
+  // const abc = "";
   const handleFieldValueChange = (e: any): any => {
     setModalFieldData({
       ...ModalFieldData,
@@ -188,9 +188,76 @@ function Admin() {
       console.log(error);
     }
   };
+  const handleUpdateContest = async (): Promise<any> => {
+    let { contestNo, contestName, duration, startTime, problems, status } =
+      ModalFieldData;
+    if (contestNo === null) {
+      return alert("Failed to update constest");
+    }
+    let bodyData: {
+      contestNo?: string;
+      contestName?: string;
+      duration?: Number;
+      startTime?: string;
+      problems?: Number[];
+      status?: string;
+    } = {};
+    let problemsData = problems
+      ? (problems as string).split(",").map((value) => Number(value))
+      : [];
+
+    if (contestName !== null) bodyData.contestName = contestName;
+    if (duration !== null) bodyData.duration = Number(duration);
+    if (startTime !== null) bodyData.startTime = startTime;
+    if (problems !== null) bodyData.problems = problemsData;
+    if (status !== null) bodyData.status = status;
+
+    console.log(bodyData);
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/contest/update/${contestNo}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(bodyData),
+        }
+      );
+      const jsondata = await response.json();
+      console.log(jsondata);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleDeleteContest = async (): Promise<any> => {
+    let { contestNo } = ModalFieldData;
+    if (contestNo === null) {
+      return alert("Failed to delete contest");
+    }
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/contest/delete/${contestNo}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          }
+        }
+      );
+      const jsondata = await response.json();
+      console.log(jsondata);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   function handleSendQuery() {
     if (ModelHeading === "Create Contest") {
       handleCreateContest();
+    } else if (ModelHeading === "Update Contest") {
+      handleUpdateContest();
+    } else if (ModelHeading === "Delete Contest") {
+      handleDeleteContest();
     }
   }
 
