@@ -1,33 +1,29 @@
 import { useState, useEffect } from "react";
-import { string } from "yup";
 
 function Admin() {
-  interface InOutTestCase{
-input:string,
-output:string
+  interface InOutTestCase {
+    input: string;
+    output: string;
   }
-  interface ProblemSet  {
-    problemNo?:string,
-    problemName?:string,
-    description?: string,
-    timeComplexity?: string,
-    spaceComplexity?: string,
-    companies?: String[],
-    like?: Number,
-    dislike?: Number,
-    testcases?: InOutTestCase[],
-    constraint?: String[],
-    topic?: String[],
-    accepted?: Number,
-    submission?: Number,
-    status?: string,
-    contestProblem?: Boolean,
-    sampleInputOutput?: InOutTestCase[],
+  interface ProblemSet {
+    problemNo?: string;
+    problemName?: string;
+    description?: string;
+    timeComplexity?: string;
+    spaceComplexity?: string;
+    companies?: String[];
+    like?: Number;
+    dislike?: Number;
+    testcases?: InOutTestCase[];
+    constraint?: String[];
+    topic?: String[];
+    accepted?: Number;
+    submission?: Number;
+    status?: string;
+    contestProblem?: Boolean;
+    sampleInputOutput?: InOutTestCase[];
   }
-  const [ShowModel, setShowModel] = useState(false);
-  const handleCloseModel = () => {
-    setShowModel(false);
-  };
+
   const initialModelFieldData = {
     contestNo: null,
     contestName: null,
@@ -150,6 +146,22 @@ output:string
       });
     } else if (e === "btn6") {
       setModelHeading("Delete Problem");
+      setDisplayField({
+        ...initialDisplayValue,
+        problemNo: true,
+      });
+    } else if (e === "get1") {
+      handleGetAllContest();
+    } else if (e === "get2") {
+      setModelHeading("Get Specific Contest");
+      setDisplayField({
+        ...initialDisplayValue,
+        contestNo: true,
+      });
+    } else if (e === "get3") {
+      handleGetAllProblem();
+    } else if (e === "get4") {
+      setModelHeading("Get Specific Problem");
       setDisplayField({
         ...initialDisplayValue,
         problemNo: true,
@@ -289,7 +301,7 @@ output:string
       submission,
       status,
       contestProblem,
-      sampleInputOutput
+      sampleInputOutput,
     } = ModalFieldData;
     if (
       accepted === null ||
@@ -310,25 +322,24 @@ output:string
     ) {
       return alert("Failed to create problem");
     }
-const bodyData:ProblemSet = {
-  problemName,
-  description,
-  timeComplexity,
-  spaceComplexity,
-  companies: (companies as string).split(","),
-  like:Number(like),
-  dislike:Number(dislike),
-  testcases:JSON.parse(testcases),
-  constraint: (constraint as string).split(","),
-  topic:(topic as string).split(","),
-  accepted:Number(accepted),
-  submission:Number(submission),
-  status,
-  contestProblem : contestProblem==="true"?true:false,
-  sampleInputOutput:JSON.parse(sampleInputOutput),
-}
+    const bodyData: ProblemSet = {
+      problemName,
+      description,
+      timeComplexity,
+      spaceComplexity,
+      companies: (companies as string).split(","),
+      like: Number(like),
+      dislike: Number(dislike),
+      testcases: JSON.parse(testcases),
+      constraint: (constraint as string).split(","),
+      topic: (topic as string).split(","),
+      accepted: Number(accepted),
+      submission: Number(submission),
+      status,
+      contestProblem: contestProblem === "true" ? true : false,
+      sampleInputOutput: JSON.parse(sampleInputOutput),
+    };
 
-   
     try {
       const response = await fetch(
         `http://localhost:8000/api/problemset/create`,
@@ -347,9 +358,9 @@ const bodyData:ProblemSet = {
     }
   };
   const handleUpdateProblem = async (): Promise<any> => {
-    let { 
-      problemNo, 
-       problemName,
+    let {
+      problemNo,
+      problemName,
       description,
       timeComplexity,
       spaceComplexity,
@@ -363,8 +374,8 @@ const bodyData:ProblemSet = {
       submission,
       status,
       contestProblem,
-      sampleInputOutput, } =
-      ModalFieldData;
+      sampleInputOutput,
+    } = ModalFieldData;
     if (problemNo === null) {
       return alert("Failed to update problem");
     }
@@ -376,16 +387,20 @@ const bodyData:ProblemSet = {
     if (description !== null) bodyData.description = description;
     if (timeComplexity !== null) bodyData.timeComplexity = timeComplexity;
     if (spaceComplexity !== null) bodyData.spaceComplexity = spaceComplexity;
-    if (companies !== null) bodyData.companies = (companies as string).split(",");
+    if (companies !== null)
+      bodyData.companies = (companies as string).split(",");
     if (like !== null) bodyData.like = Number(like);
     if (dislike !== null) bodyData.dislike = Number(dislike);
     if (testcases !== null) bodyData.testcases = JSON.parse(testcases);
-    if (constraint !== null) bodyData.constraint = (constraint as string).split(",");
+    if (constraint !== null)
+      bodyData.constraint = (constraint as string).split(",");
     if (topic !== null) bodyData.topic = (topic as string).split(",");
     if (accepted !== null) bodyData.accepted = Number(accepted);
     if (submission !== null) bodyData.submission = Number(submission);
-    if (contestProblem !== null) bodyData.contestProblem = contestProblem==="true"?true:false;
-    if (sampleInputOutput !== null) bodyData.sampleInputOutput = JSON.parse(sampleInputOutput);
+    if (contestProblem !== null)
+      bodyData.contestProblem = contestProblem === "true" ? true : false;
+    if (sampleInputOutput !== null)
+      bodyData.sampleInputOutput = JSON.parse(sampleInputOutput);
     if (status !== null) bodyData.status = status;
     console.log(bodyData);
     try {
@@ -427,6 +442,8 @@ const bodyData:ProblemSet = {
     }
   };
   function handleSendQuery() {
+    console.log("1");
+
     if (ModelHeading === "Create Contest") {
       handleCreateContest();
     } else if (ModelHeading === "Update Contest") {
@@ -439,12 +456,100 @@ const bodyData:ProblemSet = {
       handleUpdateProblem();
     } else if (ModelHeading === "Delete Problem") {
       handleDeleteProblem();
+    }  else if (ModelHeading === "Get Specific Contest") {
+      handleGetSpecificContest();
+    } else if (ModelHeading === "Get Specific Problem") {
+      handleGetSpecificProblem();
     }
   }
 
+  const handleGetAllProblem = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/problemset/getallproblem`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const jsondata = await response.json();
+      console.log(jsondata);
+      (document.querySelector(".getDisplayResult") as HTMLElement).innerHTML =
+        JSON.stringify(jsondata, null, 2);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleGetSpecificProblem = async () => {
+    let {problemNo} = ModalFieldData
+    if(problemNo ===  null){
+      return alert("failed to fetch specific contest")
+    }
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/problemset/getspecificproblem/${problemNo}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const jsondata = await response.json();
+      console.log(jsondata);
+      (document.querySelector(".getDisplayResult") as HTMLElement).innerHTML =
+        JSON.stringify(jsondata, null, 2);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleGetAllContest = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/contest/getallcontest`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const jsondata = await response.json();
+      console.log(jsondata);
+      (document.querySelector(".getDisplayResult") as HTMLElement).innerHTML =
+        JSON.stringify(jsondata, null, 2);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleGetSpecificContest = async () => {
+    let {contestNo} = ModalFieldData
+    if(contestNo ===  null){
+      return alert("failed to fetch specific contest")
+    }
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/contest/getspecificcontest/${contestNo}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const jsondata = await response.json();
+      console.log(jsondata);
+      (document.querySelector(".getDisplayResult") as HTMLElement).innerHTML =
+        JSON.stringify(jsondata, null, 2);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
-      <div
+      <div style={{color:"black !important"}}
         className="modal fade"
         id="exampleModal"
         tabIndex={-1}
@@ -891,8 +996,25 @@ const bodyData:ProblemSet = {
             >
               Delete Contest
             </button>
-            <button className="m-2 btn btn-success">Get All Contest</button>
-            <button className="m-2 btn btn-success">
+            <button
+              type="button"
+              onClick={() => {
+                handleChangeModelHeading("get1");
+              }}
+              className="m-2 btn btn-success"
+            >
+              Get All Contest
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                handleChangeModelHeading("get2");
+              }}
+              data-bs-toggle="modal"
+              data-bs-target="#exampleModal"
+              data-bs-whatever="@getbootstrap"
+              className="m-2 btn btn-success"
+            >
               Get Specific Contest
             </button>
           </div>
@@ -934,15 +1056,36 @@ const bodyData:ProblemSet = {
             >
               Delete Problem
             </button>
-            <button className="m-2 btn btn-success">{ModelHeading}</button>
-            <button className="m-2 btn btn-success">
+            <button
+              type="button"
+              onClick={() => {
+                handleChangeModelHeading("get3");
+              }}
+              className="m-2 btn btn-success"
+            >
+              Get All Problem
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                handleChangeModelHeading("get4");
+              }}
+              data-bs-toggle="modal"
+              data-bs-target="#exampleModal"
+              data-bs-whatever="@getbootstrap"
+              className="m-2 btn btn-success"
+            >
               Get Specific Problem
             </button>
           </div>
           <div className="">
-            <button className="m-2 btn btn-light">Clear All</button>
+            <button className="m-2 btn btn-light" onClick={()=>{
+              (document.querySelector(".getDisplayResult") as HTMLElement).innerHTML = ""
+            }}>Clear All</button>
           </div>
-          <div></div>
+          <div className="getDisplayResult container">
+            
+          </div>
         </div>
       </div>
     </>
