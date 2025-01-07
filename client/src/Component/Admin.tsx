@@ -1,6 +1,19 @@
-import { useState, useEffect } from "react";
+import {useContext, useState, useEffect } from "react";
+import MainContext from "../context/main";
 
 function Admin() {
+
+
+const context = useContext(MainContext);
+const { Demo,setDemo } = context;
+  useEffect(() => {
+    console.log("demo-",Demo);
+    
+  
+   
+  }, [Demo])
+  
+
   interface InOutTestCase {
     input: string;
     output: string;
@@ -549,8 +562,8 @@ function Admin() {
   };
   return (
     <>
-      <div style={{color:"black !important"}}
-        className="modal fade"
+      <div style={{}}
+        className="modal fade text-dark"
         id="exampleModal"
         tabIndex={-1}
         aria-labelledby="exampleModalLabel"
@@ -1060,6 +1073,11 @@ function Admin() {
               type="button"
               onClick={() => {
                 handleChangeModelHeading("get3");
+                if (setDemo) {
+                  console.log("--------------");
+                  
+                  setDemo("bye");
+                }
               }}
               className="m-2 btn btn-success"
             >

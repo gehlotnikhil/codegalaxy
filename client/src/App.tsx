@@ -7,28 +7,31 @@ import Home from "./Component/Home";
 import About from "./Component/About";
 import Profile from "./Component/Profile";
 import Error from "./Component/Error";
-import Admin from "./Component/Admin"
+import Admin from "./Component/Admin";
+import MainContext from "./context/main";
+import { useState } from "react";
 function App() {
- return (
-   
+  const ChangeCodeEditorDesign = () => {};
+  const [Demo, setDemo] = useState("hello world");
+  return (
     <>
-      <BrowserRouter>
-      <AppNavbar />
-    
-        <Routes>
-          <Route index element={<Home />} />
-          {/* <Route path="/" element={<Home />} /> */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/admin" element={<Admin/>} />
-          <Route path="*" element={<Error />} />
-        </Routes>
-
-      </BrowserRouter>
-      </>
-  
+      {/* <MainContext.Provider value={{ }}> */}
+      <MainContext.Provider value={{ Demo, setDemo, ChangeCodeEditorDesign }}>
+        <BrowserRouter>
+          <AppNavbar />
+          <Routes>
+            <Route index element={<Home />} />
+            {/* <Route path="/" element={<Home />} /> */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="*" element={<Error />} />
+          </Routes>
+        </BrowserRouter>
+      </MainContext.Provider>
+    </>
   );
 }
 
