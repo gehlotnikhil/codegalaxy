@@ -1,15 +1,102 @@
 import { useState, useEffect } from "react";
 
 function Admin() {
+  const [ModalFieldData, setModalFieldData] = useState({
+    contestNo: 0,
+    contestName: "",
+    duration: 0,
+    startTime: "",
+    problems: [],
+    status: "",
+    problemNo: 0,
+    problemName: "",
+    description: "",
+    timeComplexity: "",
+    spaceComplexity: "",
+    companies: [],
+    like: 0,
+    dislike: 0,
+    testcases: "",
+    constraint: [],
+    topic: [],
+    accepted: "",
+    submission: "",
+    contestProblem: false,
+    sampleInputOutput: [],
+  });
+
   const [ModelHeading, setModelHeading] = useState("");
-  const handleChangeModelHeading = (e: string): any => {
-    if (e === "btn1") setModelHeading("Create Contest");
-    else if (e === "btn2") setModelHeading("Update Contest");
-    else if (e === "btn3") setModelHeading("Delete Contest");
-    else if (e === "btn4") setModelHeading("Create Problem");
-    else if (e === "btn5") setModelHeading("Update Problem");
-    else if (e === "btn6") setModelHeading("Delete Problem");
+  const initialDisplayValue = {
+    contestNo: false,
+    contestName: false,
+    duration: false,
+    startTime: false,
+    problems: false,
+    status: false,
+    problemNo: false,
+    problemName: false,
+    description: false,
+    timeComplexity: false,
+    spaceComplexity: false,
+    companies: false,
+    like: false,
+    dislike: false,
+    testcases: false,
+    constraint: false,
+    topic: false,
+    accepted: false,
+    submission: false,
+    contestProblem: false,
+    sampleInputOutput: false,
   };
+  const [DisplayField, setDisplayField] = useState(initialDisplayValue);
+  const handleChangeModelHeading = (e: string): any => {
+    setDisplayField(initialDisplayValue);
+    if (e === "btn1") {
+      setModelHeading("Create Contest");
+      setDisplayField({
+        ...initialDisplayValue,
+        contestName: true,
+        duration: true,
+        startTime: true,
+        problems: true,
+        status: true
+      
+      });
+    } else if (e === "btn2") {
+      setModelHeading("Update Contest");
+      setDisplayField({
+        ...initialDisplayValue,
+        contestNo:true,
+        contestName: true,
+        duration: true,
+        startTime: true,
+        problems: true,
+        status: true
+      
+      });
+    } else if (e === "btn3") {
+      setModelHeading("Delete Contest");
+      setDisplayField({
+        ...initialDisplayValue,
+        contestNo: true
+      });
+    } else if (e === "btn4") {
+      setModelHeading("Create Problem");
+      
+    } else if (e === "btn5") {
+      setModelHeading("Update Problem");
+    } else if (e === "btn6") {
+      setModelHeading("Delete Problem");
+    }
+
+    
+  };
+  useEffect(() => {
+    console.log(DisplayField);
+    
+  }, [DisplayField])
+  
   useEffect(() => {
     console.log("ModelHeading updated:", ModelHeading);
   }, [ModelHeading]);
@@ -114,7 +201,7 @@ function Admin() {
                   </div>
                   <div className="mb-3">
                     <label htmlFor="name" className="col-form-label">
-                    Time Complexity:
+                      Time Complexity:
                     </label>
                     <input
                       type="text"
@@ -124,7 +211,7 @@ function Admin() {
                   </div>
                   <div className="mb-3">
                     <label htmlFor="name" className="col-form-label">
-                    Space Complexity:
+                      Space Complexity:
                     </label>
                     <input
                       type="text"
@@ -134,7 +221,7 @@ function Admin() {
                   </div>
                   <div className="mb-3">
                     <label htmlFor="name" className="col-form-label">
-                    Like:
+                      Like:
                     </label>
                     <input
                       type="text"
@@ -144,7 +231,7 @@ function Admin() {
                   </div>
                   <div className="mb-3">
                     <label htmlFor="name" className="col-form-label">
-                    DisLike:
+                      DisLike:
                     </label>
                     <input
                       type="text"
@@ -154,7 +241,7 @@ function Admin() {
                   </div>
                   <div className="mb-3">
                     <label htmlFor="name" className="col-form-label">
-                    Constraints:
+                      Constraints:
                     </label>
                     <input
                       type="text"
@@ -164,7 +251,7 @@ function Admin() {
                   </div>
                   <div className="mb-3">
                     <label htmlFor="name" className="col-form-label">
-                    Topic:
+                      Topic:
                     </label>
                     <input
                       type="text"
@@ -174,7 +261,7 @@ function Admin() {
                   </div>
                   <div className="mb-3">
                     <label htmlFor="name" className="col-form-label">
-                    Accepted:
+                      Accepted:
                     </label>
                     <input
                       type="text"
@@ -184,7 +271,7 @@ function Admin() {
                   </div>
                   <div className="mb-3">
                     <label htmlFor="name" className="col-form-label">
-                    Submission:
+                      Submission:
                     </label>
                     <input
                       type="text"
@@ -194,7 +281,7 @@ function Admin() {
                   </div>
                   <div className="mb-3">
                     <label htmlFor="name" className="col-form-label">
-                    Status:
+                      Status:
                     </label>
                     <input
                       type="text"
@@ -204,7 +291,7 @@ function Admin() {
                   </div>
                   <div className="mb-3">
                     <label htmlFor="name" className="col-form-label">
-                    Contest Problem:
+                      Contest Problem:
                     </label>
                     <input
                       type="text"
@@ -214,7 +301,7 @@ function Admin() {
                   </div>
                   <div className="mb-3">
                     <label htmlFor="name" className="col-form-label">
-                    TestCases:
+                      TestCases:
                     </label>
                     <input
                       type="text"
@@ -224,7 +311,7 @@ function Admin() {
                   </div>
                   <div className="mb-3">
                     <label htmlFor="name" className="col-form-label">
-                    Sample Input Output:
+                      Sample Input Output:
                     </label>
                     <input
                       type="text"
@@ -232,7 +319,6 @@ function Admin() {
                       id="recipient-name"
                     />
                   </div>
-                  
                 </div>
               </form>
             </div>
