@@ -1,7 +1,4 @@
-import React from 'react'
-import { useContext, useRef, useState } from "react"
 import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 
 function Profile() {
  
@@ -9,15 +6,15 @@ function Profile() {
 
   
   
-    function handleChange(e:any): void {
-        throw new Error('Function not implemented.');
-    }
+    // function handleChange(): void {
+    //     throw new Error('Function not implemented.');
+    // }
 
-    function handleClose(e:any): void {
-        throw new Error('Function not implemented.');
-    }
+    // function handleClose(): void {
+    //     throw new Error('Function not implemented.');
+    // }
 
-    function handleShow(e:any): void {
+    function handleShow(): void {
         throw new Error('Function not implemented.');
     }
 

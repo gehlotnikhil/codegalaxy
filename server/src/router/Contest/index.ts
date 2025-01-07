@@ -16,8 +16,7 @@ router.post(
     body("duration", "Please Enter a duration").exists(),
     body("startTime", "Please Enter a startTime").exists(),
     body("problems", "Please Enter a problems's id").exists(),
-    body("status", "Please Enter a status").exists(),
-    body("noOfParticipated", "Please Enter a noOfParticipated").exists(),
+    body("status", "Please Enter a status").exists()
   ],
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
@@ -45,7 +44,7 @@ router.post(
           startTime: new Date(startTime),
           problems,
           status,
-          noOfParticipated,
+          noOfParticipated:0,
         },
       });
       console.log(result);

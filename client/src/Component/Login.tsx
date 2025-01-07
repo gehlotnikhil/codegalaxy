@@ -1,7 +1,6 @@
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
-import { Link, useLocation } from "react-router-dom";
-import React from "react";
+import { Link } from "react-router-dom";
 // import { useNavigate } from 'react-router-dom'
 
 import { useForm, SubmitHandler } from "react-hook-form";

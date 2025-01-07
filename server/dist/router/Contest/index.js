@@ -22,8 +22,7 @@ router.post("/create", [
     body("duration", "Please Enter a duration").exists(),
     body("startTime", "Please Enter a startTime").exists(),
     body("problems", "Please Enter a problems's id").exists(),
-    body("status", "Please Enter a status").exists(),
-    body("noOfParticipated", "Please Enter a noOfParticipated").exists(),
+    body("status", "Please Enter a status").exists()
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
@@ -42,7 +41,7 @@ router.post("/create", [
                 startTime: new Date(startTime),
                 problems,
                 status,
-                noOfParticipated,
+                noOfParticipated: 0,
             },
         });
         console.log(result);

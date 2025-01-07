@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 
 function AppNavbar() {
-  function handleClickSignOut(event:any): void {
+  function handleClickSignOut(): void {
     throw new Error('Function not implemented.');
   }
 

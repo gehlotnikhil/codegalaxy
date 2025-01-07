@@ -1,7 +1,7 @@
 // src/SignUp.tsx
 import React from "react";
 // import { useNavigate } from 'react-router-dom'
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
