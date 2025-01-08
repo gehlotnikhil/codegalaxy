@@ -1,5 +1,5 @@
 // src/SignUp.tsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 // import { useNavigate } from 'react-router-dom'
 import { Link } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -39,8 +39,40 @@ const SignUp: React.FC = () => {
 
   const onSubmit: SubmitHandler<SignUpFormValues> = (data) => {
     console.log(data);
-    alert("Sign Up Successful!");
+    handleCreateAccount(data)
   };
+  
+  
+  const handleCreateAccount = async(data:SignUpFormValues)=>{
+    let result = await fetch(
+      "http://localhost:8000/api/user/registeruser",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body:JSON.stringify({"userName":data.username,"email":data.email,"password":data.password})
+      }
+    );
+    const jsondata = await result.json();
+    console.log("Account Created - ",jsondata);
+    console.log(jsondata.user);
+    const savedata = {...(JSON.parse(localStorage.getItem("User")||'{}')),
+    id: jsondata.user.id,
+    userName: jsondata.user.id,
+    email: jsondata.user.email,
+    contestDetails: [],
+    googleLoginAccess: jsondata.user.googleLoginAccess,
+    noOfContestParticipated: 0,
+    noOfProblemSolved: 0,
+    role: jsondata.user.role,
+    solvedProblemDetails: [],
+    totalRank: 1000,
+    token:jsondata.token
+    }
+    localStorage.setItem("User",JSON.stringify(savedata))
+    
+  }
 
   return (
     <div className="main">
@@ -86,10 +118,10 @@ const SignUp: React.FC = () => {
           />
           <p className="error-message">{errors.email?.message}</p>
         </div>
-        <button type="submit" className="btn-submit">
+        <button type="submit"  className="btn-submit">
           Sign Up
         </button>
-        <p className="signin-link">
+        <p className="signin-link text-dark">
           Have an account? <Link to="/login">Sign In</Link>
         </p>
         <div>

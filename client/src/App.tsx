@@ -11,19 +11,10 @@ import Admin from "./Component/Admin";
 import MainContext from "./context/main";
 import { useState ,useEffect} from "react";
 function App() {
+  
   const ChangeCodeEditorDesign = () => {};
   const [Demo, setDemo] = useState("hello world");
-  const [CodeOfEditor, setCodeOfEditor] = useState(`import React, { useState } from "react";
-    import * as yup from "yup";
-    
-    function Admin() {
-      interface InOutTestCase {
-        input: string;
-        output: string;
-      }
-    
-      return <div>Admin Component</div>;
-    }`);
+  const [CodeOfEditor, setCodeOfEditor] = useState(``);
     const handleEditorChange = (value: string | undefined) => {
       setCodeOfEditor(value || "");
     };

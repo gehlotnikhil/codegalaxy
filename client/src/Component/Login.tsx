@@ -33,6 +33,9 @@ function Login() {
     console.log(data);
     alert("Sign Up Successful!");
   };
+  const handleLoginAccount = ()=>{
+    fetch("")
+  }
 
   return (
     <>
@@ -66,7 +69,7 @@ function Login() {
           <button type="submit" className="btn-submit">
             Login
           </button>
-          <p className="login-link">
+          <p className="login-link text-dark">
             Create a account? <Link to="/signup">Sign Up</Link>
           </p>
           <div>
