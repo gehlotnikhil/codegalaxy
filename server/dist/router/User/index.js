@@ -78,7 +78,7 @@ router.post("/registeruser", [
         res.status(500).send({ success, error });
     }
 }));
-router.get("/login", [
+router.post("/login", [
     (0, express_validator_1.body)("email", "Please neter your email").exists(),
     (0, express_validator_1.body)("password", "Please enter your password")
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -103,7 +103,7 @@ router.get("/login", [
         };
         let token = yield jwt.sign(data, JWT_Secret);
         success = true;
-        return res.send({ success, token });
+        return res.send({ success, token, user: u1 });
     }
     catch (error) {
         console.log(error);

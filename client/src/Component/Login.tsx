@@ -1,6 +1,6 @@
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 // import { useNavigate } from 'react-router-dom'
 
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -18,6 +18,8 @@ interface LoginFormValues {
 }
 
 function Login() {
+  const navigate = useNavigate()
+
   interface JWTDECODETYPE {
     email: string;
   }
@@ -31,10 +33,42 @@ function Login() {
 
   const onSubmit: SubmitHandler<LoginFormValues> = (data) => {
     console.log(data);
-    alert("Sign Up Successful!");
+    handleLoginAccount(data)
   };
-  const handleLoginAccount = ()=>{
-    fetch("")
+  const handleLoginAccount = async(data:LoginFormValues)=>{
+   const result = await fetch("http://localhost:8000/api/user/login",{
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body:JSON.stringify({"email":data.email,"password":data.password})
+    })
+    const jsondata = await result.json()
+    console.log(jsondata);
+    
+    const savedata = {...(JSON.parse(localStorage.getItem("User")||'{}')),
+    id: jsondata.user.id,
+    name:jsondata.user.name,
+    age:jsondata.user.age,
+    gender:jsondata.user.gender,
+    userName: jsondata.user.id,
+    email: jsondata.user.email,
+    collegeName:jsondata.user.collegeName,
+    contestDetails: [],
+    country:jsondata.user.country,
+    googleLoginAccess: jsondata.user.googleLoginAccess,
+    noOfContestParticipated: 0,
+    noOfProblemSolved: 0,
+    role: jsondata.user.role,
+    solvedProblemDetails: [],
+    state:jsondata.user.state,
+    totalRank: 1000,
+    token:jsondata.token
+    }
+    localStorage.setItem("User",JSON.stringify(savedata))
+    navigate("/")
+    
+
   }
 
   return (

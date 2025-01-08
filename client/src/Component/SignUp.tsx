@@ -1,7 +1,7 @@
 // src/SignUp.tsx
 import React, { useEffect, useState } from "react";
 // import { useNavigate } from 'react-router-dom'
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -18,6 +18,7 @@ const schema = yup.object({
   email: yup.string().email("Invalid email address").required(),
 });
 
+
 interface SignUpFormValues {
   username: string;
   password: string;
@@ -29,6 +30,8 @@ interface JWTDECODETYPE {
 }
 
 const SignUp: React.FC = () => {
+  const navigate = useNavigate()
+
   const {
     register,
     handleSubmit,
@@ -71,6 +74,7 @@ const SignUp: React.FC = () => {
     token:jsondata.token
     }
     localStorage.setItem("User",JSON.stringify(savedata))
+    navigate("/")
     
   }
 

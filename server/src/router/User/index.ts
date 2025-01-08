@@ -77,7 +77,7 @@ router.post(
     }
   }
 );
-router.get(
+router.post(
   "/login",
   [
     body("email","Please neter your email").exists(),
@@ -105,7 +105,7 @@ router.get(
       }
       let token  = await jwt.sign(data,JWT_Secret)
       success = true
-      return res.send({success,token})
+      return res.send({success,token,user:u1})
     } catch (error) {
       console.log(error);
       res.status(500).send({success,error})
