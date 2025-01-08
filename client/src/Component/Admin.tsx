@@ -1,10 +1,21 @@
 import { useContext, useState, useEffect } from "react";
 import MainContext from "../context/main";
 import CodeEditor from "./CodeEditor";
+import { useNavigate } from "react-router";
 
 function Admin() {
+  const navigate = useNavigate()
+  useEffect(() => {
+    
+  const user = JSON.parse(localStorage.getItem("User")||"null")
+  if(user?.role?.Admin === false){
+    navigate("/")
+  }
+    
+  }, [])
+  
   const context = useContext(MainContext);
-  const { Demo, setDemo, CodeOfEditor, setCodeOfEditor } = context;
+  const { Demo, setDemo, setCodeOfEditor } = context;
   useEffect(() => {
     console.log("demo-", Demo);
   }, [Demo]);

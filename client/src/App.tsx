@@ -22,8 +22,7 @@ function App() {
       console.log(CodeOfEditor);
       
     }, [CodeOfEditor])
-    
-  
+
   return (
     <>
       {/* <MainContext.Provider value={{ }}> */}
@@ -35,10 +34,12 @@ function App() {
             {/* <Route path="/" element={<Home />} /> */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="*" element={<Error />} />
+            <Route path="/admin" element={<Admin />} />
+          
             <Route path="/about" element={<About />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="*" element={<Error />} />
+       
           </Routes>
         </BrowserRouter>
       </MainContext.Provider>

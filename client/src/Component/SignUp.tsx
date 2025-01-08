@@ -1,5 +1,5 @@
 // src/SignUp.tsx
-import React, { useEffect, useState } from "react";
+import React from "react";
 // import { useNavigate } from 'react-router-dom'
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";

@@ -1,11 +1,11 @@
-import  { useContext, useState,useEffect } from "react";
+import  { useContext,useEffect } from "react";
 import { Editor,loader } from "@monaco-editor/react";
 import MainContext from "../context/main";
 
 
 function CodeEditor() {
    const context = useContext(MainContext)
-  const {CodeOfEditor, setCodeOfEditor, handleEditorChange} = context;
+  const {CodeOfEditor, handleEditorChange} = context;
   useEffect(() => {
     loader.init().then((monaco) => {
       monaco.editor.defineTheme("customTheme", {

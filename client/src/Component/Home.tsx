@@ -1,5 +1,5 @@
 // import { useNavigate } from 'react-router-dom'
-import { useState, useEffect } from "react";
+import {  useEffect } from "react";
 import { useNavigate } from "react-router";
 function Home() {
   // const navigate = useNavigate()
@@ -29,12 +29,12 @@ function Home() {
     totalRank: null,
     token:null
   };
-  if(localStorage.getItem("User")===null)
-  localStorage.setItem("User", JSON.stringify(initialData));
 
   const navigate = useNavigate();
   useEffect(() => {
     try {
+      if(JSON.parse(localStorage.getItem("User") || 'null')===null)
+        localStorage.setItem("User", JSON.stringify(initialData));      
       const user = JSON.parse(localStorage.getItem("User") || '{}');
       console.log("---",user,"---------------",typeof user);
       user.token!==null?console.log("token-",user.token):navigate("/login");
