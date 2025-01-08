@@ -9,14 +9,34 @@ import Profile from "./Component/Profile";
 import Error from "./Component/Error";
 import Admin from "./Component/Admin";
 import MainContext from "./context/main";
-import { useState } from "react";
+import { useState ,useEffect} from "react";
 function App() {
   const ChangeCodeEditorDesign = () => {};
   const [Demo, setDemo] = useState("hello world");
+  const [CodeOfEditor, setCodeOfEditor] = useState(`import React, { useState } from "react";
+    import * as yup from "yup";
+    
+    function Admin() {
+      interface InOutTestCase {
+        input: string;
+        output: string;
+      }
+    
+      return <div>Admin Component</div>;
+    }`);
+    const handleEditorChange = (value: string | undefined) => {
+      setCodeOfEditor(value || "");
+    };
+    useEffect(() => {
+      console.log(CodeOfEditor);
+      
+    }, [CodeOfEditor])
+    
+  
   return (
     <>
       {/* <MainContext.Provider value={{ }}> */}
-      <MainContext.Provider value={{ Demo, setDemo, ChangeCodeEditorDesign }}>
+      <MainContext.Provider value={{handleEditorChange,setCodeOfEditor,CodeOfEditor, Demo, setDemo, ChangeCodeEditorDesign }}>
         <BrowserRouter>
           <AppNavbar />
           <Routes>

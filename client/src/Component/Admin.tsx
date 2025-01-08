@@ -1,18 +1,13 @@
-import {useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import MainContext from "../context/main";
+import CodeEditor from "./CodeEditor";
 
 function Admin() {
-
-
-const context = useContext(MainContext);
-const { Demo,setDemo } = context;
+  const context = useContext(MainContext);
+  const { Demo, setDemo, CodeOfEditor, setCodeOfEditor } = context;
   useEffect(() => {
-    console.log("demo-",Demo);
-    
-  
-   
-  }, [Demo])
-  
+    console.log("demo-", Demo);
+  }, [Demo]);
 
   interface InOutTestCase {
     input: string;
@@ -469,7 +464,7 @@ const { Demo,setDemo } = context;
       handleUpdateProblem();
     } else if (ModelHeading === "Delete Problem") {
       handleDeleteProblem();
-    }  else if (ModelHeading === "Get Specific Contest") {
+    } else if (ModelHeading === "Get Specific Contest") {
       handleGetSpecificContest();
     } else if (ModelHeading === "Get Specific Problem") {
       handleGetSpecificProblem();
@@ -489,16 +484,15 @@ const { Demo,setDemo } = context;
       );
       const jsondata = await response.json();
       console.log(jsondata);
-      (document.querySelector(".getDisplayResult") as HTMLElement).innerHTML =
-        JSON.stringify(jsondata, null, 2);
+      setCodeOfEditor(JSON.stringify(jsondata, null, 2));
     } catch (error) {
       console.log(error);
     }
   };
   const handleGetSpecificProblem = async () => {
-    let {problemNo} = ModalFieldData
-    if(problemNo ===  null){
-      return alert("failed to fetch specific contest")
+    let { problemNo } = ModalFieldData;
+    if (problemNo === null) {
+      return alert("failed to fetch specific contest");
     }
     try {
       const response = await fetch(
@@ -512,8 +506,7 @@ const { Demo,setDemo } = context;
       );
       const jsondata = await response.json();
       console.log(jsondata);
-      (document.querySelector(".getDisplayResult") as HTMLElement).innerHTML =
-        JSON.stringify(jsondata, null, 2);
+      setCodeOfEditor(JSON.stringify(jsondata, null, 2));
     } catch (error) {
       console.log(error);
     }
@@ -531,16 +524,15 @@ const { Demo,setDemo } = context;
       );
       const jsondata = await response.json();
       console.log(jsondata);
-      (document.querySelector(".getDisplayResult") as HTMLElement).innerHTML =
-        JSON.stringify(jsondata, null, 2);
+      setCodeOfEditor(JSON.stringify(jsondata, null, 2));
     } catch (error) {
       console.log(error);
     }
   };
   const handleGetSpecificContest = async () => {
-    let {contestNo} = ModalFieldData
-    if(contestNo ===  null){
-      return alert("failed to fetch specific contest")
+    let { contestNo } = ModalFieldData;
+    if (contestNo === null) {
+      return alert("failed to fetch specific contest");
     }
     try {
       const response = await fetch(
@@ -554,15 +546,15 @@ const { Demo,setDemo } = context;
       );
       const jsondata = await response.json();
       console.log(jsondata);
-      (document.querySelector(".getDisplayResult") as HTMLElement).innerHTML =
-        JSON.stringify(jsondata, null, 2);
+      setCodeOfEditor(JSON.stringify(jsondata, null, 2));
     } catch (error) {
       console.log(error);
     }
   };
   return (
     <>
-      <div style={{}}
+      <div
+        style={{}}
         className="modal fade text-dark"
         id="exampleModal"
         tabIndex={-1}
@@ -1075,7 +1067,7 @@ const { Demo,setDemo } = context;
                 handleChangeModelHeading("get3");
                 if (setDemo) {
                   console.log("--------------");
-                  
+
                   setDemo("bye");
                 }
               }}
@@ -1097,12 +1089,17 @@ const { Demo,setDemo } = context;
             </button>
           </div>
           <div className="">
-            <button className="m-2 btn btn-light" onClick={()=>{
-              (document.querySelector(".getDisplayResult") as HTMLElement).innerHTML = ""
-            }}>Clear All</button>
+            <button
+              className="m-2 btn btn-light"
+              onClick={() => {
+                setCodeOfEditor("");
+              }}
+            >
+              Clear All
+            </button>
           </div>
-          <div className="getDisplayResult container">
-            
+          <div className="codeeditor mt-4">
+          <CodeEditor/>
           </div>
         </div>
       </div>
