@@ -60,18 +60,24 @@ const SignUp: React.FC = () => {
     const jsondata = await result.json();
     console.log("Account Created - ",jsondata);
     console.log(jsondata.user);
-    const savedata = {...(JSON.parse(localStorage.getItem("User")||'{}')),
-    id: jsondata.user.id,
-    userName: jsondata.user.id,
-    email: jsondata.user.email,
-    contestDetails: [],
-    googleLoginAccess: jsondata.user.googleLoginAccess,
-    noOfContestParticipated: 0,
-    noOfProblemSolved: 0,
-    role: jsondata.user.role,
-    solvedProblemDetails: [],
-    totalRank: 1000,
-    token:jsondata.token
+    const savedata = {
+      id: jsondata.user.id,
+      name:jsondata.user.name,
+      age:jsondata.user.age,
+      gender:jsondata.user.gender,
+      userName: jsondata.user.id,
+      email: jsondata.user.email,
+      collegeName:jsondata.user.collegeName,
+      contestDetails: [],
+      country:jsondata.user.country,
+      googleLoginAccess: jsondata.user.googleLoginAccess,
+      noOfContestParticipated: 0,
+      noOfProblemSolved: 0,
+      role: jsondata.user.role,
+      solvedProblemDetails: [],
+      state:jsondata.user.state,
+      totalRank: 1000,
+      token:jsondata.token
     }
     localStorage.setItem("User",JSON.stringify(savedata))
     navigate("/")
@@ -146,8 +152,30 @@ const SignUp: React.FC = () => {
                 body: JSON.stringify({ email: decode.email }),
               }
             );
-            let res = await result.json();
-            console.log("res---", res);
+            let jsondata = await result.json();
+            console.log("res---", jsondata);
+            console.log(jsondata.user);
+    const savedata = {
+      id: jsondata.user.id,
+      name:jsondata.user.name,
+      age:jsondata.user.age,
+      gender:jsondata.user.gender,
+      userName: jsondata.user.id,
+      email: jsondata.user.email,
+      collegeName:jsondata.user.collegeName,
+      contestDetails: [],
+      country:jsondata.user.country,
+      googleLoginAccess: jsondata.user.googleLoginAccess,
+      noOfContestParticipated: 0,
+      noOfProblemSolved: 0,
+      role: jsondata.user.role,
+      solvedProblemDetails: [],
+      state:jsondata.user.state,
+      totalRank: 1000,
+      token:jsondata.token
+    }
+    localStorage.setItem("User",JSON.stringify(savedata))
+    navigate("/")
           }}
           onError={() => {
             console.log("Login Failed");
