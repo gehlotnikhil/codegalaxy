@@ -1,17 +1,27 @@
 import { Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
-import { body, validationResult } from "express-validator";
+import { body, Result, validationResult } from "express-validator";
 import UserFunctions from "../lib/UserFunctions";
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const router = Router();
-import GoogleLogin from "./GoogleLogin"; 
-const prisma = new PrismaClient();
+const axios = require("axios");
 
+import GoogleLogin from "./GoogleLogin";
+const prisma = new PrismaClient();
+import { faker } from "@faker-js/faker";
+
+function generateRandomName() {
+  // Generate a random name using faker
+  const firstName = faker.person.firstName(); // Random first name
+  const lastName = faker.person.lastName(); // Random last name
+
+  return `${firstName} ${lastName}`;
+}
 router.get("/", (req: Request, res: Response) => {
   res.send({ success: "User Routing is on" });
 });
-let JWT_Secret = "Nikhil123"
+let JWT_Secret = "Nikhil123";
 
 // User Registration route
 router.post(
@@ -25,11 +35,7 @@ router.post(
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
     try {
-      const {
-        email,
-        password,
-        userName,
-      } = req.body;
+      const { email, password, userName } = req.body;
 
       // Check for validation errors
       const errors = validationResult(req);
@@ -45,10 +51,12 @@ router.post(
       //encrypt the password
       let salt = await bcrypt.genSalt(10);
       let hashPassword = await bcrypt.hash(password, salt);
+      let name: string = generateRandomName();
 
       // Create the user in the database
       const result = await prisma.user.create({
         data: {
+          name: name,
           email: email,
           password: hashPassword,
           userName: userName,
@@ -59,6 +67,8 @@ router.post(
           contestDetails: [],
           googleLoginAccess: false,
           role: { User: true, Admin: false },
+          profilePictureUrl:
+            "https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk",
         },
       });
       //create access token
@@ -77,133 +87,274 @@ router.post(
     }
   }
 );
-router.post(
-  "/login",
+
+router.put(
+  "/update/",
   [
-    body("email","Please neter your email").exists(),
-    body("password","Please enter your password")
+    body("token", "Please fill the token field").exists(),
+    body("name", "Please fill Name field").exists(),
+    body("age", "Please fill age field").exists(),
+    body("email", "Please fill email field").exists(),
+    body("password", "Please fill password field").exists(),
+    body("userName", "Please fill userName field").exists(),
+    body("totalRank", "Please fill totalRank field").exists(),
+    body("noOfProblemSolved", "Please fill noOfProblemSolved field").exists(),
+    body(
+      "solvedProblemDetails",
+      "Please fill solvedProblemDetails field"
+    ).exists(),
+    body(
+      "noOfContestParticipated",
+      "Please fill noOfContestParticipated field"
+    ).exists(),
+    body("contestDetails", "Please fill contestDetails field").exists(),
+    body("gender", "Please fill gender field").exists(),
+    body("collegeName", "Please fill collegeName field").exists(),
+    body("state", "Please fill state field").exists(),
+    body("country", "Please fill country field").exists(),
+    body("role", "Please fill role field").exists(),
+    body("googleLoginAccess", "Please fill googleLoginAccess field").exists(),
+    body("profilePictureUrl", "Please fill profilePictureUrl field").exists(),
   ],
   async (req: Request, res: Response): Promise<any> => {
-    let success = false
+    let success = false;
     try {
-      let error = validationResult(req.body)
-      if(!error.isEmpty){
-        return res.status(404).send({success,error:error.array()})
+      const response = await axios.post(
+        `http://localhost:8000/api/user/tokentodata`,
+        { token: req.body.token },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const userDetails = response.data;
+      if (userDetails.success === false) {
+        return res.send({
+          success,
+          msg: "Failed to Update because of internal isssue",
+        });
       }
-      let {email,password} = req.body
-      let check1 = await UserFunctions.isUserExist(email)
-      if(!check1){
-        return res.send({success,msg:"User Not Exist"})
+      console.log(userDetails);
+
+      let error = validationResult(req.body);
+      if (!error.isEmpty()) {
+        return res.status(404).send({ success, error: error.array() });
       }
-      let u1 = await prisma.user.findFirst({where:{email}})
-      let result = await bcrypt.compare(password,u1?.password)
-      if(!result){
-        return res.status(404).send({success,msg:"Password is Incorrect"})
+      let query: any = {};
+      if (req.body.name) {
+        query.name = req.body.name;
       }
-      let data = {
-        id:u1?.id
+      if (req.body.age) {
+        query.age = req.body.age;
       }
-      let token  = await jwt.sign(data,JWT_Secret)
-      success = true
-      return res.send({success,token,user:u1})
+      if (req.body.email) {
+        query.email = req.body.email;
+      }
+      if (req.body.userName) {
+        query.userName = req.body.userName;
+      }
+      if (req.body.totalRank) {
+        query.totalRank = req.body.totalRank;
+      }
+      if (req.body.noOfProblemSolved) {
+        query.noOfProblemSolved = req.body.noOfProblemSolved;
+      }
+      if (req.body.solvedProblemDetails) {
+        query.solvedProblemDetails = req.body.solvedProblemDetails;
+      }
+      if (req.body.noOfContestParticipated) {
+        query.noOfContestParticipated = req.body.noOfContestParticipated;
+      }
+      if (req.body.contestDetails) {
+        query.contestDetails = req.body.contestDetails;
+      }
+      if (req.body.gender) {
+        query.gender = req.body.gender;
+      }
+      if (req.body.collegeName) {
+        query.collegeName = req.body.collegeName;
+      }
+      if (req.body.country) {
+        query.country = req.body.country;
+      }
+      if (req.body.role) {
+        query.role = req.body.role;
+      }
+      if (req.body.googleLoginAccess) {
+        query.googleLoginAccess = req.body.googleLoginAccess;
+      }
+      if (req.body.password) {
+        let salt = await bcrypt.genSalt(10);
+        console.log("-------password-",req.body.password);
+        
+        let hashPassword = await bcrypt.hash(req.body.password, salt);
+        query.password = hashPassword;
+      }
+
+      if (req.body.profilePictureUrl) {
+        query.profilePictureUrl = req.body.profilePictureUrl;
+      }
+      if (Object.keys(query).length === 0) {
+        return res.send({ success, msg: "Empty Content" });
+      }
+      console.log({...query});
+      console.log("id-", userDetails.result.id);
+      
+      let result = await prisma.user.update({
+        where: { id: userDetails.result.id },
+        data: {
+          ...query,
+        },
+      });
+
+      success = true;
+      return res.send({ success, result, msg: "Update Successfull" });
     } catch (error) {
       console.log(error);
-      res.status(500).send({success,error})
-      
+      return res.status(500).send({ success, error });
     }
-
   }
 );
 
-router.get("/getspecificuser",[
-  body("email","Please enter your email").exists(),
-  body("email","Please enter correct email format").isEmail(),
-   
-],async(req:Request,res:Response):Promise<any>=>{
-  let success = false
-  try {
-    let error = validationResult(req.body)
-    if(!error.isEmpty()){
-      return res.status(404).send({success,error:error.array()})
+router.post(
+  "/login",
+  [
+    body("email", "Please neter your email").exists(),
+    body("password", "Please enter your password"),
+  ],
+  async (req: Request, res: Response): Promise<any> => {
+    let success = false;
+    try {
+      console.log("1");
+      console.log("1");
+      console.log("1");
+      console.log("1");
+      
+      let error = validationResult(req.body);
+      if (!error.isEmpty) {
+        return res.status(404).send({ success, error: error.array() });
+      }
+      let { email, password } = req.body;
+      console.log("2");
+      let check1 = await UserFunctions.isUserExist(email);
+      if (!check1) {
+        return res.send({ success, msg: "User Not Exist" });
+      }
+      let u1 = await prisma.user.findFirst({ where: { email } });
+      console.log("u1-",password,"---",u1?.password);
+      let result = await bcrypt.compare(password, u1?.password);
+      console.log("final-",result);
+      
+      if (!result) {
+        return res.status(404).send({ success, msg: "Password is Incorrect" });
+      }
+      let data = {
+        id: u1?.id,
+      };
+      let token = await jwt.sign(data, JWT_Secret);
+      success = true;
+      return res.send({ success, token, user: u1 });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({ success, error });
     }
-    let {email} = req.body
-    let check1 = await UserFunctions.isUserExist(email);
-    if(!check1){
-      return res.status(404).send({success,msg:"User not Exist"})
-    }
-    let result = await prisma.user.findFirst({where:{email}})
-    success=true
-    return res.send({success,result})
-  } catch (error) {
-    console.log(error);
-    return res.status(505).send({success,error})   
   }
-})
+);
 
-router.get("/getalluser",async(req:Request,res:Response):Promise<any>=>{
-  let success = false
-  try {
-    let result = await prisma.user.findMany()
-    success=true
-    return res.send({success,result})
-  } catch (error) {
-    console.log(error);
-    return res.status(505).send({success,error})   
+router.get(
+  "/getspecificuser",
+  [
+    body("email", "Please enter your email").exists(),
+    body("email", "Please enter correct email format").isEmail(),
+  ],
+  async (req: Request, res: Response): Promise<any> => {
+    let success = false;
+    try {
+      let error = validationResult(req.body);
+      if (!error.isEmpty()) {
+        return res.status(404).send({ success, error: error.array() });
+      }
+      let { email } = req.body;
+      let check1 = await UserFunctions.isUserExist(email);
+      if (!check1) {
+        return res.status(404).send({ success, msg: "User not Exist" });
+      }
+      let result = await prisma.user.findFirst({ where: { email } });
+      success = true;
+      return res.send({ success, result });
+    } catch (error) {
+      console.log(error);
+      return res.status(505).send({ success, error });
+    }
   }
-})
+);
 
-router.get("/tokentodata",[
-  body("token","Please enter a token").exists()
-],async(req:Request,res:Response):Promise<any>=>{
-  let success = false
+router.get("/getalluser", async (req: Request, res: Response): Promise<any> => {
+  let success = false;
   try {
-    let error = validationResult(req.body)
-    if(!error.isEmpty()){
-      return res.status(404).send({success,error:error.array()})
-    }
-    let {token} = req.body
-    let decode = await jwt.decode(token)
-    console.log("token - ",token);
-    console.log("decode-",decode);
-    let id = decode.id
-    console.log(id);
-    
-    let result = await prisma.user.findFirst({where:{id}})
-    success = true
-    return res.send({success,result})
+    let result = await prisma.user.findMany();
+    success = true;
+    return res.send({ success, result });
   } catch (error) {
     console.log(error);
-    return res.status(500).send({success,error})
-    
-    
+    return res.status(505).send({ success, error });
   }
-})
+});
 
-router.get("/usernametodata",[
-  body("userName","Please enter a username").exists()
-],async(req:Request,res:Response):Promise<any>=>{
-  let success = false
-  try {
-    let error = validationResult(req.body)
-    if(!error.isEmpty()){
-      return res.status(404).send({success,error:error.array()})
+router.post(
+  "/tokentodata",
+  [body("token", "Please enter a token").exists()],
+  async (req: Request, res: Response): Promise<any> => {
+    let success = false;
+    try {
+      let error = validationResult(req.body);
+      if (!error.isEmpty()) {
+        return res.status(404).send({ success, error: error.array() });
+      }
+      let { token } = req.body;
+      let decode = await jwt.decode(token);
+      console.log("token - ", token);
+      console.log("decode-", decode);
+      let id = decode.id;
+      console.log(id);
+
+      let result = await prisma.user.findFirst({ where: { id } });
+      success = true;
+      return res.send({ success, result });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({ success, error });
     }
-    let {userName} = req.body
-    console.log("u-",userName);
-    
-    let result = await prisma.user.findFirst({where:{userName}})
-    console.log("res-",result);
-    if(!result){
-      return res.send({success,msg:"Username name exist"})
-    }
-    success = true
-    return res.send({success,result})
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send({success,error})
   }
-    
-})
+);
+
+router.get(
+  "/usernametodata",
+  [body("userName", "Please enter a username").exists()],
+  async (req: Request, res: Response): Promise<any> => {
+    let success = false;
+    try {
+      let error = validationResult(req.body);
+      if (!error.isEmpty()) {
+        return res.status(404).send({ success, error: error.array() });
+      }
+      let { userName } = req.body;
+      console.log("u-", userName);
+
+      let result = await prisma.user.findFirst({ where: { userName } });
+      console.log("res-", result);
+      if (!result) {
+        return res.send({ success, msg: "Username name exist" });
+      }
+      success = true;
+      return res.send({ success, result });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({ success, error });
+    }
+  }
+);
 
 router.post("/googlelogin", GoogleLogin.googleLogin);
 

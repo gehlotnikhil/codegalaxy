@@ -12,7 +12,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@prisma/client": "^6.0.1",
+    "@faker-js/faker": "^9.3.0",
+    "@prisma/client": "^6.2.1",
     "@types/node": "^22.10.1",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -22,7 +23,6 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.11.0",
     "nodemon": "^3.1.9",
-    "prisma": "^6.0.1",
     "tsc-watch": "^6.2.1",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
-    "@types/node-fetch": "^2.6.12"
+    "@types/node-fetch": "^2.6.12",
+    "prisma": "^6.2.1"
   }
 }

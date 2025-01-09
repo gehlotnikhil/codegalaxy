@@ -21,21 +21,23 @@ model testing {
   title     String
   createdAt DateTime @default(now())
 }
-type Role{
-  User Boolean
+
+type Role {
+  User  Boolean
   Admin Boolean
 }
+
 // type Test_Type{
 //   input String
 //   output String
 // }
 model User {
   id                      String           @id @default(auto()) @map("_id") @db.ObjectId
-  name                    String? 
+  name                    String?
   age                     Int?
-  email                   String          @unique
+  email                   String           @unique
   password                String?
-  userName                String?           @unique
+  userName                String?          @unique
   totalRank               Int?
   noOfProblemSolved       Int?
   solvedProblemDetails    ProblemSetInfo[]
@@ -47,6 +49,7 @@ model User {
   country                 String?
   role                    Role?
   googleLoginAccess       Boolean?
+  profilePictureUrl       String
 }
 
 // model Problem_Set{
@@ -56,38 +59,38 @@ model User {
 //   dislike Int
 
 // }
-type InputOutputType{
-  input String
+type InputOutputType {
+  input  String
   output String
 }
 
-model ProblemSet{
-  id String @id @default(auto()) @db.ObjectId @map("_id")
-  problemNo Int @unique
-  problemName String 
-  description String
-  timeComplexity String
-  spaceComplexity String
-  companies String[]
-  like Int
-  dislike Int
+model ProblemSet {
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+  problemNo         Int               @unique
+  problemName       String
+  description       String
+  timeComplexity    String
+  spaceComplexity   String
+  companies         String[]
+  like              Int
+  dislike           Int
   sampleInputOutput InputOutputType[]
-  testcases InputOutputType[]
-  constraint String[]
-  topic String[]
-  accepted Int
-  submission Int
-  status String
-  contestProblem Boolean
-}
-model Contest{
-  id String @id @default(auto()) @db.ObjectId @map("_id")
-  contestNo Int @unique
-  contestName String 
-  duration Int
-  startTime DateTime
-  problems Int[]
-  status String
-  noOfParticipated Int
+  testcases         InputOutputType[]
+  constraint        String[]
+  topic             String[]
+  accepted          Int
+  submission        Int
+  status            String
+  contestProblem    Boolean
 }
 
+model Contest {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  contestNo        Int      @unique
+  contestName      String
+  duration         Int
+  startTime        DateTime
+  problems         Int[]
+  status           String
+  noOfParticipated Int
+}

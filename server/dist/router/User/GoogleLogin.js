@@ -55,6 +55,7 @@ const googleLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     contestDetails: [],
                     googleLoginAccess: true,
                     role: { User: true, Admin: false },
+                    profilePictureUrl: "https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk"
                 },
             });
         }

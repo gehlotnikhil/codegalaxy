@@ -81,7 +81,8 @@ function AppNavbar() {
               <li>
                 <img
                   style={{ height: "43px", marginLeft: "5px" }}
-                  src="./profilePicture.png"
+                  // src="./profilePicture.png"
+                  src="https://res.cloudinary.com/diqpelkm9/image/upload/v1736351495/srfyhdzipml06vxkhm8v.png"
                   alt=""
                   srcSet=""
                 />{" "}

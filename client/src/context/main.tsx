@@ -7,6 +7,8 @@ interface MainContextType {
     setCodeOfEditor:React.Dispatch<React.SetStateAction<string>>;
     CodeOfEditor:string;
     handleEditorChange:Function;
+    profilePicture: File ;
+     setProfilePicture:React.Dispatch<React.SetStateAction<File>>;
   }
   const MainContext = createContext<MainContextType>({
     Demo: "",
@@ -15,6 +17,9 @@ interface MainContextType {
     setCodeOfEditor: () => {}, // Default function to avoid null checks
     CodeOfEditor: "",
     handleEditorChange: () => {}, // Default function
+    profilePicture: new File([""], "filename"),
+     setProfilePicture:()=>{}
+
   });
   
 export default MainContext
