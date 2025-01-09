@@ -13,9 +13,14 @@ import Profile from "./Component/Profile";
 import EditProfile from "./Component/EditProfile";
 import UploadPage from "./Component/UploadPage";
 import DisplayPage from "./Component/DisplayPage";
+import Testing1 from "./Component/testing1";
 function App() {
-  const defaultProfilePicture = ""
-  const [initialProfilePicture, setinitialProfilePicture] = useState("")
+  const defaultProfilePicture = "https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk"
+  const [initialProfilePicture, setinitialProfilePicture] = useState(defaultProfilePicture)
+  useEffect(() => {
+    console.log("Changed picture-",initialProfilePicture);
+  }, [initialProfilePicture])
+  
   const [profilePicture, setProfilePicture] = useState<File>(new File([""], "filename"));
 
 
@@ -33,7 +38,7 @@ function App() {
   return (
     <>
       {/* <MainContext.Provider value={{ }}> */}
-      <MainContext.Provider value={{handleEditorChange,setCodeOfEditor,CodeOfEditor, Demo, setDemo, ChangeCodeEditorDesign, profilePicture, setProfilePicture }}>
+      <MainContext.Provider value={{initialProfilePicture, setinitialProfilePicture,handleEditorChange,setCodeOfEditor,CodeOfEditor, Demo, setDemo, ChangeCodeEditorDesign, profilePicture, setProfilePicture,defaultProfilePicture }}>
         <BrowserRouter>
           <AppNavbar />
           <Routes>
@@ -47,6 +52,7 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/test" element={<EditProfile />} />
+            <Route path="/test2" element={<Testing1 />} />
             <Route path="/upload" element={<UploadPage />} />
             <Route path="/display" element={<DisplayPage />} />
        

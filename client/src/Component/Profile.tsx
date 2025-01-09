@@ -1,15 +1,34 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import Button from "react-bootstrap/Button";
+import { useContext ,useState,useEffect} from "react";
+import MainContext from "../context/main";
+import EditProfile from "./EditProfile";
 
 function Profile() {
   function handleShow(): void {
-    throw new Error("Function not implemented.");
+    setShowEditProfile(true)
+    setShowProfile(false)
   }
-
+  const context = useContext(MainContext)
+  const {defaultProfilePicture,initialProfilePicture,setProfilePicture} = context;
+  const [ShowEditProfile, setShowEditProfile] = useState(false)
+  const [ShowProfile, setShowProfile] = useState(true)
+  useEffect(() => {
+    
+  console.log("ShowEditProfile-",ShowEditProfile)
+    
+  }, [ShowEditProfile])
+  useEffect(() => {
+    
+  console.log("ShowProfile-",ShowProfile)
+    
+  }, [ShowProfile])
+  
   return (
     <>
-      <section className="color-1">
+    <EditProfile display={`${ShowEditProfile===true?"flex":"none"}`}/>
+      <section className={`color-1 d-${ShowProfile===true?"block":"none"}`}>
         <div className="container py-2">
           <div className="row">
             <div className="col-lg-8">
@@ -31,11 +50,11 @@ function Profile() {
                     <div className="col-sm-3">
                       <p className="mb-0">
                         <img
-                          src="./sketch_logo.png"
+                          src={initialProfilePicture}
                           className="border border-dark"
                           height={"75px"}
                           width={"60px"}
-                          alt=""
+                          alt={defaultProfilePicture}
                         />
                       </p>
                     </div>

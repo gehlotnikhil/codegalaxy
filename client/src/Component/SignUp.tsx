@@ -77,7 +77,10 @@ const SignUp: React.FC = () => {
       solvedProblemDetails: [],
       state:jsondata.user.state,
       totalRank: 1000,
-      token:jsondata.token
+      token:jsondata.token,
+      profilePictureUrl:jsondata.user.profilePictureUrl,
+      password:jsondata.user.password
+
     }
     localStorage.setItem("User",JSON.stringify(savedata))
     navigate("/")

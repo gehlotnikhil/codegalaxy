@@ -9,6 +9,9 @@ interface MainContextType {
     handleEditorChange:Function;
     profilePicture: File ;
      setProfilePicture:React.Dispatch<React.SetStateAction<File>>;
+     defaultProfilePicture:string;
+     initialProfilePicture:string;
+      setinitialProfilePicture:React.Dispatch<React.SetStateAction<string>>;
   }
   const MainContext = createContext<MainContextType>({
     Demo: "",
@@ -18,7 +21,10 @@ interface MainContextType {
     CodeOfEditor: "",
     handleEditorChange: () => {}, // Default function
     profilePicture: new File([""], "filename"),
-     setProfilePicture:()=>{}
+     setProfilePicture:()=>{},
+     defaultProfilePicture:"",
+     initialProfilePicture:"",
+      setinitialProfilePicture:()=>{}
 
   });
   

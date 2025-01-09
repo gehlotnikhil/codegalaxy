@@ -1,13 +1,39 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import MainContext from "../context/main";
 
-const EditProfile: React.FC = () => {
-    const context = useContext(MainContext)
-    const {profilePicture,setProfilePicture} = context
+interface EditProfileProps {
+  display?: string;
+}
+
+const EditProfile: React.FC<EditProfileProps> = (prop) => {
+  const context = useContext(MainContext);
+  const { profilePicture, setProfilePicture } = context;
   const [name, setName] = useState<string>("Nikhil Gehlot");
-  const [dob, setDob] = useState<string>("2005-08-15");
+  const [age, setAge] = useState<number>(0);
   const [gender, setGender] = useState<string>("male");
   const [deletePicture, setDeletePicture] = useState<boolean>(false);
+  const user = JSON.parse(localStorage.getItem("User") || "null");
+
+  const [FieldValue, setFieldValue] = useState({
+    profilePictureUrl: user.profilePictureUrl || "",
+    name: user.name || "",
+    age: user.age || 0,
+    email: user.email || "",
+    password: user.password || "",
+    userName: user.userName || "",
+    gender: user.gender || "",
+    collegeName: user.collegeName || "",
+    state: user.state || "",
+    country: user.country || "",
+    deleteProfileChecked: false,
+  });
+  console.log("->", FieldValue);
+
+  useEffect(() => {
+    console.log("->", FieldValue);
+  }, [FieldValue]);
+
+  const handleFieldValueChange = (e: any) => {};
 
   const handlePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -16,18 +42,18 @@ const EditProfile: React.FC = () => {
   };
 
   const handleSave = () => {
-    console.log({ name, dob, gender, deletePicture, profilePicture });
+    console.log({ name, age, gender, deletePicture, profilePicture });
     alert("Profile saved successfully!");
   };
 
   return (
-    <div
+    <div 
       style={{
-        display: "flex",
+        display: `${prop?.display === "none" ? "none" : "flex"}`,
         justifyContent: "center",
         alignItems: "center",
-        height: "100vh",
-        color:"black"
+
+        color: "black",
       }}
     >
       <div
@@ -48,8 +74,14 @@ const EditProfile: React.FC = () => {
               Upload picture of yourself:
               <input
                 type="file"
+                name="profilePictureUrl"
                 accept="image/jpeg,image/jpg,image/png"
-                onChange={handlePictureChange}
+                onChange={(e) =>
+                  setFieldValue({
+                    ...FieldValue,
+                    [e.target.name]: e.target.value,
+                  })
+                }
                 style={{
                   display: "block",
                   marginTop: "8px",
@@ -59,11 +91,16 @@ const EditProfile: React.FC = () => {
           </div>
           <div style={{ marginBottom: "15px" }}>
             <label>
-            Delete Profile Picture
-             <input
+              Delete Profile Picture
+              <input
                 type="checkbox"
-                checked={deletePicture}
-                onChange={() => setDeletePicture(!deletePicture)}
+                name="deleteProfileChecked"
+                onChange={(e) =>
+                  setFieldValue({
+                    ...FieldValue,
+                    [e.target.name]: e.target.checked,
+                  })
+                }
               />
             </label>
             <p style={{ fontSize: "12px", color: "gray", margin: 0 }}>
@@ -78,8 +115,14 @@ const EditProfile: React.FC = () => {
               Your Name: <span style={{ color: "red" }}>*</span>
               <input
                 type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                name="name"
+                value={FieldValue.name}
+                onChange={(e) =>
+                  setFieldValue({
+                    ...FieldValue,
+                    [e.target.name]: e.target.value,
+                  })
+                }
                 style={{
                   width: "100%",
                   padding: "10px",
@@ -91,14 +134,37 @@ const EditProfile: React.FC = () => {
             </label>
           </div>
 
-          {/* Date of Birth */}
+          {/* Age */}
           <div style={{ marginBottom: "15px" }}>
             <label>
-              Your Date of Birth:
+              Your Age: <span style={{ color: "red" }}>*</span>
               <input
-                type="date"
-                value={dob}
-                onChange={(e) => setDob(e.target.value)}
+                type="number"
+                min={"0"}
+                max={"100"}
+                name="age"
+                value={FieldValue.age!==0?FieldValue.age:0}
+                onChange={(e) => {
+                  const value = Number.parseInt(e.target.value)
+                  if(value >=1 && value <=100){
+                    setFieldValue({
+                      ...FieldValue,
+                      [e.target.name]: e.target.value,
+                    });
+                  }else if(value <1){
+                    setFieldValue({
+                      ...FieldValue,
+                      [e.target.name]:1
+                    });
+                  
+                  }else if(value >100){
+                    setFieldValue({
+                      ...FieldValue,
+                      [e.target.name]:100
+                    });
+                  }
+                 
+                }}
                 style={{
                   width: "100%",
                   padding: "10px",
@@ -115,12 +181,22 @@ const EditProfile: React.FC = () => {
             <label>
               Gender:
               <div>
-              <label style={{ marginLeft: "10px" }}>
+                <label style={{ marginLeft: "10px" }}>
                   <input
                     type="radio"
+                    name="gender"
                     value="male"
-                    checked={gender === "male"}
-                    onChange={(e) => setGender(e.target.value)}
+                    checked={
+                      FieldValue.gender !== ""
+                        ? FieldValue.gender === "male"
+                        : false
+                    }
+                    onChange={(e) =>
+                      setFieldValue({
+                        ...FieldValue,
+                        [e.target.name]: e.target.value,
+                      })
+                    }
                   />
                   Male
                 </label>
@@ -128,13 +204,143 @@ const EditProfile: React.FC = () => {
                   <input
                     type="radio"
                     value="female"
-                    checked={gender === "female"}
-                    onChange={(e) => setGender(e.target.value)}
+                    name="gender"
+                    checked={
+                      FieldValue.gender !== ""
+                        ? FieldValue.gender === "female"
+                        : false
+                    }
+                    onChange={(e) =>
+                      setFieldValue({
+                        ...FieldValue,
+                        [e.target.name]: e.target.value,
+                      })
+                    }
                   />
                   Female
                 </label>
-               
               </div>
+            </label>
+          </div>
+
+          {/* collegename */}
+          <div style={{ marginBottom: "15px" }}>
+            <label>
+              Enter your College Name:
+              <input
+                type="text"
+                    name = "collegeName"
+                value={FieldValue.collegeName}
+                onChange={(e) =>     setFieldValue({ ...FieldValue, [e.target.name]: e.target.value }) }
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  marginTop: "5px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                }}
+              />
+            </label>
+          </div>
+
+          {/* State */}
+          <div style={{ marginBottom: "15px" }}>
+            <label>
+              Enter your State: <span style={{ color: "red" }}>*</span>
+              <input
+                type="text"
+                name="state"
+                value={FieldValue.state}
+                onChange={(e) =>     setFieldValue({ ...FieldValue, [e.target.name]: e.target.value }) }
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  marginTop: "5px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                }}
+              />
+            </label>
+          </div>
+
+          {/* Country */}
+          <div style={{ marginBottom: "15px" }}>
+            <label>
+              Enter your Country: <span style={{ color: "red" }}>*</span>
+              <input
+                type="text"
+                name="country"
+                value={FieldValue.country}
+                onChange={(e) =>     setFieldValue({ ...FieldValue, [e.target.name]: e.target.value }) }
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  marginTop: "5px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                }}
+              />
+            </label>
+          </div>
+
+         
+          {/* UserName */}
+          <div style={{ marginBottom: "15px" }}>
+            <label>
+              UserName: <span style={{ color: "red" }}>*</span>
+              <input
+                type="text"
+                name="userName"
+                value={FieldValue.userName}
+                onChange={(e) =>     setFieldValue({ ...FieldValue, [e.target.name]: e.target.value }) }
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  marginTop: "5px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                }}
+              />
+            </label>
+          </div>
+
+          {/* New Email */}
+          <div style={{ marginBottom: "15px" }}>
+            <label>
+              Set New Email: <span style={{ color: "red" }}>*</span>
+              <input
+                type="text"
+                name="email"
+                value={FieldValue.email}
+                onChange={(e) =>     setFieldValue({ ...FieldValue, [e.target.name]: e.target.value }) }
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  marginTop: "5px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                }}
+              />
+            </label>
+          </div>
+
+          {/* Set New Password */}
+          <div style={{ marginBottom: "15px" }}>
+            <label>
+              Set New Password: <span style={{ color: "red" }}>*</span>
+              <input
+                type="text"
+                name="password"
+                value={FieldValue.password}
+                onChange={(e) => handleFieldValueChange(e.target)}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  marginTop: "5px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                }}
+              />
             </label>
           </div>
 
