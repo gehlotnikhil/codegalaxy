@@ -6,6 +6,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { useContext } from "react";
+import MainContext from "../context/main";
 // Define the form schema using Yup
 const schema = yup.object({
   password: yup
@@ -22,7 +24,8 @@ interface LoginFormValues {
 
 function Login() {
   const navigate = useNavigate();
-
+const context = useContext(MainContext)
+const {setUserDetailToLocalStorage} = context
   interface JWTDECODETYPE {
     email: string;
   }
@@ -48,30 +51,7 @@ function Login() {
     });
     const jsondata = await result.json();
     console.log(jsondata);
-
-    const savedata = {
-      id: jsondata.user.id,
-      name: jsondata.user.name,
-      age: jsondata.user.age,
-      gender: jsondata.user.gender,
-      userName: jsondata.user.id,
-      email: jsondata.user.email,
-      collegeName: jsondata.user.collegeName,
-      contestDetails: [],
-      country: jsondata.user.country,
-      googleLoginAccess: jsondata.user.googleLoginAccess,
-      noOfContestParticipated: 0,
-      noOfProblemSolved: 0,
-      role: jsondata.user.role,
-      solvedProblemDetails: [],
-      state: jsondata.user.state,
-      totalRank: 1000,
-      token: jsondata.token,
-      profilePictureUrl:jsondata.user.profilePictureUrl,
-      password:jsondata.user.password
-
-    };
-    localStorage.setItem("User", JSON.stringify(savedata));
+    setUserDetailToLocalStorage("",jsondata.result)
     navigate("/");
   };
 
@@ -132,27 +112,8 @@ function Login() {
                     );
                     let jsondata = await result.json();
                     console.log("res---", jsondata);
-                    console.log(jsondata.user);
-                    const savedata = {
-                      id: jsondata.user.id,
-                      name: jsondata.user.name,
-                      age: jsondata.user.age,
-                      gender: jsondata.user.gender,
-                      userName: jsondata.user.id,
-                      email: jsondata.user.email,
-                      collegeName: jsondata.user.collegeName,
-                      contestDetails: [],
-                      country: jsondata.user.country,
-                      googleLoginAccess: jsondata.user.googleLoginAccess,
-                      noOfContestParticipated: 0,
-                      noOfProblemSolved: 0,
-                      role: jsondata.user.role,
-                      solvedProblemDetails: [],
-                      state: jsondata.user.state,
-                      totalRank: 1000,
-                      token: jsondata.token,
-                    };
-                    localStorage.setItem("User", JSON.stringify(savedata));
+                    console.log(jsondata.result);
+                    setUserDetailToLocalStorage("",jsondata.result)
                     navigate("/");
                   }}
                   onError={() => {

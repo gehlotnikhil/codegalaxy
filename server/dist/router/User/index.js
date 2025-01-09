@@ -82,7 +82,7 @@ router.post("/registeruser", [
         let token = jwt.sign(data, JWT_Secret);
         console.log("User created:", result);
         success = true;
-        res.send({ success, user: result, token }); // Sending the user object as response
+        res.send({ success, result: Object.assign(Object.assign({}, result), { token: token }) }); // Sending the user object as response
     }
     catch (error) {
         console.error("Error during user creation:", error);
@@ -190,7 +190,7 @@ router.put("/update/", [
             data: Object.assign({}, query),
         });
         success = true;
-        return res.send({ success, result, msg: "Update Successfull" });
+        return res.send({ success, result: Object.assign(Object.assign({}, result), { token: req.body.token }) }); // Sending the user object as response
     }
     catch (error) {
         console.log(error);
@@ -229,7 +229,7 @@ router.post("/login", [
         };
         let token = yield jwt.sign(data, JWT_Secret);
         success = true;
-        return res.send({ success, token, user: u1 });
+        return res.send({ success, result: Object.assign(Object.assign({}, u1), { token: token }) }); // Sending the user object as response
     }
     catch (error) {
         console.log(error);

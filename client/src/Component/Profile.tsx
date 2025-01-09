@@ -4,26 +4,23 @@ import Button from "react-bootstrap/Button";
 import { useContext ,useState,useEffect} from "react";
 import MainContext from "../context/main";
 import EditProfile from "./EditProfile";
-
+import { useNavigate } from "react-router";
 function Profile() {
-  function handleShow(): void {
-    setShowEditProfile(true)
-    setShowProfile(false)
-  }
-  const context = useContext(MainContext)
+  const navigate = useNavigate()
+  const context = useContext(MainContext);
+  const {EntireUserDetail,fetchUserDetailFromLocalStorage} = context;
+  useEffect(() => {
+    if(EntireUserDetail.token === null){
+      const success = fetchUserDetailFromLocalStorage("fetchFromLocal",{})
+      if(!success){
+        navigate("/login")
+      }
+}})
+
+  const {handleShowProfileToggle,ShowEditProfile,ShowProfile} = context
   const {defaultProfilePicture,initialProfilePicture,setProfilePicture} = context;
-  const [ShowEditProfile, setShowEditProfile] = useState(false)
-  const [ShowProfile, setShowProfile] = useState(true)
-  useEffect(() => {
-    
-  console.log("ShowEditProfile-",ShowEditProfile)
-    
-  }, [ShowEditProfile])
-  useEffect(() => {
-    
-  console.log("ShowProfile-",ShowProfile)
-    
-  }, [ShowProfile])
+  
+ 
   
   return (
     <>
@@ -43,7 +40,7 @@ function Profile() {
                     cursor: "pointer",
                     fontSize: "20px",
                   }}
-                  onClick={handleShow} // Optional: Trigger edit functionality
+                  onClick={()=>{handleShowProfileToggle()}} // Optional: Trigger edit functionality
                 />
                 <div className="card-body">
                   <div className="row">
@@ -129,7 +126,6 @@ function Profile() {
                   <Button
                     style={{ marginTop: "19px" }}
                     variant="primary"
-                    onClick={handleShow}
                   >
                     Edit Profile
                   </Button>

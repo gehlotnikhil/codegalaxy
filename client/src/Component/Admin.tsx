@@ -1,20 +1,35 @@
-import { useContext, useState, useEffect } from "react";
-import MainContext from "../context/main";
+import { useState } from "react";
 import CodeEditor from "./CodeEditor";
+import MainContext from "../context/main";
 import { useNavigate } from "react-router";
+import { useContext, useEffect } from "react";
 
 function Admin() {
   const navigate = useNavigate()
+  const context = useContext(MainContext);
+  const {EntireUserDetail,fetchUserDetailFromLocalStorage} = context;
+  useEffect(() => {
+    if(EntireUserDetail.token === null){
+      const success = fetchUserDetailFromLocalStorage("fetchFromLocal",{})
+      if(!success){
+        navigate("/login")
+      }
+}})
+
+
+
+
   useEffect(() => {
     
   const user = JSON.parse(localStorage.getItem("User")||"null")
+
+
   if(user?.role?.Admin === false){
     navigate("/")
   }
     
   }, [])
   
-  const context = useContext(MainContext);
   const { Demo, setDemo, setCodeOfEditor } = context;
   useEffect(() => {
     console.log("demo-", Demo);

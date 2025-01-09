@@ -1,32 +1,95 @@
 import React, { useContext, useEffect, useState } from "react";
 import MainContext from "../context/main";
+import { useNavigate } from "react-router";
 
 interface EditProfileProps {
   display?: string;
 }
 
 const EditProfile: React.FC<EditProfileProps> = (prop) => {
-  const context = useContext(MainContext);
-  const { profilePicture, setProfilePicture } = context;
-  const [name, setName] = useState<string>("Nikhil Gehlot");
-  const [age, setAge] = useState<number>(0);
-  const [gender, setGender] = useState<string>("male");
-  const [deletePicture, setDeletePicture] = useState<boolean>(false);
-  const user = JSON.parse(localStorage.getItem("User") || "null");
+  function handleChangeProfileImage(profilePictureUrl: any): any {
+    return profilePictureUrl
+  }
+  // const navigate = useNavigate();
 
+  const context = useContext(MainContext);
+  const { handleShowProfileToggle ,updateProfileInformation} = context;
+
+  // const { profilePicture, setProfilePicture } = context;
+  const user = JSON.parse(localStorage.getItem("User") || "null");
+  const [passwordWarning, setPasswordWarning] = useState("none");
   const [FieldValue, setFieldValue] = useState({
-    profilePictureUrl: user.profilePictureUrl || "",
-    name: user.name || "",
-    age: user.age || 0,
-    email: user.email || "",
-    password: user.password || "",
-    userName: user.userName || "",
-    gender: user.gender || "",
-    collegeName: user.collegeName || "",
-    state: user.state || "",
-    country: user.country || "",
+    profilePictureUrl: user.profilePictureUrl || null,
+    name: user.name || null,
+    age: user.age || null,
+    email: user.email || null,
+    password: user.password || null,
+    userName: user.userName || null,
+    gender: user.gender || null,
+    collegeName: user.collegeName || null,
+    state: user.state || null,
+    country: user.country || null,
     deleteProfileChecked: false,
   });
+  const handleSave = (e: any) => {
+    e.preventDefault();
+    const query: {
+      profilePictureUrl?: any;
+      name?: string;
+      age?: string;
+      email?: string;
+      password?: string;
+      userName?: string;
+      gender?: string;
+      collegeName?: string;
+      state?: string;
+      country?: string;
+      deleteProfileChecked?: boolean;
+    } = {};
+    if (FieldValue.name !== null || FieldValue.name !== user.name) {
+      query.name = FieldValue.name;
+    }
+    if (FieldValue.age !== null || FieldValue.age !== user.age) {
+      query.age = FieldValue.age;
+    }
+    if (FieldValue.email !== null || FieldValue.email !== user.email) {
+      query.email = FieldValue.email;
+    }
+    if (FieldValue.password !== null || FieldValue.password !== user.password) {
+      query.password = FieldValue.password;
+    }
+    if (FieldValue.userName !== null || FieldValue.userName !== user.userName) {
+      query.userName = FieldValue.userName;
+    }
+    if (FieldValue.gender !== null || FieldValue.gender !== user.gender) {
+      query.gender = FieldValue.gender;
+    }
+    if (
+      FieldValue.collegeName !== null ||
+      FieldValue.collegeName !== user.collegeName
+    ) {
+      query.collegeName = FieldValue.collegeName;
+    }
+    if (FieldValue.state !== null || FieldValue.state !== user.state) {
+      query.state = FieldValue.state;
+    }
+    if (FieldValue.country !== null || FieldValue.country !== user.country) {
+      query.country = FieldValue.country;
+    }
+    if (FieldValue.profilePictureUrl !== null || FieldValue.profilePictureUrl !== user.profilePictureUrl) {
+      query.profilePictureUrl = handleChangeProfileImage(FieldValue.profilePictureUrl)
+    }
+    if (
+      FieldValue.deleteProfileChecked !== null ||
+      FieldValue.deleteProfileChecked !== user.deleteProfileChecked
+    ) {
+      query.deleteProfileChecked = handleChangeProfileImage("default")
+      
+    }
+    updateProfileInformation(query)
+    alert("Profile saved successfully!");
+    handleShowProfileToggle();
+  };
   console.log("->", FieldValue);
 
   useEffect(() => {
@@ -35,19 +98,8 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
 
   const handleFieldValueChange = (e: any) => {};
 
-  const handlePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setProfilePicture(event.target.files[0]);
-    }
-  };
-
-  const handleSave = () => {
-    console.log({ name, age, gender, deletePicture, profilePicture });
-    alert("Profile saved successfully!");
-  };
-
   return (
-    <div 
+    <div
       style={{
         display: `${prop?.display === "none" ? "none" : "flex"}`,
         justifyContent: "center",
@@ -58,6 +110,7 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
     >
       <div
         style={{
+          position: "relative",
           width: "700px",
           backgroundColor: "#ffffff",
           border: "1px solid #ddd",
@@ -66,8 +119,28 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
           padding: "20px",
         }}
       >
+        {/* Close Button */}
+        <button
+          className="profile-close-btn"
+          onClick={() => {
+            handleShowProfileToggle();
+          }}
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "20px",
+            backgroundColor: "transparent",
+            fontSize: "30px",
+            cursor: "pointer",
+            color: "#333",
+            border: "none",
+          }}
+          aria-label="Close"
+        >
+          &times;
+        </button>
         <h2 style={{ marginBottom: "20px" }}>Edit Profile</h2>
-        <form>
+        <form onSubmit={(e) => handleSave(e)}>
           {/* Upload Profile Picture */}
           <div style={{ marginBottom: "15px" }}>
             <label>
@@ -79,7 +152,7 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
                 onChange={(e) =>
                   setFieldValue({
                     ...FieldValue,
-                    [e.target.name]: e.target.value,
+                    [e.target.name]: e.target.files ? e.target.files[0] : null,
                   })
                 }
                 style={{
@@ -116,7 +189,7 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
               <input
                 type="text"
                 name="name"
-                value={FieldValue.name}
+                value={FieldValue.name !== null ? FieldValue.name : ""}
                 onChange={(e) =>
                   setFieldValue({
                     ...FieldValue,
@@ -143,27 +216,25 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
                 min={"0"}
                 max={"100"}
                 name="age"
-                value={FieldValue.age!==0?FieldValue.age:0}
+                value={FieldValue.age !== null ? FieldValue.age : 0}
                 onChange={(e) => {
-                  const value = Number.parseInt(e.target.value)
-                  if(value >=1 && value <=100){
+                  const value = Number.parseInt(e.target.value);
+                  if (value >= 1 && value <= 100) {
                     setFieldValue({
                       ...FieldValue,
                       [e.target.name]: e.target.value,
                     });
-                  }else if(value <1){
+                  } else if (value < 1) {
                     setFieldValue({
                       ...FieldValue,
-                      [e.target.name]:1
+                      [e.target.name]: 1,
                     });
-                  
-                  }else if(value >100){
+                  } else if (value > 100) {
                     setFieldValue({
                       ...FieldValue,
-                      [e.target.name]:100
+                      [e.target.name]: 100,
                     });
                   }
-                 
                 }}
                 style={{
                   width: "100%",
@@ -229,9 +300,16 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
               Enter your College Name:
               <input
                 type="text"
-                    name = "collegeName"
-                value={FieldValue.collegeName}
-                onChange={(e) =>     setFieldValue({ ...FieldValue, [e.target.name]: e.target.value }) }
+                name="collegeName"
+                value={
+                  FieldValue.collegeName !== null ? FieldValue.collegeName : ""
+                }
+                onChange={(e) =>
+                  setFieldValue({
+                    ...FieldValue,
+                    [e.target.name]: e.target.value,
+                  })
+                }
                 style={{
                   width: "100%",
                   padding: "10px",
@@ -250,8 +328,13 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
               <input
                 type="text"
                 name="state"
-                value={FieldValue.state}
-                onChange={(e) =>     setFieldValue({ ...FieldValue, [e.target.name]: e.target.value }) }
+                value={FieldValue.state !== null ? FieldValue.state : ""}
+                onChange={(e) =>
+                  setFieldValue({
+                    ...FieldValue,
+                    [e.target.name]: e.target.value,
+                  })
+                }
                 style={{
                   width: "100%",
                   padding: "10px",
@@ -270,8 +353,13 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
               <input
                 type="text"
                 name="country"
-                value={FieldValue.country}
-                onChange={(e) =>     setFieldValue({ ...FieldValue, [e.target.name]: e.target.value }) }
+                value={FieldValue.country !== null ? FieldValue.country : ""}
+                onChange={(e) =>
+                  setFieldValue({
+                    ...FieldValue,
+                    [e.target.name]: e.target.value,
+                  })
+                }
                 style={{
                   width: "100%",
                   padding: "10px",
@@ -283,7 +371,6 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
             </label>
           </div>
 
-         
           {/* UserName */}
           <div style={{ marginBottom: "15px" }}>
             <label>
@@ -291,8 +378,13 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
               <input
                 type="text"
                 name="userName"
-                value={FieldValue.userName}
-                onChange={(e) =>     setFieldValue({ ...FieldValue, [e.target.name]: e.target.value }) }
+                value={FieldValue.userName !== null ? FieldValue.userName : ""}
+                onChange={(e) =>
+                  setFieldValue({
+                    ...FieldValue,
+                    [e.target.name]: e.target.value,
+                  })
+                }
                 style={{
                   width: "100%",
                   padding: "10px",
@@ -309,10 +401,15 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
             <label>
               Set New Email: <span style={{ color: "red" }}>*</span>
               <input
-                type="text"
+                type="email"
                 name="email"
-                value={FieldValue.email}
-                onChange={(e) =>     setFieldValue({ ...FieldValue, [e.target.name]: e.target.value }) }
+                value={FieldValue.email !== null ? FieldValue.email : ""}
+                onChange={(e) =>
+                  setFieldValue({
+                    ...FieldValue,
+                    [e.target.name]: e.target.value,
+                  })
+                }
                 style={{
                   width: "100%",
                   padding: "10px",
@@ -320,19 +417,29 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
                   border: "1px solid #ccc",
                   borderRadius: "4px",
                 }}
+                required
               />
             </label>
           </div>
 
           {/* Set New Password */}
+
           <div style={{ marginBottom: "15px" }}>
             <label>
               Set New Password: <span style={{ color: "red" }}>*</span>
               <input
                 type="text"
                 name="password"
-                value={FieldValue.password}
-                onChange={(e) => handleFieldValueChange(e.target)}
+                onChange={(e) => {
+                  if (e.target.value.length < 5) {
+                    return setPasswordWarning("block");
+                  }
+                  setPasswordWarning("none");
+                  setFieldValue({
+                    ...FieldValue,
+                    [e.target.name]: e.target.value,
+                  });
+                }}
                 style={{
                   width: "100%",
                   padding: "10px",
@@ -342,13 +449,16 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
                 }}
               />
             </label>
+            <p className={`d-${passwordWarning}`}>
+              <span style={{ color: "red" }}>*</span>Password length should be
+              more than 5<span style={{ color: "red" }}>*</span>
+            </p>
           </div>
 
           {/* Save Button */}
           <div>
             <button
-              type="button"
-              onClick={handleSave}
+              type="submit"
               style={{
                 backgroundColor: "#007bff",
                 color: "white",
@@ -370,3 +480,5 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
 };
 
 export default EditProfile;
+
+

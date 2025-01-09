@@ -80,7 +80,8 @@ router.post(
       console.log("User created:", result);
 
       success = true;
-      res.send({ success, user: result, token }); // Sending the user object as response
+      
+      res.send({ success, result:{...result,token:token} }); // Sending the user object as response
     } catch (error) {
       console.error("Error during user creation:", error);
       res.status(500).send({ success, error });
@@ -209,7 +210,7 @@ router.put(
       });
 
       success = true;
-      return res.send({ success, result, msg: "Update Successfull" });
+    return  res.send({ success, result:{...result,token:req.body.token} }); // Sending the user object as response
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
@@ -254,7 +255,7 @@ router.post(
       };
       let token = await jwt.sign(data, JWT_Secret);
       success = true;
-      return res.send({ success, token, user: u1 });
+   return   res.send({ success, result:{...u1,token:token} }); // Sending the user object as response
     } catch (error) {
       console.log(error);
       res.status(500).send({ success, error });

@@ -1,5 +1,5 @@
 // src/SignUp.tsx
-import React from "react";
+import React, { useContext } from "react";
 // import { useNavigate } from 'react-router-dom'
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -7,6 +7,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
+import MainContext from "../context/main";
+
 // Define the form schema using Yup
 const schema = yup.object({
   username: yup.string().required("Username is required"),
@@ -31,6 +33,8 @@ interface JWTDECODETYPE {
 
 const SignUp: React.FC = () => {
   const navigate = useNavigate()
+  const context = useContext(MainContext)
+  const {setUserDetailToLocalStorage}= context
 
   const {
     register,
@@ -59,30 +63,8 @@ const SignUp: React.FC = () => {
     );
     const jsondata = await result.json();
     console.log("Account Created - ",jsondata);
-    console.log(jsondata.user);
-    const savedata = {
-      id: jsondata.user.id,
-      name:jsondata.user.name,
-      age:jsondata.user.age,
-      gender:jsondata.user.gender,
-      userName: jsondata.user.id,
-      email: jsondata.user.email,
-      collegeName:jsondata.user.collegeName,
-      contestDetails: [],
-      country:jsondata.user.country,
-      googleLoginAccess: jsondata.user.googleLoginAccess,
-      noOfContestParticipated: 0,
-      noOfProblemSolved: 0,
-      role: jsondata.user.role,
-      solvedProblemDetails: [],
-      state:jsondata.user.state,
-      totalRank: 1000,
-      token:jsondata.token,
-      profilePictureUrl:jsondata.user.profilePictureUrl,
-      password:jsondata.user.password
-
-    }
-    localStorage.setItem("User",JSON.stringify(savedata))
+    console.log(jsondata.result);
+    setUserDetailToLocalStorage("",jsondata.result)
     navigate("/")
     
   }
@@ -157,27 +139,8 @@ const SignUp: React.FC = () => {
             );
             let jsondata = await result.json();
             console.log("res---", jsondata);
-            console.log(jsondata.user);
-    const savedata = {
-      id: jsondata.user.id,
-      name:jsondata.user.name,
-      age:jsondata.user.age,
-      gender:jsondata.user.gender,
-      userName: jsondata.user.id,
-      email: jsondata.user.email,
-      collegeName:jsondata.user.collegeName,
-      contestDetails: [],
-      country:jsondata.user.country,
-      googleLoginAccess: jsondata.user.googleLoginAccess,
-      noOfContestParticipated: 0,
-      noOfProblemSolved: 0,
-      role: jsondata.user.role,
-      solvedProblemDetails: [],
-      state:jsondata.user.state,
-      totalRank: 1000,
-      token:jsondata.token
-    }
-    localStorage.setItem("User",JSON.stringify(savedata))
+            console.log(jsondata.result);
+    setUserDetailToLocalStorage("",jsondata.result)
     navigate("/")
           }}
           onError={() => {
