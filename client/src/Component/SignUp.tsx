@@ -34,7 +34,7 @@ interface JWTDECODETYPE {
 const SignUp: React.FC = () => {
   const navigate = useNavigate()
   const context = useContext(MainContext)
-  const {setUserDetailToLocalStorage}= context
+  const {setUserDetailToLocalStorage,fetchUserDetailFromLocalStorage}= context
 
   const {
     register,
@@ -64,9 +64,11 @@ const SignUp: React.FC = () => {
     const jsondata = await result.json();
     console.log("Account Created - ",jsondata);
     console.log(jsondata.result);
+    if(jsondata.success){
     setUserDetailToLocalStorage("",jsondata.result)
+    fetchUserDetailFromLocalStorage("",{})
     navigate("/")
-    
+    }
   }
 
   return (
@@ -140,8 +142,11 @@ const SignUp: React.FC = () => {
             let jsondata = await result.json();
             console.log("res---", jsondata);
             console.log(jsondata.result);
+            if(jsondata.success){
     setUserDetailToLocalStorage("",jsondata.result)
+    fetchUserDetailFromLocalStorage("",{})
     navigate("/")
+            }
           }}
           onError={() => {
             console.log("Login Failed");

@@ -15,6 +15,10 @@ import UploadPage from "./Component/UploadPage";
 import DisplayPage from "./Component/DisplayPage";
 import Testing1 from "./Component/Testing1";
 function App() {
+
+
+
+  
   interface EntireUserDetailType {
     id: string | null;
     name: string | null;

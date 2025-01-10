@@ -25,7 +25,7 @@ interface LoginFormValues {
 function Login() {
   const navigate = useNavigate();
 const context = useContext(MainContext)
-const {setUserDetailToLocalStorage} = context
+const {setUserDetailToLocalStorage,fetchUserDetailFromLocalStorage} = context
   interface JWTDECODETYPE {
     email: string;
   }
@@ -51,8 +51,11 @@ const {setUserDetailToLocalStorage} = context
     });
     const jsondata = await result.json();
     console.log(jsondata);
+    if(jsondata.success){
     setUserDetailToLocalStorage("",jsondata.result)
+    fetchUserDetailFromLocalStorage("",{})
     navigate("/");
+    }
   };
 
   return (
@@ -113,8 +116,11 @@ const {setUserDetailToLocalStorage} = context
                     let jsondata = await result.json();
                     console.log("res---", jsondata);
                     console.log(jsondata.result);
+                    if(jsondata.success){
                     setUserDetailToLocalStorage("",jsondata.result)
+                    fetchUserDetailFromLocalStorage("",{})
                     navigate("/");
+                    }
                   }}
                   onError={() => {
                     console.log("Login Failed");

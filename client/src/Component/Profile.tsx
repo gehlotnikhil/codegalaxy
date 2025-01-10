@@ -6,17 +6,20 @@ import MainContext from "../context/main";
 import EditProfile from "./EditProfile";
 import { useNavigate } from "react-router";
 function Profile() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const context = useContext(MainContext);
-  const {EntireUserDetail,fetchUserDetailFromLocalStorage} = context;
+  const { EntireUserDetail, fetchUserDetailFromLocalStorage } = context;
   useEffect(() => {
-    if(EntireUserDetail.token === null){
-      const success = fetchUserDetailFromLocalStorage("fetchFromLocal",{})
-      if(!success){
-        navigate("/login")
+    console.log(EntireUserDetail.token );
+    
+    if (EntireUserDetail.token === null) {
+      const success = fetchUserDetailFromLocalStorage("fetchFromLocal", {});
+      if (!success) {
+        navigate("/login");
       }
-}})
-
+    }
+  },[]);
+  const {} = context;
   const {handleShowProfileToggle,ShowEditProfile,ShowProfile} = context
   const {defaultProfilePicture,initialProfilePicture,setProfilePicture} = context;
   

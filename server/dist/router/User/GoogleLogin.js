@@ -67,7 +67,7 @@ const googleLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         let token = jwt.sign(data, JWT_Secret);
         console.log("4");
         success = true;
-        res.send({ success, token, user: result });
+        res.send({ success, result: Object.assign(Object.assign({}, result), { token: token }) });
     }
     catch (error) {
         console.log("Google Login Error - ", error);
