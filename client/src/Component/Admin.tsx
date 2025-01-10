@@ -8,7 +8,7 @@ function Admin() {
 
 
   
-  const { Demo, setDemo, setCodeOfEditor } = context;
+  const { Demo, setDemo, setCodeOfEditor,ServerUrl } = context;
   useEffect(() => {
     console.log("demo-", Demo);
   }, [Demo]);
@@ -215,7 +215,7 @@ function Admin() {
       return Number(value);
     });
     try {
-      const response = await fetch(`http://localhost:8000/api/contest/create`, {
+      const response = await fetch(`${ServerUrl}/api/contest/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -261,7 +261,7 @@ function Admin() {
     console.log(bodyData);
     try {
       const response = await fetch(
-        `http://localhost:8000/api/contest/update/${contestNo}`,
+        `${ServerUrl}/api/contest/update/${contestNo}`,
         {
           method: "PUT",
           headers: {
@@ -283,7 +283,7 @@ function Admin() {
     }
     try {
       const response = await fetch(
-        `http://localhost:8000/api/contest/delete/${contestNo}`,
+        `${ServerUrl}/api/contest/delete/${contestNo}`,
         {
           method: "DELETE",
           headers: {
@@ -354,7 +354,7 @@ function Admin() {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/api/problemset/create`,
+        `${ServerUrl}/api/problemset/create`,
         {
           method: "POST",
           headers: {
@@ -417,7 +417,7 @@ function Admin() {
     console.log(bodyData);
     try {
       const response = await fetch(
-        `http://localhost:8000/api/problemset/update/${problemNo}`,
+        `${ServerUrl}/api/problemset/update/${problemNo}`,
         {
           method: "PUT",
           headers: {
@@ -439,7 +439,7 @@ function Admin() {
     }
     try {
       const response = await fetch(
-        `http://localhost:8000/api/problemset/delete/${problemNo}`,
+        `${ServerUrl}/api/problemset/delete/${problemNo}`,
         {
           method: "DELETE",
           headers: {
@@ -478,7 +478,7 @@ function Admin() {
   const handleGetAllProblem = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/problemset/getallproblem`,
+        `${ServerUrl}/api/problemset/getallproblem`,
         {
           method: "GET",
           headers: {
@@ -500,7 +500,7 @@ function Admin() {
     }
     try {
       const response = await fetch(
-        `http://localhost:8000/api/problemset/getspecificproblem/${problemNo}`,
+        `${ServerUrl}/api/problemset/getspecificproblem/${problemNo}`,
         {
           method: "GET",
           headers: {
@@ -518,7 +518,7 @@ function Admin() {
   const handleGetAllContest = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/contest/getallcontest`,
+        `${ServerUrl}/api/contest/getallcontest`,
         {
           method: "GET",
           headers: {
@@ -540,7 +540,7 @@ function Admin() {
     }
     try {
       const response = await fetch(
-        `http://localhost:8000/api/contest/getspecificcontest/${contestNo}`,
+        `${ServerUrl}/api/contest/getspecificcontest/${contestNo}`,
         {
           method: "GET",
           headers: {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -7,6 +7,7 @@ import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { setUserDetail } from "../store/slice/UserDetailSlice";
+import MainContext from "../context/main";
 
 // Define the form schema using Yup
 const schema = yup.object({
@@ -34,6 +35,8 @@ interface JWTDECODETYPE {
 const SignUp: React.FC = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const context = useContext(MainContext)
+  const {ServerUrl} = context
 
   const {
     register,
@@ -51,7 +54,7 @@ const SignUp: React.FC = () => {
   
   const handleCreateAccount = async(data:SignUpFormValues)=>{
     let result = await fetch(
-      "http://localhost:8000/api/user/registeruser",
+      `${ServerUrl}/api/user/registeruser`,
       {
         method: "POST",
         headers: {
@@ -128,7 +131,7 @@ const SignUp: React.FC = () => {
             );
             console.log(decode.email);
             let result = await fetch(
-              "http://localhost:8000/api/user/googlelogin",
+              `${ServerUrl}/api/user/googlelogin`,
               {
                 method: "POST",
                 headers: {

@@ -48,6 +48,8 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; }> = ({
 };
 
 function App() {
+  // const ServerUrl = "http://localhost:8000"
+  const ServerUrl = "https://codegalaxy-server.onrender.com"
  const dispatch = useDispatch()
  const rootState = useSelector((state: RootStateType) => {
   return state;
@@ -95,7 +97,7 @@ function App() {
     }
   }
   const updateProfileInformation = async (data: any) => {
-    const result = await fetch("http://localhost:8000/api/user/update/", {
+    const result = await fetch(`${ServerUrl}/api/user/update/`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -119,6 +121,7 @@ function App() {
     <>
       <MainContext.Provider
         value={{
+          ServerUrl,
           updateProfileInformation,
           setShowProfile,
           setShowEditProfile,

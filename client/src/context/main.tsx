@@ -18,6 +18,7 @@ interface MainContextType {
   setShowEditProfile: React.Dispatch<React.SetStateAction<boolean>>;
   setShowProfile: React.Dispatch<React.SetStateAction<boolean>>;
   updateProfileInformation: Function;
+  ServerUrl:string;
 
 }
 const MainContext = createContext<MainContextType>({
@@ -39,7 +40,9 @@ const MainContext = createContext<MainContextType>({
   setShowProfile: () => {},
   updateProfileInformation: (data: any) => {
     data;
-  }
+  },
+  ServerUrl:""
+
 });
 
 export default MainContext;

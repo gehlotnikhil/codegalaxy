@@ -7,6 +7,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";
 import { setUserDetail } from "../store/slice/UserDetailSlice";
+import { useContext } from "react";
+import MainContext from "../context/main";
 // Define the form schema using Yup
 const schema = yup.object({
   password: yup
@@ -22,6 +24,8 @@ interface LoginFormValues {
 }
 
 function Login() {
+  const context = useContext(MainContext)
+  const {ServerUrl} = context
   const dispatch = useDispatch()
   const navigate = useNavigate();
   interface JWTDECODETYPE {
@@ -40,7 +44,7 @@ function Login() {
     handleLoginAccount(data);
   };
   const handleLoginAccount = async (data: LoginFormValues) => {
-    const result = await fetch("http://localhost:8000/api/user/login", {
+    const result = await fetch(`${ServerUrl}/api/user/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -101,7 +105,7 @@ function Login() {
                     );
                     console.log(decode.email);
                     let result = await fetch(
-                      "http://localhost:8000/api/user/googlelogin",
+                      `${ServerUrl}/api/user/googlelogin`,
                       {
                         method: "POST",
                         headers: {
