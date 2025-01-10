@@ -52,7 +52,7 @@ function App() {
  const rootState = useSelector((state: RootStateType) => {
   return state;
 });
-  const user = JSON.parse(localStorage.getItem("User") || "null");
+  // const user = JSON.parse(localStorage.getItem("User") || "null");
 
   const defaultProfilePicture =
     "https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk";

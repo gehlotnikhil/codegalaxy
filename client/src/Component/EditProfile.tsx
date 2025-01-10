@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
 
 import MainContext from "../context/main";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
+// import { yupResolver } from "@hookform/resolvers/yup";
+// import * as yup from "yup";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../store";
@@ -13,20 +13,20 @@ interface EditProfileProps {
 
 
 // Define the form schema using Yup
-const schema = yup.object({
-  name: yup.string().required("Name is required"),
-  age: yup
-    .number()
-    .min(0, "Age must be greater than or equal to 0")
-    .max(100, "Age must be less than or equal to 100"),
-  email: yup.string().email("Invalid email address").required("Email is required"),
-  userName: yup.string().required("Username is required"),
-  // gender: yup.string(),
-  // collegeName: yup.string(),
-  // state: yup.string(),
-  // country: yup.string(),
-  // deleteProfileChecked: yup.boolean(),
-});
+// const schema = yup.object({
+//   name: yup.string().required("Name is required"),
+//   age: yup
+//     .number()
+//     .min(0, "Age must be greater than or equal to 0")
+//     .max(100, "Age must be less than or equal to 100"),
+//   email: yup.string().email("Invalid email address").required("Email is required"),
+//   userName: yup.string().required("Username is required"),
+//   // gender: yup.string(),
+//   // collegeName: yup.string(),
+//   // state: yup.string(),
+//   // country: yup.string(),
+//   // deleteProfileChecked: yup.boolean(),
+// });
 
 interface ProfileFieldValueType {
   name: string;
@@ -131,7 +131,7 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
           {/* Email */}
           <div style={{ marginBottom: "15px" }}>
             <label>
-              Email: <span style={{ color: "red" }}>*</span>
+             Set New Email: <span style={{ color: "red" }}>*</span>
               <input type="email" {...register("email")} />
             </label>
             <p className="error-message">{errors.email?.message}</p>
@@ -140,7 +140,7 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
           {/* Username */}
           <div style={{ marginBottom: "15px" }}>
             <label>
-              Username: <span style={{ color: "red" }}>*</span>
+             Set New Username: <span style={{ color: "red" }}>*</span>
               <input type="text" {...register("userName")} />
             </label>
             <p className="error-message">{errors.userName?.message}</p>
