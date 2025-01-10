@@ -20,10 +20,10 @@ import {setUserDetail} from './store/slice/UserDetailSlice'
 const ProtectedRoute: React.FC<{ children: React.ReactNode; }> = ({
   children
 }) => {
+  const navigate = useNavigate();
   const rootState = useSelector((state: RootStateType) => {
     return state;
   });
-  const navigate = useNavigate();
   const isAuthenticated = rootState.userDetail.token !== null;
 
   useEffect(() => {
@@ -52,33 +52,36 @@ function App() {
  const rootState = useSelector((state: RootStateType) => {
   return state;
 });
-  // const user = JSON.parse(localStorage.getItem("User") || "null");
-
   const defaultProfilePicture =
     "https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk";
+
   const [initialProfilePicture, setinitialProfilePicture] = useState(
     defaultProfilePicture
   );
-  useEffect(() => {
-    console.log("Changed picture-", initialProfilePicture);
-  }, [initialProfilePicture]);
-
   const [profilePicture, setProfilePicture] = useState<File>(
     new File([""], "filename")
   );
-
-  const ChangeCodeEditorDesign = () => {};
   const [Demo, setDemo] = useState("hello world");
   const [CodeOfEditor, setCodeOfEditor] = useState(``);
-  const handleEditorChange = (value: string | undefined) => {
-    setCodeOfEditor(value || "");
-  };
+  const [ShowEditProfile, setShowEditProfile] = useState(false);
+  const [ShowProfile, setShowProfile] = useState(true);
+  useEffect(() => {
+    console.log("Changed picture-", initialProfilePicture);
+  }, [initialProfilePicture]);
   useEffect(() => {
     console.log(CodeOfEditor);
   }, [CodeOfEditor]);
+  useEffect(() => {
+    console.log("ShowEditProfile-", ShowEditProfile);
+  }, [ShowEditProfile]);
+  useEffect(() => {
+    console.log("ShowProfile-", ShowProfile);
+  }, [ShowProfile]);
 
-  const [ShowEditProfile, setShowEditProfile] = useState(false);
-  const [ShowProfile, setShowProfile] = useState(true);
+  const ChangeCodeEditorDesign = () => {};
+  const handleEditorChange = (value: string | undefined) => {
+    setCodeOfEditor(value || "");
+  };
   function handleShowProfileToggle(): void {
     if (ShowEditProfile === true) {
       setShowEditProfile(false);
@@ -91,13 +94,6 @@ function App() {
       setShowProfile(true);
     }
   }
-
-  useEffect(() => {
-    console.log("ShowEditProfile-", ShowEditProfile);
-  }, [ShowEditProfile]);
-  useEffect(() => {
-    console.log("ShowProfile-", ShowProfile);
-  }, [ShowProfile]);
   const updateProfileInformation = async (data: any) => {
     const result = await fetch("http://localhost:8000/api/user/update/", {
       method: "PUT",

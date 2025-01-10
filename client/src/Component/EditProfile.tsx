@@ -1,16 +1,16 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import MainContext from "../context/main";
 // import { yupResolver } from "@hookform/resolvers/yup";
 // import * as yup from "yup";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import { RootStateType } from "../store";
-import {EntireUserDetailType} from '../store/slice/UserDetailSlice'
+import { EntireUserDetailType } from "../store/slice/UserDetailSlice";
+import axios from "axios";
 interface EditProfileProps {
   display?: string;
 }
-
 
 // Define the form schema using Yup
 // const schema = yup.object({
@@ -38,10 +38,16 @@ interface ProfileFieldValueType {
   // state?: string;
   // country?: string;
   // deleteProfileChecked?: boolean;
+  profilePictureUrl?: string;
 }
 
 const EditProfile: React.FC<EditProfileProps> = (prop) => {
-  const userDetail:EntireUserDetailType = useSelector((state:RootStateType):EntireUserDetailType=>{return state.userDetail})
+  // const dispatch = useDispatch()
+  const userDetail: EntireUserDetailType = useSelector(
+    (state: RootStateType): EntireUserDetailType => {
+      return state.userDetail;
+    }
+  );
 
   const {
     register,
@@ -53,17 +59,67 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
       age: userDetail.age ?? 0, // Allow null for optional fields
       userName: userDetail.userName || "",
       email: userDetail.email || "",
-
     },
   });
 
   const context = useContext(MainContext);
-  const { handleShowProfileToggle,updateProfileInformation } = context;
+  const { handleShowProfileToggle, updateProfileInformation } = context;
 
-  const onSubmit: SubmitHandler<ProfileFieldValueType> = (data) => {
+  const onSubmit: SubmitHandler<ProfileFieldValueType> = async(data) => {
     console.log("Form data:", data);
-    updateProfileInformation(data)
+    if (file !== null) {
+      let profilePictureUrl = await handleUpload();
+      data = {...data, profilePictureUrl:profilePictureUrl}
+    }
+    console.log("last--------------",data);
+    
+    updateProfileInformation(data);
     // Handle form submission logic here
+  };
+
+  const CLOUD_NAME = "diqpelkm9"; // Replace with your Cloudinary cloud name
+  const CLOUDINARY_UPLOAD_PRESET = "my_present";
+  const [file, setFile] = useState<File | null>(null);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    console.log(file);
+  }, [file]);
+  useEffect(() => {
+    console.log(error);
+  }, [error]);
+
+  const handleUpload = async () => {
+    if (!file) {
+      setError("Please select a file.");
+      return;
+    }
+
+    setError("");
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+    try {
+      const response = await axios.post(
+        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+        formData
+      );
+      let uploadedImageUrl = response.data.secure_url;
+      console.log("etannnnnnnn->>>", uploadedImageUrl);
+      let starting = () => {
+        let b = uploadedImageUrl.substring(50, uploadedImageUrl.length);
+        console.log(b.indexOf("/"));
+        return b.indexOf("/");
+      };
+      uploadedImageUrl = uploadedImageUrl.substring(51 + starting(), uploadedImageUrl.length - 4);
+      let newurl =
+        "https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/" + uploadedImageUrl;
+        console.log("etannnnnnnn->>>", newurl);
+        return newurl
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      setError("Image upload failed. Please try again.");
+    }
   };
 
   return (
@@ -108,13 +164,24 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
         </button>
         <h2 style={{ marginBottom: "20px" }}>Edit Profile</h2>
         <form onSubmit={handleSubmit(onSubmit)}>
-         
-        
+          {/* Upload profile image */}
+          <div style={{ marginBottom: "15px" }}>
+            <label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  if (e.target.files) setFile(e.target.files[0]);
+                }}
+              />{" "}
+            </label>
+            <p className="error-message">{errors.name?.message}</p>
+          </div>
           {/* Name */}
           <div style={{ marginBottom: "15px" }}>
             <label>
               Your Name: <span style={{ color: "red" }}>*</span>
-              <input type="text"{...register("name")} />
+              <input type="text" {...register("name")} />
             </label>
             <p className="error-message">{errors.name?.message}</p>
           </div>
@@ -131,7 +198,7 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
           {/* Email */}
           <div style={{ marginBottom: "15px" }}>
             <label>
-             Set New Email: <span style={{ color: "red" }}>*</span>
+              Set New Email: <span style={{ color: "red" }}>*</span>
               <input type="email" {...register("email")} />
             </label>
             <p className="error-message">{errors.email?.message}</p>
@@ -140,7 +207,7 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
           {/* Username */}
           <div style={{ marginBottom: "15px" }}>
             <label>
-             Set New Username: <span style={{ color: "red" }}>*</span>
+              Set New Username: <span style={{ color: "red" }}>*</span>
               <input type="text" {...register("userName")} />
             </label>
             <p className="error-message">{errors.userName?.message}</p>

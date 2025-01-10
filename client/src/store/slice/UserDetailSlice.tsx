@@ -56,7 +56,7 @@ const UserDetailSlice = createSlice({
   name: "userDetail",
   initialState: initialUserDetail,
   reducers: {
-    setUserDetail(state, action: PayloadAction<UserDetailType>) {
+    setUserDetail(state, action: PayloadAction<any>) {
       console.log("setUserDetail");
       return { ...state, ...(action.payload) }; // Spread new data into the state
     },

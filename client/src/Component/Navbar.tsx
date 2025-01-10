@@ -1,6 +1,13 @@
+import { useContext } from "react";
 import { Link } from "react-router-dom";
+import MainContext from "../context/main";
+import { useSelector } from "react-redux";
+import { RootStateType } from "../store";
 
 function AppNavbar() {
+  const context = useContext(MainContext)
+  const userDetails = useSelector((state:RootStateType)=>{return state.userDetail})
+  const {defaultProfilePicture} = context;
   function handleClickSignOut(): void {
     console.log("hi--");
     localStorage.setItem("User", "null");
@@ -51,7 +58,7 @@ function AppNavbar() {
                   About
                 </Link>
               </li>
-            
+                         
             </ul>
 
             <div className="d-flex ">
@@ -83,7 +90,7 @@ function AppNavbar() {
                 <img
                   style={{ height: "43px", marginLeft: "5px" }}
                   // src="./profilePicture.png"
-                  src="https://res.cloudinary.com/diqpelkm9/image/upload/v1736351495/srfyhdzipml06vxkhm8v.png"
+                  src={`${userDetails.profilePictureUrl===defaultProfilePicture?defaultProfilePicture:userDetails.profilePictureUrl}`}
                   alt=""
                   srcSet=""
                 />{" "}

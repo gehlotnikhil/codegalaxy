@@ -47,6 +47,7 @@ const UploadPage: React.FC = () => {
       <input
         type="file"
         accept="image/*"
+        
         onChange={(e) => {
           if (e.target.files) setFile(e.target.files[0]);
         }}

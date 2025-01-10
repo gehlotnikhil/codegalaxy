@@ -13,12 +13,18 @@ import RatingDisplay from "./RatingDisplay";
 import SubmissionGraph from "./SubmissionGraph";
 
 function Profile() {
+
   const context = useContext(MainContext);
   const userDetail = useSelector((state: RootStateType) => {
     return state.userDetail;
   });
-  const { handleShowProfileToggle, ShowEditProfile, ShowProfile } = context;
-  const { defaultProfilePicture, initialProfilePicture } = context;
+  const { handleShowProfileToggle, ShowEditProfile, ShowProfile,defaultProfilePicture } = context;
+  const {  } = context;
+
+
+
+
+
 
   return (
     <>
@@ -47,13 +53,13 @@ function Profile() {
                 <div className="card-body">
                   <div className="row">
                     <div className="col-sm-3">
-                      <p className="mb-0">
+                      <p className="mb-0" >
                         <img
-                          src={initialProfilePicture}
-                          className="border border-dark"
+                  src={`${userDetail.profilePictureUrl===defaultProfilePicture?defaultProfilePicture:userDetail.profilePictureUrl}`} 
+                  style={{border:"1px",borderColor:"black",borderStyle:"dotted"}}
                           height={"75px"}
                           width={"60px"}
-                          alt={defaultProfilePicture}
+                          alt=""
                         />
                       </p>
                     </div>
