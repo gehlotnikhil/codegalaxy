@@ -51,11 +51,7 @@ function AppNavbar() {
                   About
                 </Link>
               </li>
-              <li className="nav-item">
-                <Link className="white nav-link" to="/admin">
-                  Admin
-                </Link>
-              </li>
+            
             </ul>
 
             <div className="d-flex ">

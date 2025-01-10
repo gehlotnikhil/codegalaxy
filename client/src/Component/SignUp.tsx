@@ -17,6 +17,7 @@ const schema = yup.object({
     .oneOf([yup.ref("password")], "Passwords must match")
     .required("Confirm Password is required"),
   email: yup.string().email("Invalid email address").required(),
+
 });
 
 
@@ -43,7 +44,7 @@ const SignUp: React.FC = () => {
   });
 
   const onSubmit: SubmitHandler<SignUpFormValues> = (data) => {
-    console.log(data);
+    console.log("submiting--",data);
     handleCreateAccount(data)
   };
   

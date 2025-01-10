@@ -1,39 +1,70 @@
-import React, { useContext, useEffect, useState } from "react";
-import MainContext from "../context/main";
+import React, { useContext } from "react";
 
+import MainContext from "../context/main";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { useSelector } from "react-redux";
+import { RootStateType } from "../store";
+import {EntireUserDetailType} from '../store/slice/UserDetailSlice'
 interface EditProfileProps {
   display?: string;
 }
 
+
+// Define the form schema using Yup
+const schema = yup.object({
+  name: yup.string().required("Name is required"),
+  age: yup
+    .number()
+    .min(0, "Age must be greater than or equal to 0")
+    .max(100, "Age must be less than or equal to 100"),
+  email: yup.string().email("Invalid email address").required("Email is required"),
+  userName: yup.string().required("Username is required"),
+  // gender: yup.string(),
+  // collegeName: yup.string(),
+  // state: yup.string(),
+  // country: yup.string(),
+  // deleteProfileChecked: yup.boolean(),
+});
+
+interface ProfileFieldValueType {
+  name: string;
+  age?: number;
+  email: string;
+  userName: string;
+  // gender?: string;
+  // collegeName?: string;
+  // state?: string;
+  // country?: string;
+  // deleteProfileChecked?: boolean;
+}
+
 const EditProfile: React.FC<EditProfileProps> = (prop) => {
+  const userDetail:EntireUserDetailType = useSelector((state:RootStateType):EntireUserDetailType=>{return state.userDetail})
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ProfileFieldValueType>({
+    defaultValues: {
+      name: userDetail.name || "", // Fallback to empty string
+      age: userDetail.age ?? 0, // Allow null for optional fields
+      userName: userDetail.userName || "",
+      email: userDetail.email || "",
+
+    },
+  });
+
   const context = useContext(MainContext);
-  const { handleShowProfileToggle } = context;
-  const [passwordWarning, setPasswordWarning] = useState("none");
-  useEffect(() => {}, []);
+  const { handleShowProfileToggle,updateProfileInformation } = context;
 
-  const [FieldValue, setFieldValue] = useState(() => ({
-    profilePictureUrl: null,
-    name: null,
-    age: null,
-    email: null,
-    password: null,
-    userName: null,
-    gender: null,
-    collegeName: null,
-    state: null,
-    country: null,
-    deleteProfileChecked: false,
-  }));
-
-  const handleSave = (e: any) => {
-    e.preventDefault();
+  const onSubmit: SubmitHandler<ProfileFieldValueType> = (data) => {
+    console.log("Form data:", data);
+    updateProfileInformation(data)
+    // Handle form submission logic here
   };
-  console.log("->", FieldValue);
-
-  useEffect(() => {
-    console.log("->", FieldValue);
-  }, [FieldValue]);
-
 
   return (
     <div
@@ -41,7 +72,6 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
         display: `${prop?.display === "none" ? "none" : "flex"}`,
         justifyContent: "center",
         alignItems: "center",
-
         color: "black",
       }}
     >
@@ -77,322 +107,46 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
           &times;
         </button>
         <h2 style={{ marginBottom: "20px" }}>Edit Profile</h2>
-        <form onSubmit={(e) => handleSave(e)}>
-          {/* Upload Profile Picture */}
-          <div style={{ marginBottom: "15px" }}>
-            <label>
-              Upload picture of yourself:
-              <input
-                type="file"
-                name="profilePictureUrl"
-                accept="image/jpeg,image/jpg,image/png"
-                onChange={(e) =>
-                  setFieldValue({
-                    ...FieldValue,
-                    [e.target.name]: e.target.files ? e.target.files[0] : null,
-                  })
-                }
-                style={{
-                  display: "block",
-                  marginTop: "8px",
-                }}
-              />
-            </label>
-          </div>
-          <div style={{ marginBottom: "15px" }}>
-            <label>
-              Delete Profile Picture
-              <input
-                type="checkbox"
-                name="deleteProfileChecked"
-                onChange={(e) =>
-                  setFieldValue({
-                    ...FieldValue,
-                    [e.target.name]: e.target.checked,
-                  })
-                }
-              />
-            </label>
-            <p style={{ fontSize: "12px", color: "gray", margin: 0 }}>
-              Tick the checkbox if you want to delete your current profile
-              picture.
-            </p>
-          </div>
-
+        <form onSubmit={handleSubmit(onSubmit)}>
+         
+        
           {/* Name */}
           <div style={{ marginBottom: "15px" }}>
             <label>
               Your Name: <span style={{ color: "red" }}>*</span>
-              <input
-                type="text"
-                name="name"
-                value={FieldValue.name !== null ? FieldValue.name : ""}
-                onChange={(e) =>
-                  setFieldValue({
-                    ...FieldValue,
-                    [e.target.name]: e.target.value,
-                  })
-                }
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  marginTop: "5px",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                }}
-              />
+              <input type="text"{...register("name")} />
             </label>
+            <p className="error-message">{errors.name?.message}</p>
           </div>
 
           {/* Age */}
           <div style={{ marginBottom: "15px" }}>
             <label>
-              Your Age: <span style={{ color: "red" }}>*</span>
-              <input
-                type="number"
-                min={"0"}
-                max={"100"}
-                name="age"
-                value={FieldValue.age !== null ? FieldValue.age : 0}
-                onChange={(e) => {
-                  const value = Number.parseInt(e.target.value);
-                  if (value >= 1 && value <= 100) {
-                    setFieldValue({
-                      ...FieldValue,
-                      [e.target.name]: e.target.value,
-                    });
-                  } else if (value < 1) {
-                    setFieldValue({
-                      ...FieldValue,
-                      [e.target.name]: 1,
-                    });
-                  } else if (value > 100) {
-                    setFieldValue({
-                      ...FieldValue,
-                      [e.target.name]: 100,
-                    });
-                  }
-                }}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  marginTop: "5px",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                }}
-              />
+              Your Age:
+              <input type="number" {...register("age")} />
             </label>
+            <p className="error-message">{errors.age?.message}</p>
           </div>
 
-          {/* Gender */}
+          {/* Email */}
           <div style={{ marginBottom: "15px" }}>
             <label>
-              Gender:
-              <div>
-                <label style={{ marginLeft: "10px" }}>
-                  <input
-                    type="radio"
-                    name="gender"
-                    value="male"
-                    checked={
-                      FieldValue.gender !== ""
-                        ? FieldValue.gender === "male"
-                        : false
-                    }
-                    onChange={(e) =>
-                      setFieldValue({
-                        ...FieldValue,
-                        [e.target.name]: e.target.value,
-                      })
-                    }
-                  />
-                  Male
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    value="female"
-                    name="gender"
-                    checked={
-                      FieldValue.gender !== ""
-                        ? FieldValue.gender === "female"
-                        : false
-                    }
-                    onChange={(e) =>
-                      setFieldValue({
-                        ...FieldValue,
-                        [e.target.name]: e.target.value,
-                      })
-                    }
-                  />
-                  Female
-                </label>
-              </div>
+              Email: <span style={{ color: "red" }}>*</span>
+              <input type="email" {...register("email")} />
             </label>
+            <p className="error-message">{errors.email?.message}</p>
           </div>
 
-          {/* collegename */}
+          {/* Username */}
           <div style={{ marginBottom: "15px" }}>
             <label>
-              Enter your College Name:
-              <input
-                type="text"
-                name="collegeName"
-                value={
-                  FieldValue.collegeName !== null ? FieldValue.collegeName : ""
-                }
-                onChange={(e) =>
-                  setFieldValue({
-                    ...FieldValue,
-                    [e.target.name]: e.target.value,
-                  })
-                }
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  marginTop: "5px",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                }}
-              />
+              Username: <span style={{ color: "red" }}>*</span>
+              <input type="text" {...register("userName")} />
             </label>
+            <p className="error-message">{errors.userName?.message}</p>
           </div>
 
-          {/* State */}
-          <div style={{ marginBottom: "15px" }}>
-            <label>
-              Enter your State: <span style={{ color: "red" }}>*</span>
-              <input
-                type="text"
-                name="state"
-                value={FieldValue.state !== null ? FieldValue.state : ""}
-                onChange={(e) =>
-                  setFieldValue({
-                    ...FieldValue,
-                    [e.target.name]: e.target.value,
-                  })
-                }
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  marginTop: "5px",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                }}
-              />
-            </label>
-          </div>
-
-          {/* Country */}
-          <div style={{ marginBottom: "15px" }}>
-            <label>
-              Enter your Country: <span style={{ color: "red" }}>*</span>
-              <input
-                type="text"
-                name="country"
-                value={FieldValue.country !== null ? FieldValue.country : ""}
-                onChange={(e) =>
-                  setFieldValue({
-                    ...FieldValue,
-                    [e.target.name]: e.target.value,
-                  })
-                }
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  marginTop: "5px",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                }}
-              />
-            </label>
-          </div>
-
-          {/* UserName */}
-          <div style={{ marginBottom: "15px" }}>
-            <label>
-              UserName: <span style={{ color: "red" }}>*</span>
-              <input
-                type="text"
-                name="userName"
-                value={FieldValue.userName !== null ? FieldValue.userName : ""}
-                onChange={(e) =>
-                  setFieldValue({
-                    ...FieldValue,
-                    [e.target.name]: e.target.value,
-                  })
-                }
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  marginTop: "5px",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                }}
-              />
-            </label>
-          </div>
-
-          {/* New Email */}
-          <div style={{ marginBottom: "15px" }}>
-            <label>
-              Set New Email: <span style={{ color: "red" }}>*</span>
-              <input
-                type="email"
-                name="email"
-                value={FieldValue.email !== null ? FieldValue.email : ""}
-                onChange={(e) =>
-                  setFieldValue({
-                    ...FieldValue,
-                    [e.target.name]: e.target.value,
-                  })
-                }
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  marginTop: "5px",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                }}
-                required
-              />
-            </label>
-          </div>
-
-          {/* Set New Password */}
-
-          <div style={{ marginBottom: "15px" }}>
-            <label>
-              Set New Password: <span style={{ color: "red" }}>*</span>
-              <input
-                type="text"
-                name="password"
-                onChange={(e) => {
-                  if (e.target.value.length < 5) {
-                    return setPasswordWarning("block");
-                  }
-                  setPasswordWarning("none");
-                  setFieldValue({
-                    ...FieldValue,
-                    [e.target.name]: e.target.value,
-                  });
-                }}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  marginTop: "5px",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                }}
-              />
-            </label>
-            <p className={`d-${passwordWarning}`}>
-              <span style={{ color: "red" }}>*</span>Password length should be
-              more than 5<span style={{ color: "red" }}>*</span>
-            </p>
-          </div>
-
-          {/* Save Button */}
+          {/* Submit Button */}
           <div>
             <button
               type="submit"

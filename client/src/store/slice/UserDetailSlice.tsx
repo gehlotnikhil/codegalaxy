@@ -72,3 +72,4 @@ console.log("UserDetailSlice-", UserDetailSlice);
 // Export the slice's actions and reducer
 export const { setUserDetail, deleteUserDetail } = UserDetailSlice.actions;
 export default UserDetailSlice.reducer;
+export type EntireUserDetailType = UserDetailType;

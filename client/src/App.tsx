@@ -14,9 +14,9 @@ import EditProfile from "./Component/EditProfile";
 import UploadPage from "./Component/UploadPage";
 import DisplayPage from "./Component/DisplayPage";
 import Testing1 from "./Component/Testing1";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootStateType } from "./store";
-
+import {setUserDetail} from './store/slice/UserDetailSlice'
 const ProtectedRoute: React.FC<{ children: React.ReactNode; }> = ({
   children
 }) => {
@@ -48,7 +48,10 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; }> = ({
 };
 
 function App() {
- 
+ const dispatch = useDispatch()
+ const rootState = useSelector((state: RootStateType) => {
+  return state;
+});
   const user = JSON.parse(localStorage.getItem("User") || "null");
 
   const defaultProfilePicture =
@@ -102,13 +105,18 @@ function App() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        token: user.token,
+        token: rootState.userDetail.token,
         ...data,
       }),
     });
     const jsondata = await result.json();
     console.log(jsondata);
-    
+    if(jsondata.success){
+      console.log("go--------------------------",jsondata);
+      
+    dispatch(setUserDetail(jsondata.result))
+    alert("Updated")
+    }
   };
 
   return (
