@@ -3,10 +3,10 @@ import userReducer from "./slice/UserDetailSlice"; // Import the reducer directl
 
 const store = configureStore({
   reducer: {
-    users: userReducer, // Use the reducer here
+    userDetail: userReducer, // Use the reducer here
   },
 });
 console.log("store-",store);
 
 export default store;
-export type RootState = ReturnType<typeof store.getState>;
+export type RootStateType = ReturnType<typeof store.getState>;

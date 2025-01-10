@@ -1,5 +1,5 @@
 import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom"; // Ensure this is `react-router-dom`
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom"; // Ensure this is `react-router-dom`
 import Login from "./Component/Login";
 import AppNavbar from "./Component/Navbar";
 import SignUp from "./Component/SignUp";
@@ -14,129 +14,28 @@ import EditProfile from "./Component/EditProfile";
 import UploadPage from "./Component/UploadPage";
 import DisplayPage from "./Component/DisplayPage";
 import Testing1 from "./Component/Testing1";
-function App() {
+import { useSelector } from "react-redux";
+import { RootStateType } from "./store";
 
-
-
-  
-  interface EntireUserDetailType {
-    id: string | null;
-    name: string | null;
-    age: number | null;
-    gender: string | null;
-    userName: string | null;
-    email: string | null;
-    collegeName: string | null;
-    contestDetails: any | null;
-    country: string | null;
-    googleLoginAccess: string | null;
-    noOfContestParticipated: number | null;
-    noOfProblemSolved: number | null;
-    role: any | null;
-    solvedProblemDetails: any | null;
-    state: string | null;
-    totalRank: number | null;
-    token: string | null;
-    profilePictureUrl: string | null;
-    password: string | null;
-  }
-  const [EntireUserDetail, setEntireUserDetail] =
-    useState<EntireUserDetailType>({
-      id: null,
-      name: null,
-      age: null,
-      gender: null,
-      userName: null,
-      email: null,
-      collegeName: null,
-      contestDetails: null,
-      country: null,
-      googleLoginAccess: null,
-      noOfContestParticipated: null,
-      noOfProblemSolved: null,
-      role: null,
-      solvedProblemDetails: null,
-      state: null,
-      totalRank: null,
-      token: null,
-      profilePictureUrl: null,
-      password: null,
-    });
-const setUserDetailToLocalStorage = (query: string,
-  data: any
-): boolean => {
-  query;
-    data;
-    console.log("setUserDetailToLocalStorage-", user);
-    if (data !== null) {
-      const savedata:EntireUserDetailType = ({
-        id: data.id,
-        name: data.name,
-        age: data.age,
-        gender: data.gender,
-        userName: data.userName,
-        email: data.email,
-        collegeName: data.collegeName,
-        contestDetails: data.contestDetails,
-        country: data.country,
-        googleLoginAccess: data.googleLoginAccess,
-        noOfContestParticipated: data.noOfContestParticipated,
-        noOfProblemSolved: data.noOfProblemSolved,
-        role: data.role,
-        solvedProblemDetails: data.solvedProblemDetails,
-        state: data.state,
-        totalRank: data.totalRank,
-        token: data.token,
-        profilePictureUrl: data.profilePictureUrl,
-        password: data.password
-      });
-      localStorage.setItem("User",JSON.stringify(savedata))
-
-      return true;
-    }
-    return false;
-
-}
-
-  const fetchUserDetailFromLocalStorage = (
-    query: string,
-    data: any
-  ): boolean => {
-    query;
-    data;
-    const user = JSON.parse(localStorage.getItem("User") || "null");
-    console.log("fetchUserDetailFromLocalStorage-", user);
-    if (user !== null) {
-      setEntireUserDetail({
-        id: user.id,
-        name: user.name,
-        age: user.age,
-        gender: user.gender,
-        userName: user.userName,
-        email: user.email,
-        collegeName: user.collegeName,
-        contestDetails: [],
-        country: user.country,
-        googleLoginAccess: user.googleLoginAccess,
-        noOfContestParticipated: 0,
-        noOfProblemSolved: 0,
-        role: user.role,
-        solvedProblemDetails: [],
-        state: user.state,
-        totalRank: 1000,
-        token: user.token,
-        profilePictureUrl: user.profilePictureUrl,
-        password: user.password,
-      });
-      return true;
-    }
-    return false;
-  };
-
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const rootState = useSelector((state: RootStateType) => {
+    return state;
+  });
+  const navigate = useNavigate();
   useEffect(() => {
-    console.log("EntireUserDetail-", EntireUserDetail);
-  }, [EntireUserDetail]);
+    console.log("rock----", rootState.userDetail);
+    if (rootState.userDetail.token === null) {
+      navigate("/login");
+    }
+  }, []);
 
+  return <>{children}</>; // Render children only if condition passes
+};
+
+function App() {
+ 
   const user = JSON.parse(localStorage.getItem("User") || "null");
 
   const defaultProfilePicture =
@@ -195,17 +94,14 @@ const setUserDetailToLocalStorage = (query: string,
       }),
     });
     const jsondata = await result.json();
+    console.log(jsondata);
+    
   };
 
   return (
     <>
-      {/* <MainContext.Provider value={{ }}> */}
       <MainContext.Provider
         value={{
-          setUserDetailToLocalStorage,
-          fetchUserDetailFromLocalStorage,
-          EntireUserDetail,
-          setEntireUserDetail,
           updateProfileInformation,
           setShowProfile,
           setShowEditProfile,
@@ -228,19 +124,76 @@ const setUserDetailToLocalStorage = (query: string,
         <BrowserRouter>
           <AppNavbar />
           <Routes>
-            <Route index element={<Home />} />
-            {/* <Route path="/" element={<Home />} /> */}
+            {/* Public Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="*" element={<Error />} />
-            <Route path="/admin" element={<Admin />} />
 
-            <Route path="/about" element={<About />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/test" element={<EditProfile />} />
-            <Route path="/test2" element={<Testing1 />} />
-            <Route path="/upload" element={<UploadPage />} />
-            <Route path="/display" element={<DisplayPage />} />
+            {/* Protected Routes */}
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <Admin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/about"
+              element={
+                <ProtectedRoute>
+                  <About />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/test"
+              element={
+                <ProtectedRoute>
+                  <EditProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/test2"
+              element={
+                <ProtectedRoute>
+                  <Testing1 />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/upload"
+              element={
+                <ProtectedRoute>
+                  <UploadPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/display"
+              element={
+                <ProtectedRoute>
+                  <DisplayPage />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </BrowserRouter>
       </MainContext.Provider>

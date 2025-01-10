@@ -1,25 +1,5 @@
 import { createContext } from "react";
-interface EntireUserDetailType {
-  id: string | null;
-  name: string | null;
-  age: number | null;
-  gender: string | null;
-  userName: string | null;
-  email: string | null;
-  collegeName: string | null;
-  contestDetails: any | null;
-  country: string | null;
-  googleLoginAccess: string | null;
-  noOfContestParticipated: number | null;
-  noOfProblemSolved: number | null;
-  role: any | null;
-  solvedProblemDetails: any | null;
-  state: string | null;
-  totalRank: number | null;
-  token: string | null;
-  profilePictureUrl: string | null;
-  password: string | null;
-}
+
 interface MainContextType {
   Demo: string; // Replace 'any' with the appropriate type
   setDemo: React.Dispatch<React.SetStateAction<string>>;
@@ -38,12 +18,7 @@ interface MainContextType {
   setShowEditProfile: React.Dispatch<React.SetStateAction<boolean>>;
   setShowProfile: React.Dispatch<React.SetStateAction<boolean>>;
   updateProfileInformation: Function;
-  EntireUserDetail: EntireUserDetailType;
-  setEntireUserDetail: React.Dispatch<
-    React.SetStateAction<EntireUserDetailType>
-  >;
-  fetchUserDetailFromLocalStorage: Function;
-  setUserDetailToLocalStorage:Function;
+
 }
 const MainContext = createContext<MainContextType>({
   Demo: "",
@@ -64,38 +39,6 @@ const MainContext = createContext<MainContextType>({
   setShowProfile: () => {},
   updateProfileInformation: (data: any) => {
     data;
-  },
-  EntireUserDetail: {
-    id: null,
-    name: null,
-    age: null,
-    gender: null,
-    userName: null,
-    email: null,
-    collegeName: null,
-    contestDetails: null,
-    country: null,
-    googleLoginAccess: null,
-    noOfContestParticipated: null,
-    noOfProblemSolved: null,
-    role: null,
-    solvedProblemDetails: null,
-    state: null,
-    totalRank: null,
-    token: null,
-    profilePictureUrl: null,
-    password: null,
-  },
-  setEntireUserDetail: () => {},
-  fetchUserDetailFromLocalStorage: (query: string, data: any): boolean => {
-    query;
-    data;
-    return false;
-  },
-  setUserDetailToLocalStorage: (query: string, data: any): boolean => {
-    query;
-    data;
-    return false;
   }
 });
 

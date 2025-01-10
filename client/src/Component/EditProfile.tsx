@@ -6,139 +6,27 @@ interface EditProfileProps {
 }
 
 const EditProfile: React.FC<EditProfileProps> = (prop) => {
-
-  function handleChangeProfileImage(profilePictureUrl: any): any {
-    return profilePictureUrl
-  }
-  // const navigate = useNavigate();
-
   const context = useContext(MainContext);
-  const { handleShowProfileToggle ,updateProfileInformation,EntireUserDetail} = context;
-
-  // const { profilePicture, setProfilePicture } = context;
-  const user = JSON.parse(localStorage.getItem("User") || "null");
+  const { handleShowProfileToggle } = context;
   const [passwordWarning, setPasswordWarning] = useState("none");
-  // const [FieldValue, setFieldValue] = useState({
-  //   profilePictureUrl: null,
-  //   name: null,
-  //   age:  null,
-  //   email: null,
-  //   password: null,
-  //   userName: null,
-  //   gender:  null,
-  //   collegeName:  null,
-  //   state:null,
-  //   country:  null,
-  //   deleteProfileChecked: false,
-  // });
-  // try {
-  //   setFieldValue({
-  //     profilePictureUrl: EntireUserDetail.profilePictureUrl || null,
-  //     name: EntireUserDetail.name || null,
-  //     age: EntireUserDetail.age || null,
-  //     email: EntireUserDetail.email || null,
-  //     password: EntireUserDetail.password || null,
-  //     userName: EntireUserDetail.userName || null,
-  //     gender: EntireUserDetail.gender || null,
-  //     collegeName: EntireUserDetail.collegeName || null,
-  //     state: EntireUserDetail.state || null,
-  //     country: EntireUserDetail.country || null,
-  //     deleteProfileChecked: false,
-  //   })
-  // } catch (error) {
-  //   console.log(error);
-    
-  // }
-  useEffect(() => {
-    console.log("p--",EntireUserDetail);
-    console.log("p--",EntireUserDetail.name);
-    console.log("p--",EntireUserDetail.name);
-    console.log("p--",EntireUserDetail.name);
-    console.log("p--",EntireUserDetail.name);
-    console.log("p--",EntireUserDetail.name);
-    console.log("p--",EntireUserDetail.name);
-    console.log("p--",EntireUserDetail.name);
-    console.log("p--",EntireUserDetail.name);
-    console.log("p--",EntireUserDetail.name);
-    console.log("p--",EntireUserDetail.name);
-    console.log("p--",EntireUserDetail.name);
-    
-  }, [])
-  
+  useEffect(() => {}, []);
+
   const [FieldValue, setFieldValue] = useState(() => ({
-    profilePictureUrl: EntireUserDetail.profilePictureUrl,
-    name: EntireUserDetail.name ,
-    age: EntireUserDetail.age,
-    email: EntireUserDetail.email,
-    password: EntireUserDetail.password ,
-    userName: EntireUserDetail.userName || null,
-    gender: EntireUserDetail.gender || null,
-    collegeName: EntireUserDetail.collegeName || null,
-    state: EntireUserDetail.state || null,
-    country: EntireUserDetail.country || null,
+    profilePictureUrl: null,
+    name: null,
+    age: null,
+    email: null,
+    password: null,
+    userName: null,
+    gender: null,
+    collegeName: null,
+    state: null,
+    country: null,
     deleteProfileChecked: false,
   }));
-  
+
   const handleSave = (e: any) => {
     e.preventDefault();
-    const query: {
-      profilePictureUrl?: any;
-      name?: string;
-      age?: number;
-      email?: string;
-      password?: string;
-      userName?: string;
-      gender?: string;
-      collegeName?: string;
-      state?: string;
-      country?: string;
-      deleteProfileChecked?: boolean;
-    } = {};
-    if (FieldValue.name !== null && FieldValue.name !== EntireUserDetail.name) {
-      query.name = FieldValue.name;
-    }
-    if (FieldValue.age !== null && FieldValue.age !== EntireUserDetail.age) {
-      query.age = FieldValue.age;
-    }
-    if (FieldValue.email !== null && FieldValue.email !== EntireUserDetail.email) {
-      query.email = FieldValue.email;
-    }
-    if (FieldValue.password !== null && FieldValue.password !== EntireUserDetail.password) {
-      query.password = FieldValue.password;
-    }
-    if (FieldValue.userName !== null && FieldValue.userName !== EntireUserDetail.userName) {
-      query.userName = FieldValue.userName;
-    }
-    if (FieldValue.gender !== null && FieldValue.gender !== EntireUserDetail.gender) {
-      query.gender = FieldValue.gender;
-    }
-    if (
-      FieldValue.collegeName !== null &&
-      FieldValue.collegeName !== EntireUserDetail.collegeName
-    ) {
-      query.collegeName = FieldValue.collegeName;
-    }
-    if (FieldValue.state !== null && FieldValue.state !== EntireUserDetail.state) {
-      query.state = FieldValue.state;
-    }
-    if (FieldValue.country !== null && FieldValue.country !== EntireUserDetail.country) {
-      query.country = FieldValue.country;
-    }
-    if (FieldValue.profilePictureUrl !== null && FieldValue.profilePictureUrl !== EntireUserDetail.profilePictureUrl) {
-      query.profilePictureUrl = handleChangeProfileImage(FieldValue.profilePictureUrl)
-    }
-    if (
-      FieldValue.deleteProfileChecked !== null &&
-      FieldValue.deleteProfileChecked !== false
-    ) {
-      query.deleteProfileChecked = handleChangeProfileImage("default")
-      
-    }
-    console.log("ola--",query);
-    
-    updateProfileInformation(query)
-    alert("Profile saved successfully!");
-    handleShowProfileToggle();
   };
   console.log("->", FieldValue);
 
@@ -146,7 +34,6 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
     console.log("->", FieldValue);
   }, [FieldValue]);
 
-  // const handleFieldValueChange = (e: any) => {};
 
   return (
     <div
@@ -530,5 +417,3 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
 };
 
 export default EditProfile;
-
-

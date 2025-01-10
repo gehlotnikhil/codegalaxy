@@ -1,17 +1,6 @@
-import MainContext from "../context/main";
-import { useNavigate } from "react-router";
-import { useContext, useEffect } from "react";
+
 function About() {
-  const navigate = useNavigate()
-  const context = useContext(MainContext);
-  const {EntireUserDetail,fetchUserDetailFromLocalStorage} = context;
-  useEffect(() => {
-    if(EntireUserDetail.token === null){
-      const success = fetchUserDetailFromLocalStorage("fetchFromLocal",{})
-      if(!success){
-        navigate("/login")
-      }
-}})
+
   return (
     <div className="color-1">
       <div className="container ">

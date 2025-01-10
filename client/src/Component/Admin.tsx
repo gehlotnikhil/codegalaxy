@@ -7,14 +7,7 @@ import { useContext, useEffect } from "react";
 function Admin() {
   const navigate = useNavigate()
   const context = useContext(MainContext);
-  const {EntireUserDetail,fetchUserDetailFromLocalStorage} = context;
-  useEffect(() => {
-    if(EntireUserDetail.token === null){
-      const success = fetchUserDetailFromLocalStorage("fetchFromLocal",{})
-      if(!success){
-        navigate("/login")
-      }
-}})
+
 
 
 

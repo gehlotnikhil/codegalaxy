@@ -1,27 +1,14 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import Button from "react-bootstrap/Button";
-import { useContext ,useState,useEffect} from "react";
+import { useContext } from "react";
 import MainContext from "../context/main";
 import EditProfile from "./EditProfile";
-import { useNavigate } from "react-router";
 function Profile() {
-  const navigate = useNavigate();
   const context = useContext(MainContext);
-  const { EntireUserDetail, fetchUserDetailFromLocalStorage } = context;
-  useEffect(() => {
-    console.log(EntireUserDetail.token );
-    
-    if (EntireUserDetail.token === null) {
-      const success = fetchUserDetailFromLocalStorage("fetchFromLocal", {});
-      if (!success) {
-        navigate("/login");
-      }
-    }
-  },[]);
-  const {} = context;
+
   const {handleShowProfileToggle,ShowEditProfile,ShowProfile} = context
-  const {defaultProfilePicture,initialProfilePicture,setProfilePicture} = context;
+  const {defaultProfilePicture,initialProfilePicture} = context;
   
  
   

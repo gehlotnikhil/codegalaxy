@@ -2,12 +2,11 @@ import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { Link, useNavigate } from "react-router-dom";
 // import { useNavigate } from 'react-router-dom'
-
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useContext } from "react";
-import MainContext from "../context/main";
+import { useDispatch } from "react-redux";
+import { setUserDetail } from "../store/slice/UserDetailSlice";
 // Define the form schema using Yup
 const schema = yup.object({
   password: yup
@@ -23,9 +22,8 @@ interface LoginFormValues {
 }
 
 function Login() {
+  const dispatch = useDispatch()
   const navigate = useNavigate();
-const context = useContext(MainContext)
-const {setUserDetailToLocalStorage,fetchUserDetailFromLocalStorage} = context
   interface JWTDECODETYPE {
     email: string;
   }
@@ -52,8 +50,7 @@ const {setUserDetailToLocalStorage,fetchUserDetailFromLocalStorage} = context
     const jsondata = await result.json();
     console.log(jsondata);
     if(jsondata.success){
-    setUserDetailToLocalStorage("",jsondata.result)
-    fetchUserDetailFromLocalStorage("",{})
+    dispatch(setUserDetail(jsondata.result))
     navigate("/");
     }
   };
@@ -117,10 +114,9 @@ const {setUserDetailToLocalStorage,fetchUserDetailFromLocalStorage} = context
                     console.log("res---", jsondata);
                     console.log(jsondata.result);
                     if(jsondata.success){
-                    setUserDetailToLocalStorage("",jsondata.result)
-                    fetchUserDetailFromLocalStorage("",{})
-                    navigate("/");
-                    }
+                      dispatch(setUserDetail(jsondata.result))
+                      navigate("/");
+                      }
                   }}
                   onError={() => {
                     console.log("Login Failed");
