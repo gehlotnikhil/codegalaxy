@@ -31,6 +31,7 @@
   "devDependencies": {
     "@types/express": "^5.0.0",
     "@types/node-fetch": "^2.6.12",
+    "axios": "^1.7.9",
     "prisma": "^6.2.1"
   }
 }
