@@ -17,6 +17,7 @@ const { body, validationResult } = require("express-validator");
 router.get("/", (req, res) => {
     res.send({ success: "Contest Routing is on" });
 });
+// console.log("-->",prisma);
 router.post("/create", [
     body("contestName", "Please Enter a contestName").exists(),
     body("duration", "Please Enter a duration").exists(),

@@ -8,6 +8,7 @@ const { body, validationResult } = require("express-validator");
 router.get("/", (req: Request, res: Response) => {
   res.send({ success: "Contest Routing is on" });
 });
+// console.log("-->",prisma);
 
 router.post(
   "/create",
