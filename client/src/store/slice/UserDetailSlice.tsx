@@ -1,5 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+type RoleType = {
+  User:boolean;
+  Admin:boolean;
+}
 type UserDetailType = {
   id: string;
   name: string;
@@ -13,7 +17,7 @@ type UserDetailType = {
   googleLoginAccess: boolean;
   noOfContestParticipated: number;
   noOfProblemSolved: number;
-  role: any[];
+  role: RoleType;
   solvedProblemDetails: any[];
   state: string;
   totalRank: number;
@@ -21,6 +25,7 @@ type UserDetailType = {
   profilePictureUrl: string;
   password: string;
 };
+
 
 const initialUserDetail: UserDetailType = {
   id: '',
@@ -35,7 +40,10 @@ const initialUserDetail: UserDetailType = {
   googleLoginAccess: false,
   noOfContestParticipated: 0,
   noOfProblemSolved: 0,
-  role: [],
+  role: {
+    User:true,
+    Admin:false
+  },
   solvedProblemDetails: [],
   state: '',
   totalRank: 0,

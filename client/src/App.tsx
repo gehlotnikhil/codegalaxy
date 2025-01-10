@@ -17,20 +17,33 @@ import Testing1 from "./Component/Testing1";
 import { useSelector } from "react-redux";
 import { RootStateType } from "./store";
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
-  children,
+const ProtectedRoute: React.FC<{ children: React.ReactNode; }> = ({
+  children
 }) => {
   const rootState = useSelector((state: RootStateType) => {
     return state;
   });
   const navigate = useNavigate();
+  const isAuthenticated = rootState.userDetail.token !== null;
+
   useEffect(() => {
-    console.log("rock----", rootState.userDetail);
-    if (rootState.userDetail.token === null) {
+    if (!isAuthenticated) {
       navigate("/login");
     }
-  }, []);
+    console.log("rock----", rootState.userDetail);
+    console.log("aaaa--------------", rootState.userDetail.role?.Admin);
+    if(rootState.userDetail.role?.Admin===true){
+      navigate("/admin")
+    }
+    if(rootState.userDetail.role?.Admin===false && location.pathname === "/admin"){
+      navigate("/")
+    }
+  }, [isAuthenticated, navigate]);
 
+  if (!isAuthenticated) {
+    // Optionally render a loading spinner or null while checking
+    return null;
+  }
   return <>{children}</>; // Render children only if condition passes
 };
 
@@ -141,7 +154,7 @@ function App() {
             <Route
               path="/admin"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute >
                   <Admin />
                 </ProtectedRoute>
               }
