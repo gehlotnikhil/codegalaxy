@@ -2,67 +2,106 @@ import { useContext, useEffect, useState } from "react";
 import CodeEditor from "./CodeEditor";
 import OutputPanel from "./Panel";
 import MainContext from "../context/main";
+import { ToastContainer, toast } from 'react-toastify';
 
 function PlayGround() {
-  const context = useContext(MainContext)
-  const {handleCodeExecution} = context
-  const [CodeValue, setCodeValue] = useState("");
+  const context = useContext(MainContext);
+  const { handleCodeExecution } = context;
+  const [CodeValue, setCodeValue] = useState(`#include <stdio.h>
+int main() {
+   printf("Hello, World!");
+   return 0;
+}
+`);
+  const [EditorLanguage, setEditorLanguage] = useState("c");
   const [editableContent, setEditableContent] = useState("");
-const [DisplayOutput, setDisplayOutput] = useState("")
-useEffect(() => {
-  console.log("displayoutput",DisplayOutput);
-  
-}, [DisplayOutput])
+  const [DisplayOutput, setDisplayOutput] = useState("");
+
+  useEffect(() => {
+    console.log("displayoutput", DisplayOutput);
+  }, [DisplayOutput]);
+  useEffect(() => {}, [editableContent]);
+  useEffect(() => {
+    console.log(CodeValue);
+  }, [CodeValue]);
+  useEffect(() => {
+    console.log("language-", EditorLanguage);
+    if(EditorLanguage ==="cpp"){
+      setCodeValue(`#include <iostream>
+using namespace std;
+
+int main() {
+   cout << "Hello World";
+   return 0;
+}`)
+    }else if(EditorLanguage ==="c"){
+      setCodeValue(`#include <stdio.h>
+
+int main() {
+   printf("Hello, World!");
+   return 0;
+}
+`)
+    }else if(EditorLanguage === "java"){
+      setCodeValue(`public class FirstProgram
+{
+    public static void main(String[] args)
+    {
+        System.out.println("Hello World");
+    }
+}`)
+    }else if(EditorLanguage === "go"){
+      setCodeValue(`package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello world")
+}`)
+    }
+  }, [EditorLanguage]);
 
   const handleEditorChange = (value: string | undefined) => {
     setCodeValue(value || "");
   };
-useEffect(() => {
-  
-}, [editableContent])
-
-  const handleEditableChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleEditableChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     setEditableContent(event.target.value);
   };
-
-  useEffect(() => {
-    console.log(CodeValue);
-  }, [CodeValue]);
-
-const [EditorLanguage, setEditorLanguage] = useState("c")
-useEffect(() => {
-  console.log("language-",EditorLanguage);
-  
-}, [EditorLanguage])
-
-const handleRunCode = async()=>{
-  const data = {
-    code:CodeValue,
-    language:EditorLanguage,
-    testcases:[{
-      input:editableContent,
-      output:""
+  const handleRunCode = async () => {
+    if (CodeValue === "") {
+      return alert("Failed to Execute");
     }
-    ]
-  }
-  const result = await handleCodeExecution(data)
-  console.log("execute---",result);
-  if(result.success === true){
-    let output:string = result.output[0]
-    let updatedOutput = output.replace("jdoodle","file")
-    setDisplayOutput(updatedOutput)
-  }
-  
-}
+    const data = {
+      code: CodeValue,
+      language: EditorLanguage,
+      testcases: [
+        {
+          input: editableContent,
+          output: "",
+        },
+      ],
+    };
+    const result = await handleCodeExecution(data);
+    console.log("execute---", result);
+    if (result.success === true) {
+      let output: string = result.output[0];
+      let updatedOutput = output.replace("jdoodle", "file");
+      setDisplayOutput(updatedOutput);
+    }
+  };
+  const notify = () => toast("Wow so easy!");
 
   return (
     <div
-      style={{
-        display: "flex",
+    style={{
+      display: "flex",
         flexDirection: "row",
         height: "100vh", // Full height layout
       }}
-    >
+      >
+      <ToastContainer/>
       {/* Left Div */}
       <div
         style={{
@@ -93,12 +132,15 @@ const handleRunCode = async()=>{
               borderRadius: "4px",
               cursor: "pointer",
             }}
-            onClick={() => {handleRunCode()}}
+            onClick={() => {
+              notify()
+              handleRunCode();
+            }}
           >
             Run Code
           </button>
           <select
-          onChange={(value)=>setEditorLanguage(value.target.value)}
+            onChange={(value) => setEditorLanguage(value.target.value)}
             style={{
               padding: "4px 8px",
               fontSize: "14px",
@@ -117,13 +159,13 @@ const handleRunCode = async()=>{
         {/* Code Editor */}
         <div style={{ flex: 1, overflow: "hidden" }}>
           <CodeEditor
-          renderValidationDecorations={"on"}
+            renderValidationDecorations={"on"}
             handleEditorChange={handleEditorChange}
             CodeOfEditor={CodeValue}
             height={"100%"}
             defaultLanguage={EditorLanguage}
             readOnly={false}
-            fontSize={16}
+            fontSize={20}
           />
         </div>
       </div>
@@ -147,7 +189,14 @@ const handleRunCode = async()=>{
             borderBottom: "1px solid #ddd", // Divider between sections
           }}
         >
-          <OutputPanel output={DisplayOutput===""?"Output will be displayed here":DisplayOutput} height="" />
+          <OutputPanel
+            output={
+              DisplayOutput === ""
+                ? "Output will be displayed here"
+                : DisplayOutput
+            }
+            height=""
+          />
         </div>
 
         {/* Second Nested Div (Editable) */}
@@ -161,7 +210,7 @@ const handleRunCode = async()=>{
         >
           {/* Editable Text Area */}
           <textarea
-          placeholder="Provide Input"
+            placeholder="Provide Input"
             value={editableContent}
             onChange={handleEditableChange}
             style={{
