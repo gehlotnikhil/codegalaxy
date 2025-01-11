@@ -1,48 +1,37 @@
-import  { useContext,useEffect } from "react";
-import { Editor,loader } from "@monaco-editor/react";
-import MainContext from "../context/main";
+import { Editor } from "@monaco-editor/react";
+import { useEffect, useMemo } from "react";
 
+interface propType {
+  height: string;
+  defaultLanguage: string;
+  readOnly: boolean;
+  fontSize: number;
+  CodeOfEditor: string;
+  handleEditorChange: Function;
+  renderValidationDecorations: "editable" | "on" | "off";
+}
 
-function CodeEditor() {
-   const context = useContext(MainContext)
-  const {CodeOfEditor, handleEditorChange} = context;
+function CodeEditor(prop: propType) {
+  // Memoize options to avoid unnecessary re-renders
+  const editorOptions = useMemo(() => ({
+    readOnly: prop.readOnly,
+    renderValidationDecorations: prop.renderValidationDecorations,
+    fontSize: prop.fontSize,
+  }), [prop.readOnly, prop.renderValidationDecorations, prop.fontSize]);
+
   useEffect(() => {
-    loader.init().then((monaco) => {
-      monaco.editor.defineTheme("customTheme", {
-        base: "vs-dark", // Inherit dark theme
-        inherit: true, // Inherit default vs-dark rules
-        rules: [
-          { token: "", background: "1E1E1E", foreground: "D4D4D4" },
-          { token: "keyword", foreground: "C586C0" },
-          { token: "string", foreground: "CE9178" },
-          { token: "number", foreground: "B5CEA8" },
-          { token: "comment", foreground: "6A9955" },
-        ],
-        colors: {
-          "editor.background": "#1E1E1E", // Background color
-          "editor.foreground": "#D4D4D4", // Text color
-          "editorLineNumber.foreground": "#858585", // Line numbers
-          "editorCursor.foreground": "#FFFFFF", // Cursor color
-        },
-      });
-    });
-  }, []);
-   
+    console.log(prop); // Debug log for prop changes
+  }, [prop]); // Log whenever props change
 
   return (
-    <div style={{ height: "60vh" }}  >
+    <div style={{ height: "100vh" }}>
       <Editor
-        height="90%"
-        defaultLanguage="typescript"
-        value={CodeOfEditor}
-        onChange={(value) =>  handleEditorChange(value)}
+        height={prop.height}
+        defaultLanguage={prop.defaultLanguage}
+        value={prop.CodeOfEditor}
+        onChange={(value) => prop.handleEditorChange(value)}
         theme="vs-dark"
-        options={{
-          readOnly: true, // Enable read-only mode
-          renderValidationDecorations: "off", // Hide error indicators
-          fontSize: 20, // Increase font size (default is 12)
-
-        }}
+        options={editorOptions} // Use memoized options
       />
     </div>
   );

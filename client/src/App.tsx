@@ -17,25 +17,25 @@ import Testing1 from "./Component/Testing1";
 import { useDispatch, useSelector } from "react-redux";
 import { RootStateType } from "./store";
 import {setUserDetail} from './store/slice/UserDetailSlice'
+import PlayGround from "./Component/PlayGround";
+import Demo2 from "./Component/Demo2";
 const ProtectedRoute: React.FC<{ children: React.ReactNode; }> = ({
   children
 }) => {
   const navigate = useNavigate();
-  const rootState = useSelector((state: RootStateType) => {
-    return state;
-  });
-  const isAuthenticated = rootState.userDetail.token !== null;
+  const userDetail = useSelector((state: RootStateType) =>  state.userDetail);
+  const isAuthenticated = userDetail.token !== null;
 
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/login");
     }
-    console.log("rock----", rootState.userDetail);
-    console.log("aaaa--------------", rootState.userDetail.role?.Admin);
-    if(rootState.userDetail.role?.Admin===true){
+    console.log("rock----", userDetail);
+    console.log("aaaa--------------", userDetail.role?.Admin);
+    if(userDetail.role?.Admin===true){
       navigate("/admin")
     }
-    if(rootState.userDetail.role?.Admin===false && location.pathname === "/admin"){
+    if(userDetail.role?.Admin===false && location.pathname === "/admin"){
       navigate("/")
     }
   }, [isAuthenticated, navigate]);
@@ -48,12 +48,10 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; }> = ({
 };
 
 function App() {
-  // const ServerUrl = "http://localhost:8000"
-  const ServerUrl = "https://codegalaxy-server.onrender.com"
+  const ServerUrl = "http://localhost:8000"
+  // const ServerUrl = "https://codegalaxy-server.onrender.com"
  const dispatch = useDispatch()
- const rootState = useSelector((state: RootStateType) => {
-  return state;
-});
+ const userDetail = useSelector((state: RootStateType) =>  state.userDetail);
   const defaultProfilePicture =
     "https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk";
 
@@ -64,15 +62,12 @@ function App() {
     new File([""], "filename")
   );
   const [Demo, setDemo] = useState("hello world");
-  const [CodeOfEditor, setCodeOfEditor] = useState(``);
   const [ShowEditProfile, setShowEditProfile] = useState(false);
   const [ShowProfile, setShowProfile] = useState(true);
   useEffect(() => {
     console.log("Changed picture-", initialProfilePicture);
   }, [initialProfilePicture]);
-  useEffect(() => {
-    console.log(CodeOfEditor);
-  }, [CodeOfEditor]);
+
   useEffect(() => {
     console.log("ShowEditProfile-", ShowEditProfile);
   }, [ShowEditProfile]);
@@ -81,9 +76,7 @@ function App() {
   }, [ShowProfile]);
 
   const ChangeCodeEditorDesign = () => {};
-  const handleEditorChange = (value: string | undefined) => {
-    setCodeOfEditor(value || "");
-  };
+ 
   function handleShowProfileToggle(): void {
     if (ShowEditProfile === true) {
       setShowEditProfile(false);
@@ -103,7 +96,7 @@ function App() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        token: rootState.userDetail.token,
+        token: userDetail.token,
         ...data,
       }),
     });
@@ -130,9 +123,6 @@ function App() {
           handleShowProfileToggle,
           initialProfilePicture,
           setinitialProfilePicture,
-          handleEditorChange,
-          setCodeOfEditor,
-          CodeOfEditor,
           Demo,
           setDemo,
           ChangeCodeEditorDesign,
@@ -148,6 +138,13 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="*" element={<Error />} />
+            <Route path="/demo2" element={<Demo2 />} />
+            <Route path="/playground" element={
+              <ProtectedRoute>
+              <PlayGround />
+               </ProtectedRoute>
+              } />
+            
 
             {/* Protected Routes */}
             <Route

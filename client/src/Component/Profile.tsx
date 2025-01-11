@@ -19,7 +19,6 @@ function Profile() {
     return state.userDetail;
   });
   const { handleShowProfileToggle, ShowEditProfile, ShowProfile,defaultProfilePicture } = context;
-  const {  } = context;
 
 
 

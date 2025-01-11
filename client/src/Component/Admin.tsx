@@ -5,10 +5,17 @@ import { useContext, useEffect } from "react";
 
 function Admin() {
   const context = useContext(MainContext);
-
+  const [CodeValue, setCodeValue] = useState("")  
+  const handleEditorChange = (value: string | undefined) => {
+    setCodeValue(value || "");
+  };
+useEffect(() => {
+ console.log(CodeValue);
+ 
+}, [CodeValue])
 
   
-  const { Demo, setDemo, setCodeOfEditor,ServerUrl } = context;
+  const { Demo, setDemo,ServerUrl } = context;
   useEffect(() => {
     console.log("demo-", Demo);
   }, [Demo]);
@@ -488,7 +495,7 @@ function Admin() {
       );
       const jsondata = await response.json();
       console.log(jsondata);
-      setCodeOfEditor(JSON.stringify(jsondata, null, 2));
+      setCodeValue(JSON.stringify(jsondata, null, 2));
     } catch (error) {
       console.log(error);
     }
@@ -510,7 +517,7 @@ function Admin() {
       );
       const jsondata = await response.json();
       console.log(jsondata);
-      setCodeOfEditor(JSON.stringify(jsondata, null, 2));
+      setCodeValue(JSON.stringify(jsondata, null, 2));
     } catch (error) {
       console.log(error);
     }
@@ -528,7 +535,7 @@ function Admin() {
       );
       const jsondata = await response.json();
       console.log(jsondata);
-      setCodeOfEditor(JSON.stringify(jsondata, null, 2));
+      setCodeValue(JSON.stringify(jsondata, null, 2));
     } catch (error) {
       console.log(error);
     }
@@ -550,7 +557,7 @@ function Admin() {
       );
       const jsondata = await response.json();
       console.log(jsondata);
-      setCodeOfEditor(JSON.stringify(jsondata, null, 2));
+      setCodeValue(JSON.stringify(jsondata, null, 2));
     } catch (error) {
       console.log(error);
     }
@@ -1096,14 +1103,14 @@ function Admin() {
             <button
               className="m-2 btn btn-light"
               onClick={() => {
-                setCodeOfEditor("");
+                setCodeValue("");
               }}
             >
               Clear All
             </button>
           </div>
-          <div className="codeeditor mt-4">
-          <CodeEditor/>
+          <div className="codeeditor mt-4" style={{maxHeight:"50vh",boxSizing:"border-box"}}>
+          <CodeEditor renderValidationDecorations={"off"} handleEditorChange={handleEditorChange} CodeOfEditor={CodeValue} height={"60%"} defaultLanguage={"typescript"} readOnly={true} fontSize={16}/>
           </div>
         </div>
       </div>
