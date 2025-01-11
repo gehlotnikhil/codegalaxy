@@ -4,7 +4,7 @@ import MainContext from "../context/main";
 // import { yupResolver } from "@hookform/resolvers/yup";
 // import * as yup from "yup";
 import { useForm, SubmitHandler } from "react-hook-form";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootStateType } from "../store";
 import { EntireUserDetailType } from "../store/slice/UserDetailSlice";
 import axios from "axios";
@@ -61,18 +61,25 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
       email: userDetail.email || "",
     },
   });
-
+  function trimUrlExtension(url: any) {
+    const lastDotIndex = url.lastIndexOf('.');
+    const lastSlashIndex = url.lastIndexOf('/');
+    if (lastDotIndex > lastSlashIndex) {
+      return url.substring(0, lastDotIndex);
+    }
+    return url;
+  }
   const context = useContext(MainContext);
   const { handleShowProfileToggle, updateProfileInformation } = context;
 
-  const onSubmit: SubmitHandler<ProfileFieldValueType> = async(data) => {
+  const onSubmit: SubmitHandler<ProfileFieldValueType> = async (data) => {
     console.log("Form data:", data);
     if (file !== null) {
       let profilePictureUrl = await handleUpload();
-      data = {...data, profilePictureUrl:profilePictureUrl}
+      data = { ...data, profilePictureUrl: profilePictureUrl }
     }
-    console.log("last--------------",data);
-    
+    console.log("last--------------", data);
+
     updateProfileInformation(data);
     // Handle form submission logic here
   };
@@ -105,17 +112,21 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
         formData
       );
       let uploadedImageUrl = response.data.secure_url;
-      console.log("etannnnnnnn->>>", uploadedImageUrl);
+
+      console.log("etannnnnnnn->>>", trimUrlExtension(uploadedImageUrl));
+      uploadedImageUrl = trimUrlExtension(uploadedImageUrl)
       let starting = () => {
         let b = uploadedImageUrl.substring(50, uploadedImageUrl.length);
         console.log(b.indexOf("/"));
         return b.indexOf("/");
       };
-      uploadedImageUrl = uploadedImageUrl.substring(51 + starting(), uploadedImageUrl.length - 4);
+      uploadedImageUrl = uploadedImageUrl.substring(51 + starting());
       let newurl =
         "https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/" + uploadedImageUrl;
-        console.log("etannnnnnnn->>>", newurl);
-        return newurl
+      console.log("etannnnnnnn->>>", newurl);
+      console.log("new", newurl);
+
+      return newurl
     } catch (error) {
       console.error("Error uploading image:", error);
       setError("Image upload failed. Please try again.");
