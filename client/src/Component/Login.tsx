@@ -127,10 +127,13 @@ function Login() {
                     if(jsondata.success){
                       dispatch(setUserDetail(jsondata.result))
                       navigate("/");
+                      toast.success("Logged in")
+
                       }
                   }}
                   onError={() => {
                     console.log("Login Failed");
+                    toast.error("Login Failed");
                   }}
                 />
               </GoogleOAuthProvider>

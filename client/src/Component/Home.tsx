@@ -1,7 +1,14 @@
+import PraticeCourse from "./PraticeCourse";
+import Problem from "./Problem";
+
 function Home() {
   return <>
-  
-  <h1>Hello</h1>
+  <div>
+<PraticeCourse/>
+</div>
+<div>
+  <Problem/>
+</div>
   </>;
 }
 

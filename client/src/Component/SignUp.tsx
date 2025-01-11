@@ -150,10 +150,12 @@ const SignUp: React.FC = () => {
             if(jsondata.success){
               dispatch(setUserDetail(jsondata.result))
               navigate("/");
+              toast.success("Signed Up")
               }
           }}
           onError={() => {
             console.log("Login Failed");
+            toast.error("Login Failed");
           }} 
         />
       </GoogleOAuthProvider>
