@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import CodeEditor from "./CodeEditor";
 import OutputPanel from "./Panel";
+import MainContext from "../context/main";
 
 function PlayGround() {
+  const context = useContext(MainContext)
+  const {handleCodeExecution} = context
   const [CodeValue, setCodeValue] = useState("");
   const [editableContent, setEditableContent] = useState("");
 const [DisplayOutput, setDisplayOutput] = useState("")
-setDisplayOutput("")
 useEffect(() => {
   console.log("displayoutput",DisplayOutput);
   
@@ -33,6 +35,25 @@ useEffect(() => {
   
 }, [EditorLanguage])
 
+const handleRunCode = async()=>{
+  const data = {
+    code:CodeValue,
+    language:EditorLanguage,
+    testcases:[{
+      input:editableContent,
+      output:""
+    }
+    ]
+  }
+  const result = await handleCodeExecution(data)
+  console.log("execute---",result);
+  if(result.success === true){
+    let output:string = result.output[0]
+    let updatedOutput = output.replace("jdoodle","file")
+    setDisplayOutput(updatedOutput)
+  }
+  
+}
 
   return (
     <div
@@ -72,7 +93,7 @@ useEffect(() => {
               borderRadius: "4px",
               cursor: "pointer",
             }}
-            onClick={() => {}}
+            onClick={() => {handleRunCode()}}
           >
             Run Code
           </button>
@@ -140,13 +161,14 @@ useEffect(() => {
         >
           {/* Editable Text Area */}
           <textarea
+          placeholder="Provide Input"
             value={editableContent}
             onChange={handleEditableChange}
             style={{
               width: "100%",
               height: "100%",
               padding: "8px",
-              fontSize: "2rem",
+              fontSize: "1.5rem",
               boxSizing: "border-box",
             }}
           />

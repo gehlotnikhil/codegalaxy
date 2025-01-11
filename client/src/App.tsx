@@ -109,11 +109,25 @@ function App() {
     alert("Updated")
     }
   };
+  const handleCodeExecution = async(data:any)=>{
+    const result = await fetch(`${ServerUrl}/api/problemset/executeproblem`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data
+      }),
+    });
+    const jsondata  = await result.json();
+    return jsondata
+  }
 
   return (
     <>
       <MainContext.Provider
         value={{
+          handleCodeExecution,
           ServerUrl,
           updateProfileInformation,
           setShowProfile,

@@ -16,6 +16,7 @@ interface MainContextType {
   setShowProfile: React.Dispatch<React.SetStateAction<boolean>>;
   updateProfileInformation: Function;
   ServerUrl:string;
+  handleCodeExecution:Function;
   
 
 }
@@ -36,7 +37,8 @@ const MainContext = createContext<MainContextType>({
   updateProfileInformation: (data: any) => {
     data;
   },
-  ServerUrl:""
+  ServerUrl:"",
+  handleCodeExecution:(data:any)=>{data}
 
 });
 
