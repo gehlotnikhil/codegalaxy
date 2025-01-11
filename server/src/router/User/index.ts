@@ -147,7 +147,7 @@ router.put(
         query.name = req.body.name;
       }
       if (req.body.age) {
-        query.age = req.body.age;
+        query.age =  Number(req.body.age);
       }
       if (req.body.email) {
         query.email = req.body.email;
