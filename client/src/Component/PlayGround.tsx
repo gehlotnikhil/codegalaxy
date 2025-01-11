@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import CodeEditor from "./CodeEditor";
 import OutputPanel from "./Panel";
 import MainContext from "../context/main";
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 function PlayGround() {
   const context = useContext(MainContext);
@@ -71,7 +71,7 @@ func main() {
   };
   const handleRunCode = async () => {
     if (CodeValue === "") {
-      return alert("Failed to Execute");
+      return toast.warning("Code is empty");
     }
     const data = {
       code: CodeValue,
@@ -89,9 +89,11 @@ func main() {
       let output: string = result.output[0];
       let updatedOutput = output.replace("jdoodle", "file");
       setDisplayOutput(updatedOutput);
+      toast.success("Code Executed.")
+    }else{
+      toast.error("Failed")
     }
   };
-  const notify = () => toast("Wow so easy!");
 
   return (
     <div
@@ -101,7 +103,6 @@ func main() {
         height: "100vh", // Full height layout
       }}
       >
-      <ToastContainer/>
       {/* Left Div */}
       <div
         style={{
@@ -133,7 +134,6 @@ func main() {
               cursor: "pointer",
             }}
             onClick={() => {
-              notify()
               handleRunCode();
             }}
           >

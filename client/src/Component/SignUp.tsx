@@ -8,6 +8,7 @@ import { jwtDecode } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { setUserDetail } from "../store/slice/UserDetailSlice";
 import MainContext from "../context/main";
+import { toast } from "react-toastify";
 
 // Define the form schema using Yup
 const schema = yup.object({
@@ -69,6 +70,9 @@ const SignUp: React.FC = () => {
     if(jsondata.success){
        dispatch(setUserDetail(jsondata.result))
        navigate("/");
+       toast.success("Account Created")
+       }else{
+        toast.error("Failed to Create Account")
        }
   }
 

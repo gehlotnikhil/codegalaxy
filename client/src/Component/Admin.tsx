@@ -2,6 +2,7 @@ import { useState } from "react";
 import CodeEditor from "./CodeEditor";
 import MainContext from "../context/main";
 import { useContext, useEffect } from "react";
+import { toast } from "react-toastify";
 
 function Admin() {
   const context = useContext(MainContext);
@@ -215,7 +216,7 @@ useEffect(() => {
       problems === null ||
       status === null
     ) {
-      return alert("Failed to create constest");
+      return toast.error("Failed to create constest");
     }
     const problemsData = (problems as string).split(",");
     problemsData.map((value) => {
@@ -245,7 +246,7 @@ useEffect(() => {
     let { contestNo, contestName, duration, startTime, problems, status } =
       ModalFieldData;
     if (contestNo === null) {
-      return alert("Failed to update constest");
+      return toast.error("Failed to update constest");
     }
     let bodyData: {
       contestNo?: string;
@@ -286,7 +287,7 @@ useEffect(() => {
   const handleDeleteContest = async (): Promise<any> => {
     let { contestNo } = ModalFieldData;
     if (contestNo === null) {
-      return alert("Failed to delete contest");
+      return toast.error("Failed to delete contest");
     }
     try {
       const response = await fetch(
@@ -339,7 +340,7 @@ useEffect(() => {
       contestProblem === null ||
       sampleInputOutput === null
     ) {
-      return alert("Failed to create problem");
+      return toast.error("Failed to create problem");
     }
     const bodyData: ProblemSet = {
       problemName,
@@ -396,7 +397,7 @@ useEffect(() => {
       sampleInputOutput,
     } = ModalFieldData;
     if (problemNo === null) {
-      return alert("Failed to update problem");
+      return toast.error("Failed to update problem");
     }
     let bodyData: ProblemSet = {};
     // let problemsData = problems
@@ -442,7 +443,7 @@ useEffect(() => {
   const handleDeleteProblem = async (): Promise<any> => {
     let { problemNo } = ModalFieldData;
     if (problemNo === null) {
-      return alert("Failed to delete problem");
+      return toast.error("Failed to delete problem");
     }
     try {
       const response = await fetch(
@@ -503,7 +504,7 @@ useEffect(() => {
   const handleGetSpecificProblem = async () => {
     let { problemNo } = ModalFieldData;
     if (problemNo === null) {
-      return alert("failed to fetch specific contest");
+      return toast.error("failed to fetch specific contest");
     }
     try {
       const response = await fetch(
@@ -543,7 +544,7 @@ useEffect(() => {
   const handleGetSpecificContest = async () => {
     let { contestNo } = ModalFieldData;
     if (contestNo === null) {
-      return alert("failed to fetch specific contest");
+      return toast.error("failed to fetch specific contest");
     }
     try {
       const response = await fetch(

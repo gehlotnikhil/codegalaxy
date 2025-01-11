@@ -2,12 +2,15 @@ const axios = require("axios");
 const { body, validationResult } = require("express-validator");
 import e, { Request, Response } from "express";
 let url = "https://api.jdoodle.com/v1/execute";
-let clientId = "3cb6c6b56019717db130949865c7091f";
-let clientSecret =
-  "79caf22b6c76651bc39c941615728ab37f8f78acaf61204d35bef61358208626";
-// let clientId = "ceb8d7514750a4147ffce9a3a3190691";
-// let clientSecret =
-//   "870220b6e357ee0768b3561207b95491e0225aae58bc169ba11c273df1e3f1ce";
+
+// let clientId ="3cb6c6b56019717db130949865c7091f"
+//   let clientSecret ="79caf22b6c76651bc39c941615728ab37f8f78acaf61204d35bef61358208626"
+  // let clientId ="ceb8d7514750a4147ffce9a3a3190691"
+  // let clientSecret ="870220b6e357ee0768b3561207b95491e0225aae58bc169ba11c273df1e3f1ce"
+//   let clientId ="fe433fd7a361a4a412a4454380ecd54f"
+//   let clientSecret ="80849acee2f7b865c39c0648264e3dc76c8a55cf3948fab6ff4fb3268d1e1200"
+  let clientId ="cb896ba9a94408c20a3bca93d0ef0df1"
+  let clientSecret ="a2dddd28fefc644e7872296073a3ad90dd07c2b167f5618c63f45f2bc796a614"
 
 const execute = async (req: Request, res: Response): Promise<any> => {
   let success = false;

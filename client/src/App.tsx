@@ -19,6 +19,7 @@ import { RootStateType } from "./store";
 import {setUserDetail} from './store/slice/UserDetailSlice'
 import PlayGround from "./Component/PlayGround";
 import Demo2 from "./Component/Demo2";
+import { toast } from "react-toastify";
 const ProtectedRoute: React.FC<{ children: React.ReactNode; }> = ({
   children
 }) => {
@@ -106,7 +107,7 @@ function App() {
       console.log("go--------------------------",jsondata);
       
     dispatch(setUserDetail(jsondata.result))
-    alert("Updated")
+    toast("Updated")
     }
   };
   const handleCodeExecution = async(data:any)=>{
