@@ -29,8 +29,6 @@ useEffect(() => {
     problemNo?: string;
     problemName?: string;
     description?: string;
-    timeComplexity?: string;
-    spaceComplexity?: string;
     companies?: String[];
     like?: Number;
     dislike?: Number;
@@ -40,7 +38,6 @@ useEffect(() => {
     accepted?: Number;
     submission?: Number;
     status?: string;
-    contestProblem?: Boolean;
     sampleInputOutput?: InOutTestCase[];
   }
 
@@ -54,8 +51,6 @@ useEffect(() => {
     problemNo: null,
     problemName: null,
     description: null,
-    timeComplexity: null,
-    spaceComplexity: null,
     companies: null,
     like: null,
     dislike: null,
@@ -64,7 +59,6 @@ useEffect(() => {
     topic: null,
     accepted: null,
     submission: null,
-    contestProblem: null,
     sampleInputOutput: null,
   };
   const [ModalFieldData, setModalFieldData] = useState(initialModelFieldData);
@@ -80,8 +74,6 @@ useEffect(() => {
     problemNo: false,
     problemName: false,
     description: false,
-    timeComplexity: false,
-    spaceComplexity: false,
     companies: false,
     like: false,
     dislike: false,
@@ -90,7 +82,6 @@ useEffect(() => {
     topic: false,
     accepted: false,
     submission: false,
-    contestProblem: false,
     sampleInputOutput: false,
   };
   const [DisplayField, setDisplayField] = useState(initialDisplayValue);
@@ -129,8 +120,6 @@ useEffect(() => {
         ...initialDisplayValue,
         problemName: true,
         description: true,
-        timeComplexity: true,
-        spaceComplexity: true,
         companies: true,
         like: true,
         dislike: true,
@@ -140,7 +129,6 @@ useEffect(() => {
         accepted: true,
         submission: true,
         status: true,
-        contestProblem: true,
         sampleInputOutput: true,
       });
     } else if (e === "btn5") {
@@ -150,8 +138,6 @@ useEffect(() => {
         problemNo: true,
         problemName: true,
         description: true,
-        timeComplexity: true,
-        spaceComplexity: true,
         companies: true,
         like: true,
         dislike: true,
@@ -161,7 +147,6 @@ useEffect(() => {
         accepted: true,
         submission: true,
         status: true,
-        contestProblem: true,
         sampleInputOutput: true,
       });
     } else if (e === "btn6") {
@@ -309,8 +294,6 @@ useEffect(() => {
     let {
       problemName,
       description,
-      timeComplexity,
-      spaceComplexity,
       companies,
       like,
       dislike,
@@ -320,7 +303,6 @@ useEffect(() => {
       accepted,
       submission,
       status,
-      contestProblem,
       sampleInputOutput,
     } = ModalFieldData;
     if (
@@ -328,8 +310,6 @@ useEffect(() => {
       companies === null ||
       problemName === null ||
       description === null ||
-      timeComplexity === null ||
-      spaceComplexity === null ||
       like === null ||
       dislike === null ||
       testcases === null ||
@@ -337,7 +317,6 @@ useEffect(() => {
       topic === null ||
       submission === null ||
       status === null ||
-      contestProblem === null ||
       sampleInputOutput === null
     ) {
       return toast.error("Failed to create problem");
@@ -345,8 +324,6 @@ useEffect(() => {
     const bodyData: ProblemSet = {
       problemName,
       description,
-      timeComplexity,
-      spaceComplexity,
       companies: (companies as string).split(","),
       like: Number(like),
       dislike: Number(dislike),
@@ -356,7 +333,6 @@ useEffect(() => {
       accepted: Number(accepted),
       submission: Number(submission),
       status,
-      contestProblem: contestProblem === "true" ? true : false,
       sampleInputOutput: JSON.parse(sampleInputOutput),
     };
 
@@ -382,8 +358,6 @@ useEffect(() => {
       problemNo,
       problemName,
       description,
-      timeComplexity,
-      spaceComplexity,
       companies,
       like,
       dislike,
@@ -393,7 +367,6 @@ useEffect(() => {
       accepted,
       submission,
       status,
-      contestProblem,
       sampleInputOutput,
     } = ModalFieldData;
     if (problemNo === null) {
@@ -405,8 +378,6 @@ useEffect(() => {
     //   : [];
     if (problemName !== null) bodyData.problemName = problemName;
     if (description !== null) bodyData.description = description;
-    if (timeComplexity !== null) bodyData.timeComplexity = timeComplexity;
-    if (spaceComplexity !== null) bodyData.spaceComplexity = spaceComplexity;
     if (companies !== null)
       bodyData.companies = (companies as string).split(",");
     if (like !== null) bodyData.like = Number(like);
@@ -417,8 +388,6 @@ useEffect(() => {
     if (topic !== null) bodyData.topic = (topic as string).split(",");
     if (accepted !== null) bodyData.accepted = Number(accepted);
     if (submission !== null) bodyData.submission = Number(submission);
-    if (contestProblem !== null)
-      bodyData.contestProblem = contestProblem === "true" ? true : false;
     if (sampleInputOutput !== null)
       bodyData.sampleInputOutput = JSON.parse(sampleInputOutput);
     if (status !== null) bodyData.status = status;
@@ -729,40 +698,6 @@ useEffect(() => {
                   </div>
                   <div
                     className={`mb-3 ${
-                      DisplayField.timeComplexity ? "d-block" : "d-none"
-                    }`}
-                  >
-                    <label htmlFor="name" className="col-form-label">
-                      Time Complexity:
-                    </label>
-                    <input
-                      type="text"
-                      value={ModalFieldData.timeComplexity || ""}
-                      name="timeComplexity"
-                      onChange={handleFieldValueChange}
-                      className="form-control"
-                      id=""
-                    />
-                  </div>
-                  <div
-                    className={`mb-3 ${
-                      DisplayField.spaceComplexity ? "d-block" : "d-none"
-                    }`}
-                  >
-                    <label htmlFor="name" className="col-form-label">
-                      Space Complexity:
-                    </label>
-                    <input
-                      type="text"
-                      value={ModalFieldData.spaceComplexity || ""}
-                      name="spaceComplexity"
-                      onChange={handleFieldValueChange}
-                      className="form-control"
-                      id=""
-                    />
-                  </div>
-                  <div
-                    className={`mb-3 ${
                       DisplayField.like ? "d-block" : "d-none"
                     }`}
                   >
@@ -897,24 +832,7 @@ useEffect(() => {
                       id=""
                     />
                   </div>
-                  <div
-                    className={`mb-3 ${
-                      DisplayField.contestProblem ? "d-block" : "d-none"
-                    }`}
-                  >
-                    <label htmlFor="name" className="col-form-label">
-                      Contest Problem:
-                    </label>
-                    <input
-                      type="text"
-                      value={ModalFieldData.contestProblem || ""}
-                      name="contestProblem"
-                      onChange={handleFieldValueChange}
-                      className="form-control"
-                      id=""
-                    />
-                  </div>
-                  <div
+                 <div
                     className={`mb-3 ${
                       DisplayField.testcases ? "d-block" : "d-none"
                     }`}

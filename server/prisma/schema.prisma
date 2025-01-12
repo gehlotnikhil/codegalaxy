@@ -69,8 +69,6 @@ model ProblemSet {
   problemNo         Int               @unique
   problemName       String
   description       String
-  timeComplexity    String
-  spaceComplexity   String
   companies         String[]
   like              Int
   dislike           Int
@@ -81,7 +79,6 @@ model ProblemSet {
   accepted          Int
   submission        Int
   status            String
-  contestProblem    Boolean
 }
 
 model Contest {

@@ -24,8 +24,6 @@ router.get("/", (req, res) => {
 router.post("/create", [
     (0, express_validator_1.body)("problemName", "Please Enter a problem name").exists(),
     (0, express_validator_1.body)("description", "Please Enter a description ").exists(),
-    (0, express_validator_1.body)("timeComplexity", "Please Enter a timeComplexity ").exists(),
-    (0, express_validator_1.body)("spaceComplexity", "Please Enter a spaceComplexity ").exists(),
     (0, express_validator_1.body)("companies", "Please Enter a companies ").exists(),
     (0, express_validator_1.body)("like", "Please Enter a like ").exists(),
     (0, express_validator_1.body)("dislike", "Please Enter a dislike").exists(),
@@ -35,7 +33,6 @@ router.post("/create", [
     (0, express_validator_1.body)("accepted", "Please Enter a accepted").exists(),
     (0, express_validator_1.body)("submission", "Please Enter a submission").exists(),
     (0, express_validator_1.body)("status", "Please Enter a status").exists(),
-    (0, express_validator_1.body)("contestProblem", "Please Enter a contestProblem").exists(),
     (0, express_validator_1.body)("sampleInputOutput", "Please Enter a sampleInputOutput").exists(),
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
@@ -44,7 +41,7 @@ router.post("/create", [
         if (!error.isEmpty()) {
             return res.status(404).send({ success, error: error.array() });
         }
-        let { problemName, description, timeComplexity, spaceComplexity, companies, like, dislike, testcases, constraint, topic, accepted, submission, status, contestProblem, sampleInputOutput, } = req.body;
+        let { problemName, description, companies, like, dislike, testcases, constraint, topic, accepted, submission, status, sampleInputOutput, } = req.body;
         let t = yield prisma.problemSet.findMany();
         console.log(t[t.length - 1].problemNo);
         let result = yield prisma.problemSet.create({
@@ -52,8 +49,6 @@ router.post("/create", [
                 problemNo: t[t.length - 1].problemNo + 1,
                 problemName: problemName,
                 description: description,
-                timeComplexity: timeComplexity,
-                spaceComplexity: spaceComplexity,
                 companies: companies,
                 like: like,
                 dislike: dislike,
@@ -63,7 +58,6 @@ router.post("/create", [
                 accepted: accepted,
                 submission: submission,
                 status: status,
-                contestProblem: contestProblem,
                 sampleInputOutput: sampleInputOutput,
             },
         });
@@ -79,8 +73,6 @@ router.post("/create", [
 router.put("/update/:problemno", [
     (0, express_validator_1.body)("problemName", "Please Enter a problem name").exists(),
     (0, express_validator_1.body)("description", "Please Enter a description ").exists(),
-    (0, express_validator_1.body)("timeComplexity", "Please Enter a timeComplexity ").exists(),
-    (0, express_validator_1.body)("spaceComplexity", "Please Enter a spaceComplexity ").exists(),
     (0, express_validator_1.body)("companies", "Please Enter a companies ").exists(),
     (0, express_validator_1.body)("like", "Please Enter a like ").exists(),
     (0, express_validator_1.body)("dislike", "Please Enter a dislike").exists(),
@@ -90,7 +82,6 @@ router.put("/update/:problemno", [
     (0, express_validator_1.body)("accepted", "Please Enter a accepted").exists(),
     (0, express_validator_1.body)("submission", "Please Enter a submission").exists(),
     (0, express_validator_1.body)("status", "Please Enter a status").exists(),
-    (0, express_validator_1.body)("contestProblem", "Please Enter a contestProblem").exists(),
     (0, express_validator_1.body)("sampleInputOutput", "Please Enter a sampleInputOutput").exists(),
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
@@ -105,12 +96,6 @@ router.put("/update/:problemno", [
         }
         if (req.body.description) {
             query.description = req.body.description;
-        }
-        if (req.body.timeComplexity) {
-            query.timeComplexity = req.body.timeComplexity;
-        }
-        if (req.body.spaceComplexity) {
-            query.spaceComplexity = req.body.spaceComplexity;
         }
         if (req.body.companies) {
             query.companies = req.body.companies;
@@ -138,9 +123,6 @@ router.put("/update/:problemno", [
         }
         if (req.body.status) {
             query.status = req.body.status;
-        }
-        if (req.body.contestProblem) {
-            query.contestProblem = req.body.contestProblem;
         }
         if (req.body.sampleInputOutput) {
             query.sampleInputOutput = req.body.sampleInputOutput;
