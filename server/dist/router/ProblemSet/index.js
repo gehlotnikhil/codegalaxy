@@ -33,6 +33,7 @@ router.post("/create", [
     (0, express_validator_1.body)("accepted", "Please Enter a accepted").exists(),
     (0, express_validator_1.body)("submission", "Please Enter a submission").exists(),
     (0, express_validator_1.body)("status", "Please Enter a status").exists(),
+    (0, express_validator_1.body)("category", "Please Enter a category").exists(),
     (0, express_validator_1.body)("sampleInputOutput", "Please Enter a sampleInputOutput").exists(),
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
@@ -41,12 +42,16 @@ router.post("/create", [
         if (!error.isEmpty()) {
             return res.status(404).send({ success, error: error.array() });
         }
-        let { problemName, description, companies, like, dislike, testcases, constraint, topic, accepted, submission, status, sampleInputOutput, } = req.body;
+        let { problemName, description, companies, like, dislike, testcases, constraint, topic, accepted, submission, status, category, sampleInputOutput, } = req.body;
         let t = yield prisma.problemSet.findMany();
-        console.log(t[t.length - 1].problemNo);
+        let newNumber = 1;
+        if (t.length > 0) {
+            console.log(t[t.length - 1].problemNo);
+            newNumber = t[t.length - 1].problemNo + 1;
+        }
         let result = yield prisma.problemSet.create({
             data: {
-                problemNo: t[t.length - 1].problemNo + 1,
+                problemNo: newNumber,
                 problemName: problemName,
                 description: description,
                 companies: companies,
@@ -57,6 +62,7 @@ router.post("/create", [
                 topic: topic,
                 accepted: accepted,
                 submission: submission,
+                category: category,
                 status: status,
                 sampleInputOutput: sampleInputOutput,
             },
@@ -80,6 +86,7 @@ router.put("/update/:problemno", [
     (0, express_validator_1.body)("constraint", "Please Enter a constraint").exists(),
     (0, express_validator_1.body)("topic", "Please Enter a topic").exists(),
     (0, express_validator_1.body)("accepted", "Please Enter a accepted").exists(),
+    (0, express_validator_1.body)("category", "Please Enter a category").exists(),
     (0, express_validator_1.body)("submission", "Please Enter a submission").exists(),
     (0, express_validator_1.body)("status", "Please Enter a status").exists(),
     (0, express_validator_1.body)("sampleInputOutput", "Please Enter a sampleInputOutput").exists(),
@@ -117,6 +124,9 @@ router.put("/update/:problemno", [
         }
         if (req.body.accepted) {
             query.accepted = req.body.accepted;
+        }
+        if (req.body.category) {
+            query.category = req.body.category;
         }
         if (req.body.submission) {
             query.submission = req.body.submission;

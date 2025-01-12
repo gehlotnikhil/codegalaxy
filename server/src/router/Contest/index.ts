@@ -40,9 +40,13 @@ router.post(
      console.log(t[t.length-1].contestNo);
      
       console.log(t);
+      let newNumber = 1;
+      if(t.length>0){
+       newNumber = t[t.length-1].contestNo + 1;
+      }
       let result = await prisma.contest.create({
         data: {
-          contestNo: t[t.length-1].contestNo+1,
+          contestNo: newNumber,
           contestName,
           duration,
           startTime: new Date(startTime),

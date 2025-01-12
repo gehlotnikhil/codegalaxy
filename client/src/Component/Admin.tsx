@@ -6,17 +6,15 @@ import { toast } from "react-toastify";
 
 function Admin() {
   const context = useContext(MainContext);
-  const [CodeValue, setCodeValue] = useState("")  
+  const [CodeValue, setCodeValue] = useState("");
   const handleEditorChange = (value: string | undefined) => {
     setCodeValue(value || "");
   };
-useEffect(() => {
- console.log(CodeValue);
- 
-}, [CodeValue])
+  useEffect(() => {
+    console.log(CodeValue);
+  }, [CodeValue]);
 
-  
-  const { Demo, setDemo,ServerUrl } = context;
+  const { Demo, setDemo, ServerUrl } = context;
   useEffect(() => {
     console.log("demo-", Demo);
   }, [Demo]);
@@ -25,6 +23,7 @@ useEffect(() => {
     input: string;
     output: string;
   }
+
   interface ProblemSet {
     problemNo?: string;
     problemName?: string;
@@ -37,7 +36,8 @@ useEffect(() => {
     topic?: String[];
     accepted?: Number;
     submission?: Number;
-    status?: string;
+    status?: "UNSOLVED" | "SOLVED";
+    category?: "ALGORITHMS" | "AI" | "CONCURRANCY";
     sampleInputOutput?: InOutTestCase[];
   }
 
@@ -58,6 +58,7 @@ useEffect(() => {
     constraint: null,
     topic: null,
     accepted: null,
+    category: null,
     submission: null,
     sampleInputOutput: null,
   };
@@ -81,6 +82,7 @@ useEffect(() => {
     constraint: false,
     topic: false,
     accepted: false,
+    category: false,
     submission: false,
     sampleInputOutput: false,
   };
@@ -127,6 +129,7 @@ useEffect(() => {
         constraint: true,
         topic: true,
         accepted: true,
+        category: true,
         submission: true,
         status: true,
         sampleInputOutput: true,
@@ -145,6 +148,7 @@ useEffect(() => {
         constraint: true,
         topic: true,
         accepted: true,
+        category: true,
         submission: true,
         status: true,
         sampleInputOutput: true,
@@ -193,6 +197,7 @@ useEffect(() => {
   }, [ModelHeading]);
 
   const handleCreateContest = async (): Promise<any> => {
+    try {
     let { contestName, duration, startTime, problems, status } = ModalFieldData;
     if (
       contestName === null ||
@@ -207,7 +212,6 @@ useEffect(() => {
     problemsData.map((value) => {
       return Number(value);
     });
-    try {
       const response = await fetch(`${ServerUrl}/api/contest/create`, {
         method: "POST",
         headers: {
@@ -222,8 +226,14 @@ useEffect(() => {
         }),
       });
       const jsondata = await response.json();
-      console.log(jsondata);
+      if (jsondata.success) {
+        console.log(jsondata);
+        toast.success("Contest created successfully");
+      } else {
+        toast.error("Failed to create constest");
+      }
     } catch (error) {
+      toast.error("Internal server error");
       console.log(error);
     }
   };
@@ -291,6 +301,7 @@ useEffect(() => {
     }
   };
   const handleCreateProblem = async (): Promise<any> => {
+    try {
     let {
       problemName,
       description,
@@ -302,11 +313,13 @@ useEffect(() => {
       topic,
       accepted,
       submission,
+      category,
       status,
       sampleInputOutput,
     } = ModalFieldData;
     if (
       accepted === null ||
+      category === null ||
       companies === null ||
       problemName === null ||
       description === null ||
@@ -331,25 +344,29 @@ useEffect(() => {
       constraint: (constraint as string).split(","),
       topic: (topic as string).split(","),
       accepted: Number(accepted),
+      category,
       submission: Number(submission),
       status,
       sampleInputOutput: JSON.parse(sampleInputOutput),
     };
 
-    try {
-      const response = await fetch(
-        `${ServerUrl}/api/problemset/create`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(bodyData),
-        }
-      );
+  
+      const response = await fetch(`${ServerUrl}/api/problemset/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bodyData),
+      });
       const jsondata = await response.json();
+      if(jsondata.success){
+        toast.success("Problem created successfully");
+      }else{
+        toast.error("Failed to create problem");
+      }
       console.log(jsondata);
     } catch (error) {
+      toast.error("Internal server error");
       console.log(error);
     }
   };
@@ -365,6 +382,7 @@ useEffect(() => {
       constraint,
       topic,
       accepted,
+      category,
       submission,
       status,
       sampleInputOutput,
@@ -391,6 +409,7 @@ useEffect(() => {
     if (sampleInputOutput !== null)
       bodyData.sampleInputOutput = JSON.parse(sampleInputOutput);
     if (status !== null) bodyData.status = status;
+    if (category !== null) bodyData.category = category;
     console.log(bodyData);
     try {
       const response = await fetch(
@@ -494,15 +513,12 @@ useEffect(() => {
   };
   const handleGetAllContest = async () => {
     try {
-      const response = await fetch(
-        `${ServerUrl}/api/contest/getallcontest`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${ServerUrl}/api/contest/getallcontest`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       const jsondata = await response.json();
       console.log(jsondata);
       setCodeValue(JSON.stringify(jsondata, null, 2));
@@ -817,6 +833,23 @@ useEffect(() => {
                   </div>
                   <div
                     className={`mb-3 ${
+                      DisplayField.category ? "d-block" : "d-none"
+                    }`}
+                  >
+                    <label htmlFor="name" className="col-form-label">
+                      Category:
+                    </label>
+                    <input
+                      type="text"
+                      value={ModalFieldData.category || ""}
+                      name="category"
+                      onChange={handleFieldValueChange}
+                      className="form-control"
+                      id=""
+                    />
+                  </div>
+                  <div
+                    className={`mb-3 ${
                       DisplayField.companies ? "d-block" : "d-none"
                     }`}
                   >
@@ -832,7 +865,7 @@ useEffect(() => {
                       id=""
                     />
                   </div>
-                 <div
+                  <div
                     className={`mb-3 ${
                       DisplayField.testcases ? "d-block" : "d-none"
                     }`}
@@ -1028,8 +1061,19 @@ useEffect(() => {
               Clear All
             </button>
           </div>
-          <div className="codeeditor mt-4" style={{maxHeight:"50vh",boxSizing:"border-box"}}>
-          <CodeEditor renderValidationDecorations={"off"} handleEditorChange={handleEditorChange} CodeOfEditor={CodeValue} height={"60%"} defaultLanguage={"typescript"} readOnly={true} fontSize={16}/>
+          <div
+            className="codeeditor mt-4"
+            style={{ maxHeight: "50vh", boxSizing: "border-box" }}
+          >
+            <CodeEditor
+              renderValidationDecorations={"off"}
+              handleEditorChange={handleEditorChange}
+              CodeOfEditor={CodeValue}
+              height={"60%"}
+              defaultLanguage={"typescript"}
+              readOnly={true}
+              fontSize={16}
+            />
           </div>
         </div>
       </div>

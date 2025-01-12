@@ -23,6 +23,7 @@ router.post(
     body("accepted", "Please Enter a accepted").exists(),
     body("submission", "Please Enter a submission").exists(),
     body("status", "Please Enter a status").exists(),
+    body("category", "Please Enter a category").exists(),
     body("sampleInputOutput", "Please Enter a sampleInputOutput").exists(),
   ],
   async (req: Request, res: Response): Promise<any> => {
@@ -45,13 +46,18 @@ router.post(
         accepted,
         submission,
         status,
+        category,
         sampleInputOutput,
       } = req.body;
       let t = await prisma.problemSet.findMany();
+      let newNumber = 1;
+      if(t.length>0){
       console.log(t[t.length-1].problemNo);
+       newNumber = t[t.length-1].problemNo + 1;
+      }
       let result = await prisma.problemSet.create({
         data: {
-          problemNo: t[t.length-1].problemNo + 1,
+          problemNo: newNumber,
           problemName: problemName,
           description: description,
           companies: companies,
@@ -62,6 +68,7 @@ router.post(
           topic: topic,
           accepted: accepted,
           submission: submission,
+          category: category,
           status: status,
           sampleInputOutput: sampleInputOutput,
         },
@@ -89,6 +96,7 @@ router.put(
     body("constraint", "Please Enter a constraint").exists(),
     body("topic", "Please Enter a topic").exists(),
     body("accepted", "Please Enter a accepted").exists(),
+    body("category", "Please Enter a category").exists(),
     body("submission", "Please Enter a submission").exists(),
     body("status", "Please Enter a status").exists(),
     body("sampleInputOutput", "Please Enter a sampleInputOutput").exists(),
@@ -127,6 +135,9 @@ router.put(
       }
       if (req.body.accepted) {
       query.accepted=req.body.accepted
+      }
+      if (req.body.category) {
+      query.category=req.body.category
       }
       if (req.body.submission) {
       query.submission=req.body.submission

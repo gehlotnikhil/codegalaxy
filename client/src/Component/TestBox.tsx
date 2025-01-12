@@ -2,8 +2,8 @@ import React from "react";
 
 // Define the props for each TestBox
 interface TestBoxProps {
-  testName: string;
-  isSuccess: string;
+  isSuccess?: "pass" | "failed" | "pending";
+  testNo: number;
 }
 
 // Inline styles as JavaScript objects
@@ -40,10 +40,10 @@ const styles = {
 };
 
 // TestBox Component
-const TestBox: React.FC<TestBoxProps> = ({ testName, isSuccess }) => {
+const TestBox: React.FC<TestBoxProps> = ({  testNo,isSuccess }) => {
   return (
     <div style={styles.box}>
-      <div>{testName}</div>
+      <div>Test #{testNo}</div>
       <div
         style={{
           ...styles.status,
@@ -55,20 +55,23 @@ const TestBox: React.FC<TestBoxProps> = ({ testName, isSuccess }) => {
     </div>
   );
 };
+interface testType {
+  isSuccess?:  "pass" | "failed" | "pending";
+}
 
 // Main Component
-const TestStatus: React.FC = () => {
+interface TestStatusProps {
+  tests: testType[];
+}
+
+const TestStatus: React.FC<TestStatusProps> = (props ) => {
   // Example data for the tests
-  const tests = [
-    { testName: "Test #1", isSuccess: "pass" },
-    { testName: "Test #2", isSuccess: "failed" },
-    { testName: "Test #3", isSuccess: "pending" },
-  ];
+   
 
   return (
     <div style={styles.container}>
-      {tests.map((test, index) => (
-        <TestBox key={index} testName={test.testName} isSuccess={test.isSuccess} />
+      {props.tests.map((test, index) => (
+        <TestBox key={index} testNo={index+1} isSuccess={test.isSuccess} />
       ))}
     </div>
   );

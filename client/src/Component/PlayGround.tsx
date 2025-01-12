@@ -85,11 +85,11 @@ func main() {
     };
     const result = await handleCodeExecution(data);
     console.log("execute---", result);
+    console.log(result.executionTime[0]===null,"---", typeof result.executionTime[0]);
     if (result.success === true) {
       let output: string = result.output[0];
       let updatedOutput = output.replace("jdoodle", "file");
-      setDisplayOutput(updatedOutput);
-      toast.success("Code Executed.");
+      setDisplayOutput(updatedOutput);      
     } else {
       toast.error("Failed");
     }
@@ -187,6 +187,7 @@ func main() {
             color: "black",
             boxSizing: "border-box",
             borderBottom: "1px solid #ddd", // Divider between sections
+            overflowY: "scroll",
           }}
         >
           <OutputPanel
