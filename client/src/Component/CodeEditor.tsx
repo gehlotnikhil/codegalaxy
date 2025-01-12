@@ -9,6 +9,7 @@ interface propType {
   CodeOfEditor: string;
   handleEditorChange: Function;
   renderValidationDecorations: "editable" | "on" | "off";
+  style?:{};
 }
 
 function CodeEditor(prop: propType) {
@@ -24,7 +25,7 @@ function CodeEditor(prop: propType) {
   }, [prop]); // Log whenever props change
 
   return (
-    <div style={{ height: "100vh" }}>
+    <div style={{ height: "100vh", ...prop.style }}>
       <Editor
         height={prop.height}
         defaultLanguage={prop.defaultLanguage}

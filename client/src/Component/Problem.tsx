@@ -1,12 +1,12 @@
 import React from "react";
-import { FaCode, FaDatabase } from "react-icons/fa";
+import { FaCode } from "react-icons/fa";
 import { BsFillGridFill } from "react-icons/bs";
 import { GiConvergenceTarget } from "react-icons/gi";
-
+import { AiOutlineRobot } from "react-icons/ai";  
 const filters = [
   { label: "All Topics", icon: <BsFillGridFill />, active: true },
   { label: "Algorithms", icon: <FaCode />, active: false },
-  { label: "Database", icon: <FaDatabase />, active: false },
+  { label: "Artificial Intelligence", icon: <AiOutlineRobot />, active: false },
   { label: "Concurrency", icon: <GiConvergenceTarget />, active: false },
 ];
 

@@ -176,7 +176,7 @@ router.delete("/delete/:problemno", (req, res) => __awaiter(void 0, void 0, void
 router.get("/getallproblem", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
-        let result = yield prisma.problemSet.findMany();
+        let result = (yield prisma.problemSet.findMany()).sort((a, b) => a.problemNo - b.problemNo);
         success = true;
         return res.send({ success, result });
     }

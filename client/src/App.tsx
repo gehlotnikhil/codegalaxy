@@ -18,8 +18,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootStateType } from "./store";
 import {setUserDetail} from './store/slice/UserDetailSlice'
 import PlayGround from "./Component/PlayGround";
-import Demo2 from "./Component/Demo2";
 import { toast } from "react-toastify";
+import ProblemPage from "./Component/ProblemSetArea";
 const ProtectedRoute: React.FC<{ children: React.ReactNode; }> = ({
   children
 }) => {
@@ -152,8 +152,9 @@ function App() {
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/problempage" element={<ProblemPage />} />
+
             <Route path="*" element={<Error />} />
-            <Route path="/demo2" element={<Demo2 />} />
             <Route path="/playground" element={
               <ProtectedRoute>
               <PlayGround />

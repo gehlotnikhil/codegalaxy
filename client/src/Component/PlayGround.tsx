@@ -26,38 +26,38 @@ int main() {
   }, [CodeValue]);
   useEffect(() => {
     console.log("language-", EditorLanguage);
-    if(EditorLanguage ==="cpp"){
+    if (EditorLanguage === "cpp") {
       setCodeValue(`#include <iostream>
 using namespace std;
 
 int main() {
    cout << "Hello World";
    return 0;
-}`)
-    }else if(EditorLanguage ==="c"){
+}`);
+    } else if (EditorLanguage === "c") {
       setCodeValue(`#include <stdio.h>
 
 int main() {
    printf("Hello, World!");
    return 0;
 }
-`)
-    }else if(EditorLanguage === "java"){
+`);
+    } else if (EditorLanguage === "java") {
       setCodeValue(`public class FirstProgram
 {
     public static void main(String[] args)
     {
         System.out.println("Hello World");
     }
-}`)
-    }else if(EditorLanguage === "go"){
+}`);
+    } else if (EditorLanguage === "go") {
       setCodeValue(`package main
 
 import "fmt"
 
 func main() {
     fmt.Println("Hello world")
-}`)
+}`);
     }
   }, [EditorLanguage]);
 
@@ -89,20 +89,20 @@ func main() {
       let output: string = result.output[0];
       let updatedOutput = output.replace("jdoodle", "file");
       setDisplayOutput(updatedOutput);
-      toast.success("Code Executed.")
-    }else{
-      toast.error("Failed")
+      toast.success("Code Executed.");
+    } else {
+      toast.error("Failed");
     }
   };
 
   return (
     <div
-    style={{
-      display: "flex",
+      style={{
+        display: "flex",
         flexDirection: "row",
         height: "100vh", // Full height layout
       }}
-      >
+    >
       {/* Left Div */}
       <div
         style={{

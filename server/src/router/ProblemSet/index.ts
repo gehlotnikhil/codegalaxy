@@ -215,7 +215,7 @@ router.get(
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
     try {
-      let result = await prisma.problemSet.findMany()
+      let result = (await prisma.problemSet.findMany()).sort((a, b) => a.problemNo - b.problemNo)
       success = true;
       return res.send({ success,result });
     } catch (error) {
