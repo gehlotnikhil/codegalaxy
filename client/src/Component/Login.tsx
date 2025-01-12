@@ -59,7 +59,7 @@ function Login() {
     if(jsondata.success){
     dispatch(setUserDetail(jsondata.result))
     navigate("/");
-    toast.success("Hello "+userDetail.name)
+    toast.success("Hello "+jsondata.result.name)
     }else{
       toast.error("Failed to Login")
 

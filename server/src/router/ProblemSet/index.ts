@@ -53,11 +53,11 @@ router.post(
         contestProblem,
         sampleInputOutput,
       } = req.body;
-      let t = await prisma.contest.findMany();
-      console.log(t[t.length-1].contestNo);
+      let t = await prisma.problemSet.findMany();
+      console.log(t[t.length-1].problemNo);
       let result = await prisma.problemSet.create({
         data: {
-          problemNo: t[t.length-1].contestNo + 1,
+          problemNo: t[t.length-1].problemNo + 1,
           problemName: problemName,
           description: description,
           timeComplexity: timeComplexity,
@@ -200,7 +200,20 @@ router.delete(
       }
 
       let result = await prisma.problemSet.delete({where:{problemNo:Number.parseInt(req.params.problemno)}})
-
+         // Update the problem numbers for the remaining problems
+         await prisma.problemSet.updateMany({
+          where: {
+            problemNo: {
+              gt: Number.parseInt(req.params.problemno),
+            },
+          },
+          data: {
+            problemNo: {
+              decrement: 1, // Decrease the problemNo for each problem after the deleted one
+            },
+          },
+        });
+  
       success = true;
       return res.send({ success,result,msg:"Problem deleted" });
     } catch (error) {

@@ -100,6 +100,18 @@ router.delete("/delete/:contestno", (req, res) => __awaiter(void 0, void 0, void
             return res.send({ success, msg: "Contest not Exist" });
         }
         let result = yield prisma.contest.delete({ where: { contestNo: Number.parseInt(req.params.contestno) } });
+        yield prisma.contest.updateMany({
+            where: {
+                contestNo: {
+                    gt: Number.parseInt(req.params.contestno),
+                },
+            },
+            data: {
+                contestNo: {
+                    decrement: 1, // Decrease the problemNo for each problem after the deleted one
+                },
+            },
+        });
         success = true;
         return res.send({ success, msg: "Deleted", result });
     }

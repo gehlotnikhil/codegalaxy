@@ -45,11 +45,11 @@ router.post("/create", [
             return res.status(404).send({ success, error: error.array() });
         }
         let { problemName, description, timeComplexity, spaceComplexity, companies, like, dislike, testcases, constraint, topic, accepted, submission, status, contestProblem, sampleInputOutput, } = req.body;
-        let t = yield prisma.contest.findMany();
-        console.log(t[t.length - 1].contestNo);
+        let t = yield prisma.problemSet.findMany();
+        console.log(t[t.length - 1].problemNo);
         let result = yield prisma.problemSet.create({
             data: {
-                problemNo: t[t.length - 1].contestNo + 1,
+                problemNo: t[t.length - 1].problemNo + 1,
                 problemName: problemName,
                 description: description,
                 timeComplexity: timeComplexity,
@@ -165,6 +165,19 @@ router.delete("/delete/:problemno", (req, res) => __awaiter(void 0, void 0, void
             return res.send({ success, msg: "Problem not Exist" });
         }
         let result = yield prisma.problemSet.delete({ where: { problemNo: Number.parseInt(req.params.problemno) } });
+        // Update the problem numbers for the remaining problems
+        yield prisma.problemSet.updateMany({
+            where: {
+                problemNo: {
+                    gt: Number.parseInt(req.params.problemno),
+                },
+            },
+            data: {
+                problemNo: {
+                    decrement: 1, // Decrease the problemNo for each problem after the deleted one
+                },
+            },
+        });
         success = true;
         return res.send({ success, result, msg: "Problem deleted" });
     }
