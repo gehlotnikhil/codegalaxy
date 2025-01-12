@@ -200,11 +200,21 @@ router.delete(
 );
 
 router.get(
-  "/getallproblem",
+  "/getallproblem/:pageno?",
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
     try {
-      let result = (await prisma.problemSet.findMany()).sort((a, b) => a.problemNo - b.problemNo)
+      console.log(req.params.pageno,"----",typeof req.params.pageno);
+      if(req.params.pageno){
+        let result = await prisma.problemSet.findMany({
+          skip: Number(req.params.pageno) === 0 ? 0 : (Number(req.params.pageno) - 1) * 10,
+          take: 10
+        });
+        success = true;
+        return res.send({ success,result });
+      }
+      
+      let result = (await prisma.problemSet.findMany())
       success = true;
       return res.send({ success,result });
     } catch (error) {

@@ -178,10 +178,19 @@ router.delete("/delete/:problemno", (req, res) => __awaiter(void 0, void 0, void
         return res.status(500).send({ success, error });
     }
 }));
-router.get("/getallproblem", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/getallproblem/:pageno?", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
-        let result = (yield prisma.problemSet.findMany()).sort((a, b) => a.problemNo - b.problemNo);
+        console.log(req.params.pageno, "----", typeof req.params.pageno);
+        if (req.params.pageno) {
+            let result = yield prisma.problemSet.findMany({
+                skip: Number(req.params.pageno) === 0 ? 0 : (Number(req.params.pageno) - 1) * 10,
+                take: 10
+            });
+            success = true;
+            return res.send({ success, result });
+        }
+        let result = (yield prisma.problemSet.findMany());
         success = true;
         return res.send({ success, result });
     }

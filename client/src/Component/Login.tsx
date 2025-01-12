@@ -5,12 +5,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setUserDetail } from "../store/slice/UserDetailSlice";
 import { useContext } from "react";
 import MainContext from "../context/main";
 import { toast } from "react-toastify";
-import { RootStateType } from "../store";
 // Define the form schema using Yup
 const schema = yup.object({
   password: yup
@@ -26,7 +25,7 @@ interface LoginFormValues {
 }
 
 function Login() {
-  const userDetail = useSelector((state:RootStateType)=>state.userDetail)
+  // const userDetail = useSelector((state:RootStateType)=>state.userDetail)
   const context = useContext(MainContext)
   const {ServerUrl} = context
   const dispatch = useDispatch()
