@@ -45,7 +45,8 @@ router.post("/create", [
         if (!error.isEmpty()) {
             return res.status(404).send({ success, error: error.array() });
         }
-        let { problemName, description, companies, like, dislike, testcases, constraint, topic, accepted, submission, status, category, sampleInputOutput, aboveCodeTemplate, belowCodeTemplate, middleCode, } = req.body;
+        let { problemName, description, companies, like, dislike, testcases, constraint, topic, accepted, submission, status, category, sampleInputOutput, aboveCodeTemplate, belowCodeTemplate, middleCode } = req.body;
+        console.log("topic-", topic);
         let t = yield prisma.problemSet.findMany();
         let newNumber = 1;
         if (t.length > 0) {
@@ -158,7 +159,9 @@ router.put("/update/:problemno", [
         if (Object.keys(query).length === 0) {
             return res.send({ success, msg: "Empty Content" });
         }
-        let result = yield prisma.problemSet.update({ where: { problemNo: Number.parseInt(req.params.problemno) }, data: Object.assign({}, query) });
+        let result = yield prisma.problemSet.update({
+            where: { problemNo: Number.parseInt(req.params.problemno) }, data: Object.assign({}, query)
+        });
         success = true;
         return res.send({ success, result, msg: "Update Successfull" });
     }
@@ -209,6 +212,48 @@ router.get("/getallproblem/:pageno?", (req, res) => __awaiter(void 0, void 0, vo
             return res.send({ success, result });
         }
         let result = (yield prisma.problemSet.findMany());
+        success = true;
+        return res.send({ success, result });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).send({ success, error });
+    }
+}));
+router.get("/getproblemdetails/:pageno?", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let success = false;
+    try {
+        console.log(req.params.pageno, "----", typeof req.params.pageno);
+        if (req.params.pageno) {
+            let result = yield prisma.problemSet.findMany({
+                skip: Number(req.params.pageno) === 0 ? 0 : (Number(req.params.pageno) - 1) * 10,
+                take: 10,
+                select: {
+                    id: true,
+                    problemNo: true,
+                    problemName: true,
+                    accepted: true,
+                    submission: true,
+                    status: true,
+                    category: true,
+                    topic: true
+                }
+            });
+            success = true;
+            return res.send({ success, result });
+        }
+        let result = (yield prisma.problemSet.findMany({
+            select: {
+                id: true,
+                problemNo: true,
+                problemName: true,
+                accepted: true,
+                submission: true,
+                status: true,
+                category: true,
+                topic: true
+            }
+        }));
         success = true;
         return res.send({ success, result });
     }

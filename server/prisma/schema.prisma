@@ -69,9 +69,17 @@ enum categoryEnum {
   CONCURRENCY
 }
 
-enum StatusEnum{
+enum StatusEnum {
   UNSOLVED
   SOLVED
+}
+
+enum TopicEnum {
+  ARRAY
+  STRING
+  BINARYSEARCH
+  DYNAMICPROGRAMMING
+  GRAPH
 }
 type CodeTemplateType{
   c String
@@ -79,6 +87,7 @@ type CodeTemplateType{
   java String
   go String
 }
+
 
 model ProblemSet {
   id                String            @id @default(auto()) @map("_id") @db.ObjectId
@@ -91,7 +100,7 @@ model ProblemSet {
   sampleInputOutput InputOutputType[]
   testcases         InputOutputType[]
   constraint        String[]
-  topic             String[]
+  topic             TopicEnum[]
   accepted          Int
   submission        Int
   status            StatusEnum

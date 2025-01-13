@@ -3,133 +3,113 @@ import { FaCode } from "react-icons/fa";
 import { BsFillGridFill } from "react-icons/bs";
 import { GiConvergenceTarget } from "react-icons/gi";
 import { AiOutlineRobot } from "react-icons/ai";
-const filters = [
-  { label: "All Topics", icon: <BsFillGridFill />, active: true },
-  { label: "Algorithms", icon: <FaCode />, active: false },
-  { label: "Artificial Intelligence", icon: <AiOutlineRobot />, active: false },
-  { label: "Concurrency", icon: <GiConvergenceTarget />, active: false },
-];
-
-
-
-type Question = {
-  id?: number;
-  title?: string;
-  submission?: number;
-  acceptance?: number;
-  status?: "SOLVED"|"UNSOLVED";
-};
-
+import { useLocation, useSearchParams } from "react-router";
 
 const Problem: React.FC = () => {
-  interface InOutType {
-    input: string;
-    output: string;
-  }
-  interface TemplateType {
-    c: string;
-    cpp: string;
-    java: string;
-    go: string;
-  }
-interface CodingQuestionType {
-  sampleInputOutput : InOutType[];
-  testcases: InOutType[];
-  aboveCodeTemplate: TemplateType;
-  belowCodeTemplate: TemplateType;
-  middleCode: TemplateType;
-  id: string;
-  problemNo: number;
-  problemName: string;
-  description: string;
-  companies: string[];
-  like: number;
-  dislike: number;
-  constraint: string[];
-  topic: string[];
-  accepted: number;
-  submission: number;
-  status: "SOLVED" | "UNSOLVED";
-  category: "AI" | "ALGORITHMS" | "CONCURRENCY";
-}
+  const locationHook = useLocation()
 
-const CodingQuestion = [
-  {
-      "sampleInputOutput": [
-        {
-          "input": "77 45 7",
-          "output": "11"
+  // interface InOutType {
+  //   input: string;
+  //   output: string;
+  // }
+  // interface TemplateType {
+  //   c: string;
+  //   cpp: string;
+  //   java: string;
+  //   go: string;
+  // }
+
+  const filters = [
+    { label: "All Topics", icon: <BsFillGridFill />, active: true },
+    { label: "Algorithms", icon: <FaCode />, active: false },
+    {
+      label: "Artificial Intelligence",
+      icon: <AiOutlineRobot />,
+      active: false,
+    },
+    { label: "Concurrency", icon: <GiConvergenceTarget />, active: false },
+  ];
+
+  type Question = {
+    id?: string;
+    problemNo?: number;
+    problemName?: string;
+    accepted?: number;
+    submission?: number;
+    status?: "SOLVED" | "UNSOLVED";
+    category?: "AI" | "ALGORITHMS" | "CONCURRENCY";
+    topic?: (
+      | "ARRAY"
+      | "STRING"
+      | "BINARYSEARCH"
+      | "DYNAMICPROGRAMMING"
+      | "GRAPH"
+    )[];
+  };
+  const [Questions, setQuestions] = useState<Question[]>([]);
+
+  const loadQuestionDetails = async () => {
+    const response = await fetch(
+      `http://localhost:8000/api/problemset/getproblemdetails/`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
         },
-        {
-          "input": "559 56 9",
-          "output": "2"
-        }
-      ],
-      "testcases": [
-        {
-          "input": "23 54 65",
-          "output": "12"
-        },
-        {
-          "input": "99 66 6",
-          "output": "76"
-        }
-      ],
-      "aboveCodeTemplate": {
-        "c": "#include <stdio.h>\n\n",
-        "cpp": "#include <iostream>\nusing namespace std;\n\n",
-        "java": "import java.util.Scanner;\n\npublic class Main {\n",
-        "go": "package main\n\nimport (\n\t\"fmt\"\n)\n\n"
-      },
-      "belowCodeTemplate": {
-        "c": "\nint main() {\n  int a, b;\n  scanf(\"%d\", &a);\n  scanf(\"%d\", &b);\n  printf(\"%d\", addTwoNumber(a, b));\n  return 0;\n}",
-        "cpp": "\n    int main() {\n   int a,b;\n   cin>>a;\n   cin>>b;\n   cout<<addTwoNumber(a,b);\n   return 0;\n  }",
-        "java": "    \n    public static void main(String[] args) {\n        Scanner scanner = new Scanner(System.in);\n        int a = scanner.nextInt();\n        int b = scanner.nextInt();\n        System.out.println(addTwoNumber(a, b));\n        scanner.close();\n    }\n}\n",
-        "go": "\nfunc main() {\n\tvar a, b int\n\tfmt.Scan(&a)\n\tfmt.Scan(&b)\n\tfmt.Println(addTwoNumber(a, b))\n}\n"
-      },
-      "middleCode": {
-        "c": "int addTwoNumber(int a, int b) {\n    // Logic\n}",
-        "cpp": "int addTwoNumber(int a,int b){\n   // Logic\n}",
-        "java": "public static int addTwoNumber(int a, int b) {\n   // Logic\n}",
-        "go": "func addTwoNumber(a int, b int) int {\n\t// Logic\n}"
-      },
-      "id": "67842034f66d5dec66194c9a",
-      "problemNo": 1,
-      "problemName": "Random 3",
-      "description": "helloWorld",
-      "companies": [
-        "Apple",
-        "Google"
-      ],
-      "like": 12,
-      "dislike": 44,
-      "constraint": [
-        "t1",
-        "t2"
-      ],
-      "topic": [
-        "Array",
-        "String"
-      ],
-      "accepted": 34,
-      "submission": 100,
-      "status": "UNSOLVED",
-      "category": "AI"
+      }
+    );
+    const data = await response.json();
+    console.log("------", data.result);
+    if (data.success) {
+     setQuestions(data.result);
     }
-  
-]
-
-const [Questions, setQuestions] = useState<Question[]>([
-  {
-   
-  
-  }
-]);
+  };
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [page, setPage] = useState<number>(parseInt(searchParams.get("page") || "1")); // State to track the current page
 useEffect(() => {
-  console.log(Questions);
-}, [Questions]);
+  console.log("page- ",page,"----","searchParams-",searchParams.get("page"));
+  
+}, [page])
+useEffect(() => {
+  
+
+  
+}, [searchParams.get("page")])
+
+
+  // Handle the "Previous" button click
+  const handlePrevious = () => {
+    if (page > 1) {
+      setPage(page - 1);   
+      const pageParam = String(Number(searchParams.get("page"))-1);
+      setSearchParams({ page: pageParam ? pageParam : "1" });    }
+  };
+
+  // Handle the "Next" button click
+  const handleNext = () => {
+    setPage(page + 1);
+    const pageParam = String(Number(searchParams.get("page")) + 1);
+    setSearchParams({ page: pageParam ? pageParam : "1" });
+  };
+useEffect(() => {
+  setSearchParams({ page: page.toString() });
+  
+}, [])
+
+  useEffect(() => {
+    loadQuestionDetails();
+    
+  }, [locationHook]);
+
+  useEffect(() => {
+    console.log(Questions);
+  }, [Questions]);
+
+
+  
 
   return (
+    <>
     <div style={styles.container}>
       {/* Filter Section */}
       <div style={styles2.filterContainer}>
@@ -190,7 +170,7 @@ useEffect(() => {
               }}
             >
               <td style={styles.td}>
-                {q.status ==="SOLVED"? (
+                {q.status === "SOLVED" ? (
                   <span role="img" aria-label="done">
                     ✅
                   </span>
@@ -200,27 +180,60 @@ useEffect(() => {
                   </span>
                 )}
               </td>
-              <td style={styles.td}>{`${q.id}. ${q.title}`}</td>
+              <td style={styles.td}>{`${q.problemNo}. ${q.problemName}`}</td>
 
-              <td style={styles.td}>{q.acceptance}</td>
+              <td style={styles.td}>{q.accepted}</td>
               <td
                 style={{
                   ...styles.td,
                   color:
-                    (q.submission && q.acceptance && (Number(q.submission/q.acceptance*100))>=75)
+                    q.submission &&
+                    q.accepted &&
+                    Number((q.submission / q.accepted) * 100) >= 75
                       ? "#90ee90"
-                      : (q.submission && q.acceptance && (Number(q.submission/q.acceptance*100))>=50)
+                      : q.submission &&
+                        q.accepted &&
+                        Number((q.submission / q.accepted) * 100) >= 50
                       ? "#ffa500"
                       : "#ff4500",
                 }}
               >
-                {q.submission && q.acceptance &&(q.submission/q.acceptance*100)>=75?"EASY":(q.submission && q.acceptance &&(q.submission/q.acceptance*100)>=50)?"MEDIUM":"HARD"}
+                {q.submission &&
+                q.accepted &&
+                (q.submission / q.accepted) * 100 >= 75
+                  ? "EASY"
+                  : q.submission &&
+                    q.accepted &&
+                    (q.submission / q.accepted) * 100 >= 50
+                  ? "MEDIUM"
+                  : "HARD"}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      <div style={{ textAlign: "center", margin: "20px" }}>
+      <h1>Current Page: {page}</h1>
+      <div>
+        <button 
+          onClick={() => handlePrevious()} 
+          disabled={page === 1} // Disable the "Previous" button on the first page
+          style={{ marginRight: "10px", padding: "10px 20px" }}
+        >
+          Previous
+        </button>
+        <button 
+          onClick={() => handleNext()} 
+          style={{ padding: "10px 20px" }}
+        >
+          Next
+        </button>
+      </div>
     </div>
+    </div>
+
+
+    </>
   );
 };
 

@@ -53,13 +53,15 @@ router.post(
         sampleInputOutput,
         aboveCodeTemplate,
         belowCodeTemplate,
-        middleCode,
+        middleCode
       } = req.body;
+      console.log("topic-",topic);
+      
       let t = await prisma.problemSet.findMany();
       let newNumber = 1;
-      if(t.length>0){
-      console.log(t[t.length-1].problemNo);
-       newNumber = t[t.length-1].problemNo + 1;
+      if (t.length > 0) {
+        console.log(t[t.length - 1].problemNo);
+        newNumber = t[t.length - 1].problemNo + 1;
       }
       let result = await prisma.problemSet.create({
         data: {
@@ -120,65 +122,67 @@ router.put(
       if (!error.isEmpty()) {
         return res.status(404).send({ success, error: error.array() });
       }
-      let query:any={};
+      let query: any = {};
       if (req.body.problemName) {
-      query.problemName=req.body.problemName
+        query.problemName = req.body.problemName
       }
       if (req.body.description) {
-      query.description=req.body.description
+        query.description = req.body.description
       }
       if (req.body.companies) {
-      query.companies=req.body.companies
+        query.companies = req.body.companies
       }
       if (req.body.like) {
-      query.like=req.body.like
+        query.like = req.body.like
       }
       if (req.body.dislike) {
-      query.dislike=req.body.dislike
+        query.dislike = req.body.dislike
       }
       if (req.body.testcases) {
-      query.testcases=req.body.testcases
+        query.testcases = req.body.testcases
       }
       if (req.body.constraint) {
-      query.constraint=req.body.constraint
+        query.constraint = req.body.constraint
       }
       if (req.body.topic) {
-      query.topic=req.body.topic
+        query.topic = req.body.topic
       }
       if (req.body.accepted) {
-      query.accepted=req.body.accepted
+        query.accepted = req.body.accepted
       }
       if (req.body.category) {
-      query.category=req.body.category
+        query.category = req.body.category
       }
       if (req.body.submission) {
-      query.submission=req.body.submission
+        query.submission = req.body.submission
       }
       if (req.body.status) {
-      query.status=req.body.status
+        query.status = req.body.status
       }
       if (req.body.sampleInputOutput) {
-      query.sampleInputOutput=req.body.sampleInputOutput
+        query.sampleInputOutput = req.body.sampleInputOutput
       }
       if (req.body.aboveCodeTemplate) {
-      query.aboveCodeTemplate=req.body.aboveCodeTemplate
+        query.aboveCodeTemplate = req.body.aboveCodeTemplate
       }
       if (req.body.belowCodeTemplate) {
-      query.belowCodeTemplate=req.body.belowCodeTemplate
+        query.belowCodeTemplate = req.body.belowCodeTemplate
       }
       if (req.body.middleCode) {
-      query.middleCode=req.body.middleCode
+        query.middleCode = req.body.middleCode
       }
-      if(Object.keys(query).length===0){
-        return res.send({success,msg:"Empty Content"})
+      if (Object.keys(query).length === 0) {
+        return res.send({ success, msg: "Empty Content" })
       }
-      let result = await prisma.problemSet.update({where:{problemNo:Number.parseInt(req.params.problemno)},data:{
-        ...query
-      }})
-      
+      let result = await prisma.problemSet.update({
+        where: { problemNo: Number.parseInt(req.params.problemno) }, data: {
+          ...query
+        }
+      })
+
 
       success = true;
-      return res.send({ success ,result,msg:"Update Successfull"});
+      return res.send({ success, result, msg: "Update Successfull" });
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
@@ -191,28 +195,28 @@ router.delete(
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
     try {
-      let check1 = await prisma.problemSet.findFirst({where:{problemNo:Number.parseInt(req.params.problemno)}})
-      if(!check1){
-        return res.send({success,msg:"Problem not Exist"})
+      let check1 = await prisma.problemSet.findFirst({ where: { problemNo: Number.parseInt(req.params.problemno) } })
+      if (!check1) {
+        return res.send({ success, msg: "Problem not Exist" })
       }
 
-      let result = await prisma.problemSet.delete({where:{problemNo:Number.parseInt(req.params.problemno)}})
-         // Update the problem numbers for the remaining problems
-         await prisma.problemSet.updateMany({
-          where: {
-            problemNo: {
-              gt: Number.parseInt(req.params.problemno),
-            },
+      let result = await prisma.problemSet.delete({ where: { problemNo: Number.parseInt(req.params.problemno) } })
+      // Update the problem numbers for the remaining problems
+      await prisma.problemSet.updateMany({
+        where: {
+          problemNo: {
+            gt: Number.parseInt(req.params.problemno),
           },
-          data: {
-            problemNo: {
-              decrement: 1, // Decrease the problemNo for each problem after the deleted one
-            },
+        },
+        data: {
+          problemNo: {
+            decrement: 1, // Decrease the problemNo for each problem after the deleted one
           },
-        });
-  
+        },
+      });
+
       success = true;
-      return res.send({ success,result,msg:"Problem deleted" });
+      return res.send({ success, result, msg: "Problem deleted" });
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
@@ -225,19 +229,19 @@ router.get(
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
     try {
-      console.log(req.params.pageno,"----",typeof req.params.pageno);
-      if(req.params.pageno){
+      console.log(req.params.pageno, "----", typeof req.params.pageno);
+      if (req.params.pageno) {
         let result = await prisma.problemSet.findMany({
           skip: Number(req.params.pageno) === 0 ? 0 : (Number(req.params.pageno) - 1) * 10,
           take: 10
         });
         success = true;
-        return res.send({ success,result });
+        return res.send({ success, result });
       }
-      
+
       let result = (await prisma.problemSet.findMany())
       success = true;
-      return res.send({ success,result });
+      return res.send({ success, result });
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
@@ -246,30 +250,77 @@ router.get(
 );
 
 router.get(
+  "/getproblemdetails/:pageno?",
+  async (req: Request, res: Response): Promise<any> => {
+    let success = false;
+    try {
+      console.log(req.params.pageno, "----", typeof req.params.pageno);
+      if (req.params.pageno) {
+        let result = await prisma.problemSet.findMany({
+          skip: Number(req.params.pageno) === 0 ? 0 : (Number(req.params.pageno) - 1) * 10,
+          take: 10,
+          select: {
+            id: true,
+            problemNo: true,
+            problemName: true,
+            accepted: true,
+            submission: true,
+            status: true,
+            category:true,
+            topic:true
+          }
+        });
+        success = true;
+        return res.send({ success, result });
+      }
+
+      let result = (await prisma.problemSet.findMany({
+        select: {
+          id: true,
+          problemNo: true,
+          problemName: true,
+          accepted: true,
+          submission: true,
+          status: true,
+          category:true,
+          topic:true
+        }
+      }))
+      success = true;
+      return res.send({ success, result });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({ success, error });
+    }
+  }
+);
+
+
+router.get(
   "/getspecificproblem",
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
     try {
-      const {id,no} = req.query;
-      if(!id && !no){
-        return res.send({success,msg:"Please enter a valid id or no"})
+      const { id, no } = req.query;
+      if (!id && !no) {
+        return res.send({ success, msg: "Please enter a valid id or no" })
       }
-      console.log(id,"-----",no);
+      console.log(id, "-----", no);
       let result;
-      if(id){
-         result = await prisma.problemSet.findFirst({where:{id:(id as string)}})
+      if (id) {
+        result = await prisma.problemSet.findFirst({ where: { id: (id as string) } })
       }
-      if(no){
-          result = await prisma.problemSet.findFirst({where:{problemNo:Number.parseInt(no as string)}})
+      if (no) {
+        result = await prisma.problemSet.findFirst({ where: { problemNo: Number.parseInt(no as string) } })
       }
-      if(result === null){
+      if (result === null) {
         success = false;
-      }else{
+      } else {
         success = true;
 
       }
-      
-      return res.send({ success,result });
+
+      return res.send({ success, result });
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
@@ -278,9 +329,9 @@ router.get(
 );
 
 router.post("/executeproblem", [
-  body("testcase","Please enter a testcases").exists(),
-  body("language","Please enter a language").exists(),
-  body("code","Please enter a code").exists(),
+  body("testcase", "Please enter a testcases").exists(),
+  body("language", "Please enter a language").exists(),
+  body("code", "Please enter a code").exists(),
 ], executeproblem.execute);
 
 module.exports = router;
