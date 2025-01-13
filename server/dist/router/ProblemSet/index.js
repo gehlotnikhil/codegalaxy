@@ -35,6 +35,9 @@ router.post("/create", [
     (0, express_validator_1.body)("status", "Please Enter a status").exists(),
     (0, express_validator_1.body)("category", "Please Enter a category").exists(),
     (0, express_validator_1.body)("sampleInputOutput", "Please Enter a sampleInputOutput").exists(),
+    (0, express_validator_1.body)("aboveCodeTemplate", "Please Enter a aboveCodeTemplate").exists(),
+    (0, express_validator_1.body)("middleCode", "Please Enter a middleCode").exists(),
+    (0, express_validator_1.body)("belowCodeTemplate", "Please Enter a belowCodeTemplate").exists(),
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
@@ -42,7 +45,7 @@ router.post("/create", [
         if (!error.isEmpty()) {
             return res.status(404).send({ success, error: error.array() });
         }
-        let { problemName, description, companies, like, dislike, testcases, constraint, topic, accepted, submission, status, category, sampleInputOutput, } = req.body;
+        let { problemName, description, companies, like, dislike, testcases, constraint, topic, accepted, submission, status, category, sampleInputOutput, aboveCodeTemplate, belowCodeTemplate, middleCode, } = req.body;
         let t = yield prisma.problemSet.findMany();
         let newNumber = 1;
         if (t.length > 0) {
@@ -65,6 +68,9 @@ router.post("/create", [
                 category: category,
                 status: status,
                 sampleInputOutput: sampleInputOutput,
+                aboveCodeTemplate: aboveCodeTemplate,
+                belowCodeTemplate: belowCodeTemplate,
+                middleCode: middleCode,
             },
         });
         console.log(result);
@@ -90,6 +96,9 @@ router.put("/update/:problemno", [
     (0, express_validator_1.body)("submission", "Please Enter a submission").exists(),
     (0, express_validator_1.body)("status", "Please Enter a status").exists(),
     (0, express_validator_1.body)("sampleInputOutput", "Please Enter a sampleInputOutput").exists(),
+    (0, express_validator_1.body)("aboveCodeTemplate", "Please Enter a aboveCodeTemplate").exists(),
+    (0, express_validator_1.body)("belowCodeTemplate", "Please Enter a belowCodeTemplate").exists(),
+    (0, express_validator_1.body)("middleCode", "Please Enter a middleCode").exists(),
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
@@ -136,6 +145,15 @@ router.put("/update/:problemno", [
         }
         if (req.body.sampleInputOutput) {
             query.sampleInputOutput = req.body.sampleInputOutput;
+        }
+        if (req.body.aboveCodeTemplate) {
+            query.aboveCodeTemplate = req.body.aboveCodeTemplate;
+        }
+        if (req.body.belowCodeTemplate) {
+            query.belowCodeTemplate = req.body.belowCodeTemplate;
+        }
+        if (req.body.middleCode) {
+            query.middleCode = req.body.middleCode;
         }
         if (Object.keys(query).length === 0) {
             return res.send({ success, msg: "Empty Content" });
@@ -199,11 +217,27 @@ router.get("/getallproblem/:pageno?", (req, res) => __awaiter(void 0, void 0, vo
         return res.status(500).send({ success, error });
     }
 }));
-router.get("/getspecificproblem/:problemno", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/getspecificproblem", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
-        let result = yield prisma.problemSet.findFirst({ where: { problemNo: Number.parseInt(req.params.problemno) } });
-        success = true;
+        const { id, no } = req.query;
+        if (!id && !no) {
+            return res.send({ success, msg: "Please enter a valid id or no" });
+        }
+        console.log(id, "-----", no);
+        let result;
+        if (id) {
+            result = yield prisma.problemSet.findFirst({ where: { id: id } });
+        }
+        if (no) {
+            result = yield prisma.problemSet.findFirst({ where: { problemNo: Number.parseInt(no) } });
+        }
+        if (result === null) {
+            success = false;
+        }
+        else {
+            success = true;
+        }
         return res.send({ success, result });
     }
     catch (error) {

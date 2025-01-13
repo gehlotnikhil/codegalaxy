@@ -73,6 +73,12 @@ enum StatusEnum{
   UNSOLVED
   SOLVED
 }
+type CodeTemplateType{
+  c String
+  cpp String
+  java String
+  go String
+}
 
 model ProblemSet {
   id                String            @id @default(auto()) @map("_id") @db.ObjectId
@@ -90,6 +96,9 @@ model ProblemSet {
   submission        Int
   status            StatusEnum
   category          categoryEnum
+  aboveCodeTemplate CodeTemplateType
+  belowCodeTemplate CodeTemplateType
+  middleCode        CodeTemplateType
 }
 
 model Contest {

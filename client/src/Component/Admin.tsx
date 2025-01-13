@@ -496,7 +496,7 @@ function Admin() {
     }
     try {
       const response = await fetch(
-        `${ServerUrl}/api/problemset/getspecificproblem/${problemNo}`,
+        `${ServerUrl}/api/problemset/getspecificproblem?no=${problemNo}`,
         {
           method: "GET",
           headers: {
@@ -533,7 +533,7 @@ function Admin() {
     }
     try {
       const response = await fetch(
-        `${ServerUrl}/api/contest/getspecificcontest/${contestNo}`,
+        `${ServerUrl}/api/contest/getspecificcontest?no=${contestNo}`,
         {
           method: "GET",
           headers: {

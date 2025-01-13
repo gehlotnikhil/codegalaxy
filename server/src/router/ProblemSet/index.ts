@@ -25,6 +25,9 @@ router.post(
     body("status", "Please Enter a status").exists(),
     body("category", "Please Enter a category").exists(),
     body("sampleInputOutput", "Please Enter a sampleInputOutput").exists(),
+    body("aboveCodeTemplate", "Please Enter a aboveCodeTemplate").exists(),
+    body("middleCode", "Please Enter a middleCode").exists(),
+    body("belowCodeTemplate", "Please Enter a belowCodeTemplate").exists(),
   ],
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
@@ -48,6 +51,9 @@ router.post(
         status,
         category,
         sampleInputOutput,
+        aboveCodeTemplate,
+        belowCodeTemplate,
+        middleCode,
       } = req.body;
       let t = await prisma.problemSet.findMany();
       let newNumber = 1;
@@ -71,6 +77,9 @@ router.post(
           category: category,
           status: status,
           sampleInputOutput: sampleInputOutput,
+          aboveCodeTemplate: aboveCodeTemplate,
+          belowCodeTemplate: belowCodeTemplate,
+          middleCode: middleCode,
         },
       });
       console.log(result);
@@ -100,6 +109,9 @@ router.put(
     body("submission", "Please Enter a submission").exists(),
     body("status", "Please Enter a status").exists(),
     body("sampleInputOutput", "Please Enter a sampleInputOutput").exists(),
+    body("aboveCodeTemplate", "Please Enter a aboveCodeTemplate").exists(),
+    body("belowCodeTemplate", "Please Enter a belowCodeTemplate").exists(),
+    body("middleCode", "Please Enter a middleCode").exists(),
   ],
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
@@ -147,6 +159,15 @@ router.put(
       }
       if (req.body.sampleInputOutput) {
       query.sampleInputOutput=req.body.sampleInputOutput
+      }
+      if (req.body.aboveCodeTemplate) {
+      query.aboveCodeTemplate=req.body.aboveCodeTemplate
+      }
+      if (req.body.belowCodeTemplate) {
+      query.belowCodeTemplate=req.body.belowCodeTemplate
+      }
+      if (req.body.middleCode) {
+      query.middleCode=req.body.middleCode
       }
       if(Object.keys(query).length===0){
         return res.send({success,msg:"Empty Content"})
@@ -225,12 +246,29 @@ router.get(
 );
 
 router.get(
-  "/getspecificproblem/:problemno",
+  "/getspecificproblem",
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
     try {
-      let result = await prisma.problemSet.findFirst({where:{problemNo:Number.parseInt(req.params.problemno)}})
-      success = true;
+      const {id,no} = req.query;
+      if(!id && !no){
+        return res.send({success,msg:"Please enter a valid id or no"})
+      }
+      console.log(id,"-----",no);
+      let result;
+      if(id){
+         result = await prisma.problemSet.findFirst({where:{id:(id as string)}})
+      }
+      if(no){
+          result = await prisma.problemSet.findFirst({where:{problemNo:Number.parseInt(no as string)}})
+      }
+      if(result === null){
+        success = false;
+      }else{
+        success = true;
+
+      }
+      
       return res.send({ success,result });
     } catch (error) {
       console.log(error);

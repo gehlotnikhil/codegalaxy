@@ -161,15 +161,29 @@ router.get(
   }
 );
 router.get(
-  "/getspecificcontest/:contestno",
+  "/getspecificcontest",
   [],
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
     try {
-        let result = await prisma.contest.findFirst({where:{contestNo:Number.parseInt(req.params.contestno)}})
-console.log(result);
+      let {id,no} = req.query;
+      if(!id && !no){
+        return res.send({success,msg:"Please provide id or no"})
+      }
+      let result ;
+      if(no){
+        result = await prisma.contest.findFirst({where:{contestNo:Number.parseInt(no as string)}})
+      }
+      if(id){
+        result = await prisma.contest.findFirst({where:{id:(id as string)}})
+      }
+      if(result === null){
+        success = false;
+      }else{
+        success = true;
+      }
+      console.log(result);
 
-      success = true;
       return res.send({ success ,result});
     } catch (error) {
       console.log(error);

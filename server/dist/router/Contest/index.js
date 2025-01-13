@@ -137,12 +137,27 @@ router.get("/getallcontest", [], (req, res) => __awaiter(void 0, void 0, void 0,
         return res.status(500).send({ success, error });
     }
 }));
-router.get("/getspecificcontest/:contestno", [], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/getspecificcontest", [], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
-        let result = yield prisma.contest.findFirst({ where: { contestNo: Number.parseInt(req.params.contestno) } });
+        let { id, no } = req.query;
+        if (!id && !no) {
+            return res.send({ success, msg: "Please provide id or no" });
+        }
+        let result;
+        if (no) {
+            result = yield prisma.contest.findFirst({ where: { contestNo: Number.parseInt(no) } });
+        }
+        if (id) {
+            result = yield prisma.contest.findFirst({ where: { id: id } });
+        }
+        if (result === null) {
+            success = false;
+        }
+        else {
+            success = true;
+        }
         console.log(result);
-        success = true;
         return res.send({ success, result });
     }
     catch (error) {

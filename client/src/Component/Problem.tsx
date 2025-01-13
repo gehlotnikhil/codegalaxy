@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaCode } from "react-icons/fa";
 import { BsFillGridFill } from "react-icons/bs";
 import { GiConvergenceTarget } from "react-icons/gi";
-import { AiOutlineRobot } from "react-icons/ai";  
+import { AiOutlineRobot } from "react-icons/ai";
 const filters = [
   { label: "All Topics", icon: <BsFillGridFill />, active: true },
   { label: "Algorithms", icon: <FaCode />, active: false },
@@ -10,119 +10,125 @@ const filters = [
   { label: "Concurrency", icon: <GiConvergenceTarget />, active: false },
 ];
 
-const styles2 = {
-  filterContainer: {
-    display: "flex",
-    gap: "10px",
-    padding: "10px 0",
-  },
-  filterButton: (isActive: boolean) => ({
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    backgroundColor: isActive ? "#ffffff" : "#1e1e1e",
-    color: isActive ? "#000" : "#ffffff",
-    padding: "8px 16px",
-    borderRadius: "20px",
-    cursor: "pointer",
-    border: "none",
-    fontWeight: "bold",
-    boxShadow: isActive ? "0px 0px 5px rgba(255, 255, 255, 0.8)" : "none",
-  }),
-};
+
+
 type Question = {
-  id: number;
-  title: string;
-  solution: boolean;
-  acceptance: string;
-  difficulty: string;
-  status: boolean;
+  id?: number;
+  title?: string;
+  submission?: number;
+  acceptance?: number;
+  status?: "SOLVED"|"UNSOLVED";
 };
 
-const questions: Question[] = [
-  {
-    id: 1400,
-    title: "Construct K Palindrome Strings",
-    solution: true,
-    acceptance: "67.8%",
-    difficulty: "Medium",
-    status: true,
-  },
-  {
-    id: 1,
-    title: "Two Sum",
-    solution: true,
-    acceptance: "54.6%",
-    difficulty: "Easy",
-    status: true,
-  },
-  {
-    id: 2,
-    title: "Add Two Numbers",
-    solution: true,
-    acceptance: "45.0%",
-    difficulty: "Medium",
-    status: true,
-  },
-  {
-    id: 3,
-    title: "Longest Substring Without Repeating Characters",
-    solution: true,
-    acceptance: "36.0%",
-    difficulty: "Medium",
-    status: true,
-  },
-  {
-    id: 4,
-    title: "Median of Two Sorted Arrays",
-    solution: false,
-    acceptance: "42.4%",
-    difficulty: "Hard",
-    status: false,
-  },
-  {
-    id: 5,
-    title: "Longest Palindromic Substring",
-    solution: false,
-    acceptance: "35.0%",
-    difficulty: "Medium",
-    status: false,
-  },
-  {
-    id: 6,
-    title: "Zigzag Conversion",
-    solution: false,
-    acceptance: "50.3%",
-    difficulty: "Medium",
-    status: false,
-  },
-  {
-    id: 7,
-    title: "Reverse Integer",
-    solution: true,
-    acceptance: "29.6%",
-    difficulty: "Medium",
-    status: true,
-  },
-  {
-    id: 8,
-    title: "String to Integer (atoi)",
-    solution: false,
-    acceptance: "18.4%",
-    difficulty: "Medium",
-    status: false,
-  },
-  {
-    id: 9,
-    title: "Palindrome Number",
-    solution: false,
-    acceptance: "58.3%",
-    difficulty: "Easy",
-    status: false,
-  },
-];
 
 const Problem: React.FC = () => {
+  interface InOutType {
+    input: string;
+    output: string;
+  }
+  interface TemplateType {
+    c: string;
+    cpp: string;
+    java: string;
+    go: string;
+  }
+interface CodingQuestionType {
+  sampleInputOutput : InOutType[];
+  testcases: InOutType[];
+  aboveCodeTemplate: TemplateType;
+  belowCodeTemplate: TemplateType;
+  middleCode: TemplateType;
+  id: string;
+  problemNo: number;
+  problemName: string;
+  description: string;
+  companies: string[];
+  like: number;
+  dislike: number;
+  constraint: string[];
+  topic: string[];
+  accepted: number;
+  submission: number;
+  status: "SOLVED" | "UNSOLVED";
+  category: "AI" | "ALGORITHMS" | "CONCURRENCY";
+}
+
+const CodingQuestion = [
+  {
+      "sampleInputOutput": [
+        {
+          "input": "77 45 7",
+          "output": "11"
+        },
+        {
+          "input": "559 56 9",
+          "output": "2"
+        }
+      ],
+      "testcases": [
+        {
+          "input": "23 54 65",
+          "output": "12"
+        },
+        {
+          "input": "99 66 6",
+          "output": "76"
+        }
+      ],
+      "aboveCodeTemplate": {
+        "c": "#include <stdio.h>\n\n",
+        "cpp": "#include <iostream>\nusing namespace std;\n\n",
+        "java": "import java.util.Scanner;\n\npublic class Main {\n",
+        "go": "package main\n\nimport (\n\t\"fmt\"\n)\n\n"
+      },
+      "belowCodeTemplate": {
+        "c": "\nint main() {\n  int a, b;\n  scanf(\"%d\", &a);\n  scanf(\"%d\", &b);\n  printf(\"%d\", addTwoNumber(a, b));\n  return 0;\n}",
+        "cpp": "\n    int main() {\n   int a,b;\n   cin>>a;\n   cin>>b;\n   cout<<addTwoNumber(a,b);\n   return 0;\n  }",
+        "java": "    \n    public static void main(String[] args) {\n        Scanner scanner = new Scanner(System.in);\n        int a = scanner.nextInt();\n        int b = scanner.nextInt();\n        System.out.println(addTwoNumber(a, b));\n        scanner.close();\n    }\n}\n",
+        "go": "\nfunc main() {\n\tvar a, b int\n\tfmt.Scan(&a)\n\tfmt.Scan(&b)\n\tfmt.Println(addTwoNumber(a, b))\n}\n"
+      },
+      "middleCode": {
+        "c": "int addTwoNumber(int a, int b) {\n    // Logic\n}",
+        "cpp": "int addTwoNumber(int a,int b){\n   // Logic\n}",
+        "java": "public static int addTwoNumber(int a, int b) {\n   // Logic\n}",
+        "go": "func addTwoNumber(a int, b int) int {\n\t// Logic\n}"
+      },
+      "id": "67842034f66d5dec66194c9a",
+      "problemNo": 1,
+      "problemName": "Random 3",
+      "description": "helloWorld",
+      "companies": [
+        "Apple",
+        "Google"
+      ],
+      "like": 12,
+      "dislike": 44,
+      "constraint": [
+        "t1",
+        "t2"
+      ],
+      "topic": [
+        "Array",
+        "String"
+      ],
+      "accepted": 34,
+      "submission": 100,
+      "status": "UNSOLVED",
+      "category": "AI"
+    }
+  
+]
+
+const [Questions, setQuestions] = useState<Question[]>([
+  {
+   
+  
+  }
+]);
+useEffect(() => {
+  console.log(Questions);
+}, [Questions]);
+
   return (
     <div style={styles.container}>
       {/* Filter Section */}
@@ -175,7 +181,7 @@ const Problem: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {questions.map((q, index) => (
+          {Questions.map((q, index) => (
             <tr
               key={q.id}
               style={{
@@ -184,7 +190,7 @@ const Problem: React.FC = () => {
               }}
             >
               <td style={styles.td}>
-                {q.status ? (
+                {q.status ==="SOLVED"? (
                   <span role="img" aria-label="done">
                     ✅
                   </span>
@@ -195,20 +201,20 @@ const Problem: React.FC = () => {
                 )}
               </td>
               <td style={styles.td}>{`${q.id}. ${q.title}`}</td>
-              
+
               <td style={styles.td}>{q.acceptance}</td>
               <td
                 style={{
                   ...styles.td,
                   color:
-                    q.difficulty === "Easy"
+                    (q.submission && q.acceptance && (Number(q.submission/q.acceptance*100))>=75)
                       ? "#90ee90"
-                      : q.difficulty === "Medium"
+                      : (q.submission && q.acceptance && (Number(q.submission/q.acceptance*100))>=50)
                       ? "#ffa500"
                       : "#ff4500",
                 }}
               >
-                {q.difficulty}
+                {q.submission && q.acceptance &&(q.submission/q.acceptance*100)>=75?"EASY":(q.submission && q.acceptance &&(q.submission/q.acceptance*100)>=50)?"MEDIUM":"HARD"}
               </td>
             </tr>
           ))}
@@ -277,6 +283,27 @@ const styles = {
   row: {
     transition: "background-color 0.3s ease",
   },
+};
+
+const styles2 = {
+  filterContainer: {
+    display: "flex",
+    gap: "10px",
+    padding: "10px 0",
+  },
+  filterButton: (isActive: boolean) => ({
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    backgroundColor: isActive ? "#ffffff" : "#1e1e1e",
+    color: isActive ? "#000" : "#ffffff",
+    padding: "8px 16px",
+    borderRadius: "20px",
+    cursor: "pointer",
+    border: "none",
+    fontWeight: "bold",
+    boxShadow: isActive ? "0px 0px 5px rgba(255, 255, 255, 0.8)" : "none",
+  }),
 };
 
 export default Problem;
