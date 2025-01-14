@@ -87,8 +87,8 @@ setTimeout(() => {
   return <>{children}</>;
 };
 function App() {
-  const ServerUrl = "http://localhost:8000"
-  // const ServerUrl = "https://codegalaxy-server.onrender.com"
+  // const ServerUrl = "http://localhost:8000"
+  const ServerUrl = "https://codegalaxy-server.onrender.com"
  const dispatch = useDispatch()
  const userDetail = useSelector((state: RootStateType) =>  state.userDetail);
   const defaultProfilePicture =
