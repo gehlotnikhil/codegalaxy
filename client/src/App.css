@@ -241,3 +241,54 @@ body{
   color: white;
   text-decoration: none;
 }
+
+/* LoadingComponent.css */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #ffffff; /* White background */
+}
+
+.ninja-animation {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.ninja {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: url("./assets/loadingLogo.webp") no-repeat center/contain; /* Replace with actual ninja sprite */
+  animation: run-animation 3s linear infinite;
+}
+
+@keyframes run-animation {
+  0% {
+    transform: translateX(-200px);
+  }
+  100% {
+    transform: translateX(200px); /* Adjust as per design */
+  }
+}
+
+.loading-text {
+  margin-top: 20px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #000000;
+  font-family: "Arial", sans-serif;
+  animation: fadeIn 1.5s infinite ease-in-out;
+}
+
+@keyframes fadeIn {
+  0%, 100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}

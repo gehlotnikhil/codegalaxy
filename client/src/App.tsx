@@ -1,5 +1,5 @@
 import "./App.css";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom"; // Ensure this is `react-router-dom`
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom"; // Ensure this is `react-router-dom`
 import Login from "./Component/Login";
 import AppNavbar from "./Component/Navbar";
 import SignUp from "./Component/SignUp";
@@ -20,34 +20,72 @@ import {setUserDetail} from './store/slice/UserDetailSlice'
 import PlayGround from "./Component/PlayGround";
 import { toast } from "react-toastify";
 import ProblemPage from "./Component/ProblemSetArea";
-const ProtectedRoute: React.FC<{ children: React.ReactNode; }> = ({
-  children
-}) => {
+import LoadingComponent from "./Component/Loading";
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const userDetail = useSelector((state: RootStateType) =>  state.userDetail);
-  const isAuthenticated = userDetail.token !== null;
+  const location = useLocation();
+
+  const userDetail = useSelector((state: RootStateType) => state.userDetail);
+  const [loading, setLoading] = useState(true);
+
+  const loadDataTokenToUserDetail = async (token: string | null): Promise<boolean> => {
+    try {
+      const response = await fetch("http://localhost:8000/api/user/tokentodata", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token }),
+      });
+      const jsonData = await response.json();
+      if (jsonData.success) {
+        dispatch(setUserDetail(jsonData.result));
+        return true;
+      }
+    } catch (error) {
+      console.error("Error verifying token:", error);
+    }
+    return false;
+  };
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/login");
-    }
-    console.log("rock----", userDetail);
-    console.log("aaaa--------------", userDetail.role?.Admin);
-    if(userDetail.role?.Admin===true){
-      navigate("/admin")
-    }
-    if(userDetail.role?.Admin===false && location.pathname === "/admin"){
-      navigate("/")
-    }
-  }, [isAuthenticated, navigate]);
+    const verifyAuthentication = async () => {
+      const token = localStorage.getItem("token");
+      if (!userDetail.token && token) {
+        const success = await loadDataTokenToUserDetail(token);
+        if (!success) {
+          navigate("/login");
+        }
+      } else if (!userDetail.token) {
+        navigate("/login");
+      }
 
-  if (!isAuthenticated) {
-    // Optionally render a loading spinner or null while checking
-    return null;
+      if (userDetail.role?.Admin && location.pathname !== "/admin") {
+        navigate("/admin");
+      } else if (!userDetail.role?.Admin && location.pathname === "/admin") {
+        navigate("/");
+      }
+      setLoading(false);
+    };
+
+    verifyAuthentication();
+  }, [userDetail.token, location.pathname, dispatch, navigate]);
+setTimeout(() => {
+  
+}, 5000);
+
+  if (loading) {
+    // Optionally render a loading spinner
+    return <LoadingComponent/>;
   }
-  return <>{children}</>; // Render children only if condition passes
-};
 
+  return <>{children}</>;
+};
 function App() {
   const ServerUrl = "http://localhost:8000"
   // const ServerUrl = "https://codegalaxy-server.onrender.com"

@@ -14,7 +14,7 @@ function AppNavbar() {
   const { defaultProfilePicture } = context;
   function handleClickSignOut(): void {
     console.log("hi--");
-    localStorage.setItem("User", "null");
+    localStorage.removeItem("token");
   }
   const [NavbarLinkStatus, setNavbarLinkStatus] = useState({
     loginLink: true,

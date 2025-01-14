@@ -58,6 +58,9 @@ function Login() {
     console.log(jsondata);
     if(jsondata.success){
     dispatch(setUserDetail(jsondata.result))
+    localStorage.setItem("token",jsondata.result.token)
+    
+    
     navigate("/");
     toast.success("Hello "+jsondata.result.name)
     }else{

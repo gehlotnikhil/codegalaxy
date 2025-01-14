@@ -314,7 +314,7 @@ router.get(
       if (no) {
         result = await prisma.problemSet.findFirst({ where: { problemNo: Number.parseInt(no as string) } })
       }
-      if (result === null) {
+      if (result === null) { 
         success = false;
       } else {
         success = true;

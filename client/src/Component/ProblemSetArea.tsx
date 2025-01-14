@@ -48,7 +48,7 @@ const ProblemPage: React.FC = () => {
       console.log(jsondata.result);
       setMainQuestion(jsondata.result)
       setCode(jsondata.result.middleCode[SelectedLanguage])
-
+      setQuestionStatus(jsondata.result.status === "SOLVED")
     }else{
       navigate("/error")
     }
@@ -177,9 +177,7 @@ const ProblemPage: React.FC = () => {
     isSuccess?: "pass" | "failed" | "pending";
   }
   const [ResultOfTest, setResultOfTest] = useState<TestResult[]>([]);
-  const [QuestionStatus, setQuestionStatus] = useState(() => {
-    return MainQuestion.status === "SOLVED" ? true : false;
-  });
+  const [QuestionStatus, setQuestionStatus] = useState(false);
   const constraints = MainQuestion.constraint;
   // State to manage visibility
   const [showQuestionInfos, setShowQuestionInfos] = useState({
