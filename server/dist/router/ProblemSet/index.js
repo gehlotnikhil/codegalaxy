@@ -239,8 +239,9 @@ router.get("/getproblemdetails/:pageno?", (req, res) => __awaiter(void 0, void 0
                     topic: true
                 }
             });
+            let count = yield prisma.problemSet.count();
             success = true;
-            return res.send({ success, result });
+            return res.send({ success, result, entireProblemCount: count });
         }
         let result = (yield prisma.problemSet.findMany({
             select: {

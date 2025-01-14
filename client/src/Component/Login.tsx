@@ -2,6 +2,7 @@ import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { Link, useNavigate } from "react-router-dom";
 // import { useNavigate } from 'react-router-dom'
+import logo from '../assets/logo.png';
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -71,7 +72,7 @@ function Login() {
         <div className="login-container">
           <form onSubmit={handleSubmit(onSubmit)} className="login-form">
             <p className="logo">
-              <img src="./logo.png" height={"50px"} width={"50px"} />
+              <img src={logo} height={"50px"} width={"50px"} />
             </p>
             <h1 className="logo">
               <span style={{ color: "rgb(0 109 255)" }}>Code</span>

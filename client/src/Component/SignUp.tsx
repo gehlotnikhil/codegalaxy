@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import logo from '../assets/logo.png';
+
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { useDispatch } from "react-redux";
@@ -81,7 +83,7 @@ const SignUp: React.FC = () => {
     <div className="signup-container ">
       <form onSubmit={handleSubmit(onSubmit)} className="signup-form ">
         <p className="logo">
-        <img  src="./logo.png" height={"50px"} width={"50px"}  />
+        <img  src={logo} height={"50px"} width={"50px"}  />
         </p>
         <h1 className="logo"><span style={{color:"rgb(0 109 255)"}}>Code</span><span style={{color:"#FCB040"}}>Galaxy</span></h1>
         <div className="form-group">

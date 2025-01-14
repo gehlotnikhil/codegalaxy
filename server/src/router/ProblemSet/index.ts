@@ -270,8 +270,9 @@ router.get(
             topic:true
           }
         });
+        let count = await prisma.problemSet.count();
         success = true;
-        return res.send({ success, result });
+        return res.send({ success, result,entireProblemCount:count });
       }
 
       let result = (await prisma.problemSet.findMany({

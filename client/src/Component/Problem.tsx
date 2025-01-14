@@ -4,31 +4,10 @@ import { BsFillGridFill } from "react-icons/bs";
 import { GiConvergenceTarget } from "react-icons/gi";
 import { AiOutlineRobot } from "react-icons/ai";
 import { useLocation, useSearchParams } from "react-router";
+import { Link } from "react-router-dom";
 
 const Problem: React.FC = () => {
   const locationHook = useLocation()
-
-  // interface InOutType {
-  //   input: string;
-  //   output: string;
-  // }
-  // interface TemplateType {
-  //   c: string;
-  //   cpp: string;
-  //   java: string;
-  //   go: string;
-  // }
-
-  const filters = [
-    { label: "All Topics", icon: <BsFillGridFill />, active: true },
-    { label: "Algorithms", icon: <FaCode />, active: false },
-    {
-      label: "Artificial Intelligence",
-      icon: <AiOutlineRobot />,
-      active: false,
-    },
-    { label: "Concurrency", icon: <GiConvergenceTarget />, active: false },
-  ];
 
   type Question = {
     id?: string;
@@ -46,11 +25,37 @@ const Problem: React.FC = () => {
       | "GRAPH"
     )[];
   };
+
+  // interface InOutType {
+  //   input: string;
+  //   output: string;
+  // }
+  // interface TemplateType {
+  //   c: string;
+  //   cpp: string;
+  //   java: string;
+  //   go: string;
+  // }
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [page, setPage] = useState<number>(parseInt(searchParams.get("page") || "1")); // State to track the current page
+
+  const filters = [
+    { label: "All Topics", icon: <BsFillGridFill />, active: true },
+    { label: "Algorithms", icon: <FaCode />, active: false },
+    {
+      label: "Artificial Intelligence",
+      icon: <AiOutlineRobot />,
+      active: false,
+    },
+    { label: "Concurrency", icon: <GiConvergenceTarget />, active: false },
+  ];
   const [Questions, setQuestions] = useState<Question[]>([]);
 
-  const loadQuestionDetails = async () => {
+  const loadQuestionDetails = async (pageno?:number) => {
+    const page = pageno || 1;
+    
     const response = await fetch(
-      `http://localhost:8000/api/problemset/getproblemdetails/`,
+      `http://localhost:8000/api/problemset/getproblemdetails/${page}`,
       {
         method: "GET",
         headers: {
@@ -60,24 +65,22 @@ const Problem: React.FC = () => {
     );
     const data = await response.json();
     console.log("------", data.result);
+    if(data.success && Object.keys(data.result).length === 0){
+      console.log("No data found");
+      if(data.entireProblemCount !== 0){
+      let p = Math.ceil(data.entireProblemCount/10)
+      setPage(p);
+      setSearchParams({ page: p.toString() });
+      }
+      
+      return;
+
+    }
     if (data.success) {
      setQuestions(data.result);
     }
   };
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [page, setPage] = useState<number>(parseInt(searchParams.get("page") || "1")); // State to track the current page
-useEffect(() => {
-  console.log("page- ",page,"----","searchParams-",searchParams.get("page"));
-  
-}, [page])
-useEffect(() => {
-  
-
-  
-}, [searchParams.get("page")])
-
-
-  // Handle the "Previous" button click
+ 
   const handlePrevious = () => {
     if (page > 1) {
       setPage(page - 1);   
@@ -91,13 +94,14 @@ useEffect(() => {
     const pageParam = String(Number(searchParams.get("page")) + 1);
     setSearchParams({ page: pageParam ? pageParam : "1" });
   };
+
 useEffect(() => {
   setSearchParams({ page: page.toString() });
   
 }, [])
 
   useEffect(() => {
-    loadQuestionDetails();
+    loadQuestionDetails(searchParams.get("page") ? Number(searchParams.get("page")) : 1);
     
   }, [locationHook]);
 
@@ -105,7 +109,13 @@ useEffect(() => {
     console.log(Questions);
   }, [Questions]);
 
-
+  useEffect(() => {
+    console.log("page- ",page,"----","searchParams-",searchParams.get("page"));
+    
+  }, [page])
+  useEffect(() => {
+  }, [searchParams.get("page")])
+  
   
 
   return (
@@ -180,9 +190,9 @@ useEffect(() => {
                   </span>
                 )}
               </td>
-              <td style={styles.td}>{`${q.problemNo}. ${q.problemName}`}</td>
+              <td className="" style={styles.td}><Link className="problem-highlight" to={`/problem/${q.id}`}>{`${q.problemNo}. ${q.problemName}`}</Link></td>
 
-              <td style={styles.td}>{q.accepted}</td>
+              <td style={styles.td}>{q.submission && q.accepted?((q.accepted/q.submission)*100).toFixed(2):0}%</td>
               <td
                 style={{
                   ...styles.td,
@@ -213,7 +223,6 @@ useEffect(() => {
         </tbody>
       </table>
       <div style={{ textAlign: "center", margin: "20px" }}>
-      <h1>Current Page: {page}</h1>
       <div>
         <button 
           onClick={() => handlePrevious()} 

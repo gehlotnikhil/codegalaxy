@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import MainContext from "../context/main";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../store";
+import logo from '../assets/logo.png';
 
 function AppNavbar() {
   const locationHook = useLocation()
@@ -62,7 +63,8 @@ function AppNavbar() {
       updatedStatus.prfileLink = false
       updatedStatus.playgroundLink = false
 
-    } else {
+    }
+    else {
       updatedStatus.loginLink = false;
       updatedStatus.playgroundLink = true
       updatedStatus.signupLink = false;
@@ -84,7 +86,7 @@ console.log("i an in",updatedStatus);
         <div className="container-fluid">
           <img
             className="nav-item me-3"
-            src="./logo.png"
+            src={logo}
             height={"40px"}
             width={"40px"}
             alt=""

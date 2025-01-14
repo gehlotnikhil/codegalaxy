@@ -230,3 +230,14 @@ body{
   flex-grow: 1;
   overflow: hidden;
 }
+
+
+
+/*  */
+.problem-highlight:hover{
+  color:rgb(0 122 255)
+}
+.problem-highlight{
+  color: white;
+  text-decoration: none;
+}

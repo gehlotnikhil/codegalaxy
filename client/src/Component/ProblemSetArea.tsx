@@ -7,138 +7,186 @@ import { faTag, faBuilding } from "@fortawesome/free-solid-svg-icons";
 import TopicTag from "./TopicTag";
 import MainContext from "../context/main";
 import { toast } from "react-toastify";
+import { useNavigate, useParams } from "react-router";
 
 const ProblemPage: React.FC = () => {
+  interface MainQuestionType {
+    id?: string;
+    problemNo?: number;
+    problemName?: string;
+    description?: string;
+    companies?: string[];
+    like?: number;
+    dislike?: number;
+    constraint?: string[];
+    topic?:  ("ARRAY" | "STRING" | "BINARYSEARCH" | "DYNAMICPROGRAMMING" | "GRAPH")[];
+    accepted?: number;
+    submission?: number;
+    status?: "SOLVED" | "UNSOLVED";
+    category?: "AI" | "ALGORITHMS" | "CONCURRENCY";
+    sampleInputOutput?: { input: string; output: string }[];
+    testcases?: { input: string; output: string }[];
+    aboveCodeTemplate?: { go: string; java: string; cpp: string; c: string };
+    middleCode?: { go: string; java: string; cpp: string; c: string };
+    belowCodeTemplate?: { go: string; java: string; cpp: string; c: string };
+  }
+  const [MainQuestion, setMainQuestion] = useState<MainQuestionType>({});
   const context = useContext(MainContext);
-  const { handleCodeExecution } = context;
-  const Question = {
-    id: "6783b0d81ffece704ef085b3",
-    problemNo: 1,
-    problemName: "Add Two Numbers",
-    description: "This is a simple problem to add two numbers.",
-    companies: ["Apple", "Google"],
-    like: 121,
-    dislike: 44,
-    constraint: ["return only integer"],
-    topic: ["Array", "String"],
-    accepted: 324,
-    submission: 551,
-    status: "UNSOLVED",
-    category: "ALGORITHMS",
-    sampleInputOutput: [
-      {
-        input: "45 7",
-        output: "54",
-      },
-      {
-        input: "559 100",
-        output: "659",
-      },
-    ],
-    testcases: [
-      {
-        input: "23 54",
-        output: "77",
-      },
-      // {
-      //   input: "99 66 ",
-      //   output: "165",
-      // },
-      // {
-      //   input: "100 200 ",
-      //   output: "300",
-      // },
-    ],
-    aboveCodeTemplate: {
-      go: `package main
+  const param = useParams<{ problemid: string }>();
+  const navigate = useNavigate()
 
-import (
-	"fmt"
-)
+  const loadMainQuestion = async (id: string) => {
+    const response = await fetch(`http://localhost:8000/api/problemset/getspecificproblem?id=${id}`,{
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    })
+    const jsondata = await response.json();
+    console.log("jsondata--------------------",jsondata);
+    if(jsondata.success){
+      console.log(jsondata.result);
+      setMainQuestion(jsondata.result)
+      setCode(jsondata.result.middleCode[SelectedLanguage])
 
-`,
-      java: `import java.util.Scanner;
-
-public class Main {
-`,
-      cpp: `#include <iostream>
-using namespace std;
-
-`,
-      c: `#include <stdio.h>
-
-`,
-    },
-    middleCode: {
-      go: `func addTwoNumber(a int, b int) int {
-	// Logic
-}`,
-      java: `public static int addTwoNumber(int a, int b) {
-   // Logic
-}`,
-      cpp: `int addTwoNumber(int a,int b){
-   //Logic
-}`,
-      c: `int addTwoNumber(int a, int b) {
-    //Logic
-}`,
-    },
-    belowCodeTemplate: {
-      go: `
-func main() {
-	var a, b int
-	fmt.Scan(&a)
-	fmt.Scan(&b)
-	fmt.Println(addTwoNumber(a, b))
-}
-`,
-      java: `    
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        int a = scanner.nextInt();
-        int b = scanner.nextInt();
-        System.out.println(addTwoNumber(a, b));
-        scanner.close();
+    }else{
+      navigate("/error")
     }
-}
-`,
-      cpp: `
-    int main() {
-   int a,b;
-   cin>>a;
-   cin>>b;
-   cout<<addTwoNumber(a,b);
-   return 0;
-  }`,
-      c: `
-  int main() {
-    int a, b;
-    scanf("%d", &a);
-    scanf("%d", &b);
-    printf("%d", addTwoNumber(a, b));
-    return 0;
-}`,
-    },
-  };
+  }
+  useEffect(() => {
+    console.log(typeof param.problemid,"param", param.problemid);
+    loadMainQuestion(param.problemid as string)
+  }, [])
+  
+  const { handleCodeExecution } = context;
+//   const Question = {
+//     id: "6783b0d81ffece704ef085b3",
+//     problemNo: 1,
+//     problemName: "Add Two Numbers",
+//     description: "This is a simple problem to add two numbers.",
+//     companies: ["Apple", "Google"],
+//     like: 121,
+//     dislike: 44,
+//     constraint: ["return only integer"],
+//     topic: ["ARRAY", "STRING"],
+//     accepted: 324,
+//     submission: 551,
+//     status: "UNSOLVED",
+//     category: "ALGORITHMS",
+//     sampleInputOutput: [
+//       {
+//         input: "45 7",
+//         output: "54",
+//       },
+//       {
+//         input: "559 100",
+//         output: "659",
+//       },
+//     ],
+//     testcases: [
+//       {
+//         input: "23 54",
+//         output: "77",
+//       },
+//       // {
+//       //   input: "99 66 ",
+//       //   output: "165",
+//       // },
+//       // {
+//       //   input: "100 200 ",
+//       //   output: "300",
+//       // },
+//     ],
+//     aboveCodeTemplate: {
+//       go: `package main
+
+// import (
+// 	"fmt"
+// )
+
+// `,
+//       java: `import java.util.Scanner;
+
+// public class Main {
+// `,
+//       cpp: `#include <iostream>
+// using namespace std;
+
+// `,
+//       c: `#include <stdio.h>
+
+// `,
+//     },
+//     middleCode: {
+//       go: `func addTwoNumber(a int, b int) int {
+// 	// Logic
+// }`,
+//       java: `public static int addTwoNumber(int a, int b) {
+//    // Logic
+// }`,
+//       cpp: `int addTwoNumber(int a,int b){
+//    //Logic
+// }`,
+//       c: `int addTwoNumber(int a, int b) {
+//     //Logic
+// }`,
+//     },
+//     belowCodeTemplate: {
+//       go: `
+// func main() {
+// 	var a, b int
+// 	fmt.Scan(&a)
+// 	fmt.Scan(&b)
+// 	fmt.Println(addTwoNumber(a, b))
+// }
+// `,
+//       java: `    
+//     public static void main(String[] args) {
+//         Scanner scanner = new Scanner(System.in);
+//         int a = scanner.nextInt();
+//         int b = scanner.nextInt();
+//         System.out.println(addTwoNumber(a, b));
+//         scanner.close();
+//     }
+// }
+// `,
+//       cpp: `
+//     int main() {
+//    int a,b;
+//    cin>>a;
+//    cin>>b;
+//    cout<<addTwoNumber(a,b);
+//    return 0;
+//   }`,
+//       c: `
+//   int main() {
+//     int a, b;
+//     scanf("%d", &a);
+//     scanf("%d", &b);
+//     printf("%d", addTwoNumber(a, b));
+//     return 0;
+// }`,
+//     },
+//   };
   type Language = "go" | "java" | "cpp" | "c";
   const [SelectedLanguage, setSelectedLanguage] = useState<Language>("c");
-  const topics = Question.topic;
-  const companies = Question.companies;
-  const [code, setCode] = useState(Question.middleCode.c);
+  const topics = MainQuestion.topic;
+  const companies = MainQuestion.companies;
+  const [code, setCode] = useState((MainQuestion.middleCode? MainQuestion.middleCode.c:""));
   interface TestResult {
     isSuccess?: "pass" | "failed" | "pending";
   }
   const [ResultOfTest, setResultOfTest] = useState<TestResult[]>([]);
   const [QuestionStatus, setQuestionStatus] = useState(() => {
-    return Question.status === "SOLVED" ? true : false;
+    return MainQuestion.status === "SOLVED" ? true : false;
   });
-  const constraints = Question.constraint;
+  const constraints = MainQuestion.constraint;
   // State to manage visibility
   const [showQuestionInfos, setShowQuestionInfos] = useState({
     QuestionInfo1: false,
     QuestionInfo2: false,
   });
-  const sampleTestCases = Question.sampleInputOutput;
+  const sampleTestCases = MainQuestion.sampleInputOutput;
   const QuestionInfos = [
     {
       key: "QuestionInfo1" as "QuestionInfo1",
@@ -152,7 +200,7 @@ func main() {
       ),
       content: (
         <>
-          {topics.map((topic) => (
+          { topics && topics.map((topic) => (
             <TopicTag key={topic} label={topic} />
           ))}
         </>
@@ -171,7 +219,7 @@ func main() {
       ),
       content: (
         <>
-          {companies.map((topic) => (
+          {companies && companies.map((topic) => (
             <TopicTag key={topic} label={topic} />
           ))}
         </>
@@ -185,7 +233,7 @@ func main() {
   useEffect(() => {
     console.log(SelectedLanguage);
     setResultOfTest([]);
-    setCode(Question.middleCode[SelectedLanguage]);
+    setCode((MainQuestion.middleCode?MainQuestion.middleCode[SelectedLanguage]:""));
   }, [SelectedLanguage]);
   useEffect(() => {
     console.log(code);
@@ -201,19 +249,22 @@ func main() {
     setSelectedLanguage(e.target.value as Language);
   };
   const handleRunCode = async () => {
+    const testcases = MainQuestion.testcases?MainQuestion.testcases:[];
+    const aboveCodeTemplate = MainQuestion.aboveCodeTemplate?MainQuestion.aboveCodeTemplate[SelectedLanguage]:"";
+    const belowCodeTemplate = MainQuestion.belowCodeTemplate?MainQuestion.belowCodeTemplate[SelectedLanguage]:"";
     setResultOfTest(
-      Question.testcases.map(() => {
+       testcases.map(() => {
         return { isSuccess: "pending" };
       })
     );
 
     const data = {
       code:
-        Question.aboveCodeTemplate[SelectedLanguage] +
+        aboveCodeTemplate +
         code +
-        Question.belowCodeTemplate[SelectedLanguage],
+        belowCodeTemplate,
       language: SelectedLanguage,
-      testcases: Question.testcases,
+      testcases: MainQuestion.testcases,
     };
     try {
     console.log("data send--", data);
@@ -238,7 +289,7 @@ func main() {
     } else {
       toast.error("Failed");
       setResultOfTest(
-        Question.testcases.map(() => {
+        testcases.map(() => {
           return { isSuccess: "failed" };
         })
       );
@@ -246,7 +297,7 @@ func main() {
   } catch (error) {
     console.log(error);
     setResultOfTest(
-      Question.testcases.map(() => {
+      testcases.map(() => {
         return { isSuccess: "failed" };
       })
     );
@@ -268,7 +319,7 @@ func main() {
         <div style={{ ...styles.leftSection, minWidth: "45%" }}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <h1 style={styles.title}>
-              {Question.problemNo}. {Question.problemName}
+              {MainQuestion.problemNo}. {MainQuestion.problemName}
             </h1>
             <div
               style={styles.status}
@@ -278,10 +329,10 @@ func main() {
               <span style={styles.checkmark}>✅</span>
             </div>
           </div>
-          <p style={styles.description}>{Question.description}</p>
+          <p style={styles.description}>{MainQuestion.description}</p>
           <div>
             {/* Test Cases */}
-            {sampleTestCases.map((testCase, index) => (
+            {sampleTestCases && sampleTestCases.map((testCase, index) => (
               <div key={index} style={styles.testCase}>
                 <p>
                   <strong>Test case {index + 1}</strong>
@@ -300,16 +351,16 @@ func main() {
           <div className="d-flex justify-content-between align-items-center ">
             <div>
               <span>Accepted</span>
-              <span className="ms-2 fw-bold">{Question.accepted}</span>
+              <span className="ms-2 fw-bold">{MainQuestion.accepted}</span>
             </div>
             <div>
               <span>Submissions</span>
-              <span className="ms-2 fw-bold">{Question.submission}</span>
+              <span className="ms-2 fw-bold">{MainQuestion.submission}</span>
             </div>
             <div>
               <span>Acceptance Rate</span>
               <span className="ms-2 fw-bold">
-                {((Question.accepted / Question.submission) * 100).toFixed(2)}%
+                {MainQuestion.accepted && MainQuestion.submission?(((MainQuestion.accepted / MainQuestion.submission) * 100).toFixed(2)):0}%
               </span>
             </div>
           </div>
@@ -318,7 +369,7 @@ func main() {
           <div style={{}}>
             <h5 style={{}}>Constraints:</h5>
             <ul style={styles2.list}>
-              {constraints.map((constraint, index) => (
+              {constraints && constraints.map((constraint, index) => (
                 <li key={index} style={styles2.item}>
                   <span style={styles2.box}>{constraint}</span>
                 </li>
