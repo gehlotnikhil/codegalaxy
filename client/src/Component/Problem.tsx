@@ -54,8 +54,7 @@ const Problem: React.FC = () => {
     parseInt(searchParams.get("page") || "1")
   ); // State to track the current page
   const [Questions, setQuestions] = useState<Question[]>([]);
-  const [FilteredQuestion, setFilteredQuestion] =
-    useState<Question[]>(Questions);
+
   const [Filter, setFilter] = useState<FilterType>({
     tags: "Tags",
     status: "Status",

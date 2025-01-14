@@ -8,25 +8,8 @@ import { useSelector } from "react-redux";
 import { RootStateType } from "../store";
 import { EntireUserDetailType } from "../store/slice/UserDetailSlice";
 import axios from "axios";
-interface EditProfileProps {
-  display?: string;
-}
+import {  useNavigate } from "react-router";
 
-// Define the form schema using Yup
-// const schema = yup.object({
-//   name: yup.string().required("Name is required"),
-//   age: yup
-//     .number()
-//     .min(0, "Age must be greater than or equal to 0")
-//     .max(100, "Age must be less than or equal to 100"),
-//   email: yup.string().email("Invalid email address").required("Email is required"),
-//   userName: yup.string().required("Username is required"),
-//   // gender: yup.string(),
-//   // collegeName: yup.string(),
-//   // state: yup.string(),
-//   // country: yup.string(),
-//   // deleteProfileChecked: yup.boolean(),
-// });
 
 interface ProfileFieldValueType {
   name: string;
@@ -41,7 +24,9 @@ interface ProfileFieldValueType {
   profilePictureUrl?: string;
 }
 
-const EditProfile: React.FC<EditProfileProps> = (prop) => {
+const EditProfile: React.FC = () => {
+  const navigate= useNavigate()
+  
   // const dispatch = useDispatch()
   const userDetail: EntireUserDetailType = useSelector(
     (state: RootStateType): EntireUserDetailType => {
@@ -49,7 +34,10 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
     }
   );
 
-  const {
+  useEffect(() => {
+    console.log("loading token-",userDetail);
+      }, [])
+  const { 
     register,
     handleSubmit,
     formState: { errors },
@@ -70,7 +58,7 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
     return url;
   }
   const context = useContext(MainContext);
-  const { handleShowProfileToggle, updateProfileInformation } = context;
+  const {  updateProfileInformation } = context;
 
   const onSubmit: SubmitHandler<ProfileFieldValueType> = async (data) => {
     console.log("Form data:", data);
@@ -136,7 +124,7 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
   return (
     <div
       style={{
-        display: `${prop?.display === "none" ? "none" : "flex"}`,
+        display:"flex",
         justifyContent: "center",
         alignItems: "center",
         color: "black",
@@ -157,7 +145,7 @@ const EditProfile: React.FC<EditProfileProps> = (prop) => {
         <button
           className="profile-close-btn"
           onClick={() => {
-            handleShowProfileToggle();
+            navigate(`/u/${userDetail.userName}`);
           }}
           style={{
             position: "absolute",

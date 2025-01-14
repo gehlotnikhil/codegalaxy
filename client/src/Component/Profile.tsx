@@ -1,9 +1,8 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 // import Button from "react-bootstrap/Button";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import MainContext from "../context/main";
-import EditProfile from "./EditProfile";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../store";
 // import ProgressCircle from "./ProgressData";
@@ -11,15 +10,21 @@ import { RootStateType } from "../store";
 import ProgressCircle2 from "./ProgressCircle2";
 import RatingDisplay from "./RatingDisplay";
 import SubmissionGraph from "./SubmissionGraph";
+import { useNavigate, useParams } from "react-router";
 
 function Profile() {
-
+const paramUsername = useParams()
   const context = useContext(MainContext);
+  const navigate = useNavigate();
   const userDetail = useSelector((state: RootStateType) => {
     return state.userDetail;
   });
-  const { handleShowProfileToggle, ShowEditProfile, ShowProfile,defaultProfilePicture } = context;
+  const {defaultProfilePicture } = context;
 
+useEffect(() => {
+  console.log("profile--",paramUsername.username);
+  
+}, [])
 
 
 
@@ -27,9 +32,9 @@ function Profile() {
 
   return (
     <>
-      <EditProfile display={`${ShowEditProfile === true ? "flex" : "none"}`} />
+      {/* <EditProfile display={`${ShowEditProfile === true ? "flex" : "none"}`} /> */}
       <section
-        className={`color-1 d-${ShowProfile === true ? "block" : "none"}`}
+        className={`color-1`}
       >
         <div className="container py-2">
           <div className="row">
@@ -46,7 +51,7 @@ function Profile() {
                     fontSize: "20px",
                   }}
                   onClick={() => {
-                    handleShowProfileToggle();
+                    navigate("/edit")
                   }} // Optional: Trigger edit functionality
                 />
                 <div className="card-body">

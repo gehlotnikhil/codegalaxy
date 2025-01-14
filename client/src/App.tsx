@@ -31,7 +31,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const location = useLocation();
 
   const userDetail = useSelector((state: RootStateType) => state.userDetail);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); 
 
   const loadDataTokenToUserDetail = async (token: string | null): Promise<boolean> => {
     try {
@@ -44,7 +44,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
       });
       const jsonData = await response.json();
       if (jsonData.success) {
-        dispatch(setUserDetail(jsonData.result));
+        dispatch(setUserDetail({...jsonData.result,token}));
         return true;
       }
     } catch (error) {
@@ -129,6 +129,9 @@ function App() {
     }
   }
   const updateProfileInformation = async (data: any) => {
+    console.log("updateProfileInformation-",data);
+    console.log("token -",userDetail.token);
+    
     const result = await fetch(`${ServerUrl}/api/user/update/`, {
       method: "PUT",
       headers: {
@@ -146,6 +149,9 @@ function App() {
       
     dispatch(setUserDetail(jsondata.result))
     toast("Updated")
+    
+    }else{
+      toast("Not Updated")
     }
   };
   const handleCodeExecution = async(data:any)=>{
@@ -226,7 +232,7 @@ function App() {
               }
             />
             <Route
-              path="/profile"
+              path="/u/:username"
               element={
                 <ProtectedRoute>
                   <Profile />
@@ -262,6 +268,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <DisplayPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/edit"
+              element={
+                <ProtectedRoute>
+                  <EditProfile />
                 </ProtectedRoute>
               }
             />

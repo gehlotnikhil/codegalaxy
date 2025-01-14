@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express";
 
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-
+ 
 const router = Router();
 const { body, validationResult } = require("express-validator");
 router.get("/", (req: Request, res: Response) => {

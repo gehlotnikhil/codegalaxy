@@ -170,7 +170,7 @@ console.log("i an in",updatedStatus);
               </li>
               <hr style={{ margin: "0" }} className="my-2" />
               <li style={{ display: "flex", alignItems: "center" }} className={`d-${NavbarLinkStatus.prfileLink===true?"inline":"none"}`}>
-                <Link className="dropdown-item" to="/profile">
+                <Link className="dropdown-item" to={`/u/${userDetails.userName}`}>
                   Profile
                 </Link>
               </li>
