@@ -97,9 +97,9 @@ const Problem: React.FC = () => {
       filtered = filtered.filter((q)=>{
         let per = q.accepted && q.submission && (q.accepted/q.submission*100) || 0
         if(Filter.difficulty === "Easy"){
-          return per>=75
+          return per<=100 && per>=75
         }else if(Filter.difficulty === "Medium"){
-          return per>=50
+          return per>=50 && per<75
         }else if(Filter.difficulty === "Hard"){
           return per<50 && per>=0
         }
