@@ -239,14 +239,24 @@ router.post(
       }
       let { email, password } = req.body;
       console.log("2");
+      console.log(email,"---",password);
+      
       let check1 = await UserFunctions.isUserExist(email);
+      console.log("check1-",check1);
+      
       if (!check1) {
         return res.send({ success, msg: "User Not Exist" });
       }
+      console.log("c1");
+      
       let u1 = await prisma.user.findFirst({ where: { email } });
+      console.log("c2-",u1);
       console.log("u1-",password,"---",u1?.password);
+      console.log("c3");
       let result = await bcrypt.compare(password, u1?.password);
+      console.log("c4");
       console.log("final-",result);
+      console.log("c5");
       
       if (!result) {
         return res.status(404).send({ success, msg: "Password is Incorrect" });
@@ -254,6 +264,7 @@ router.post(
       let data = {
         id: u1?.id,
       };
+      console.log("c6");
       let token = await jwt.sign(data, JWT_Secret);
       success = true;
    return   res.send({ success, result:{...u1,token:token} }); // Sending the user object as response

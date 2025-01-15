@@ -1,5 +1,5 @@
 import "./App.css";
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom"; // Ensure this is `react-router-dom`
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"; // Ensure this is `react-router-dom`
 import Login from "./Component/Login";
 import AppNavbar from "./Component/Navbar";
 import SignUp from "./Component/SignUp";
@@ -24,71 +24,83 @@ import LoadingComponent from "./Component/Loading";
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
-
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const userDetail = useSelector((state: RootStateType) => state.userDetail);
-  const [loading, setLoading] = useState(true); 
-
-  const loadDataTokenToUserDetail = async (token: string | null): Promise<boolean> => {
-    try {
-      const response = await fetch("http://localhost:8000/api/user/tokentodata", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ token }),
-      });
-      const jsonData = await response.json();
-      if (jsonData.success) {
-        dispatch(setUserDetail({...jsonData.result,token}));
-        return true;
+// const ServerUrl = "http://localhost:8000"
+  const ServerUrl = "https://codegalaxy-server.onrender.com"
+  const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+    const dispatch = useDispatch();
+    const location = useLocation();
+    const userDetail = useSelector((state: RootStateType) => state.userDetail);
+  
+    const [loading, setLoading] = useState(true);
+    const [redirectComponent, setRedirectComponent] = useState<React.ReactNode>(null);
+  
+    const loadDataTokenToUserDetail = async (token: string | null): Promise<boolean> => {
+      try {
+        const response = await fetch(`${ServerUrl}/api/user/tokentodata`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token }),
+        });
+  
+        const jsonData = await response.json();
+        console.log("Token validation response:", jsonData);
+  
+        if (jsonData.success) {
+          dispatch(setUserDetail({ ...jsonData.result, token }));
+          return true;
+        }
+      } catch (error) {
+        console.error("Error verifying token:", error);
       }
-    } catch (error) {
-      console.error("Error verifying token:", error);
-    }
-    return false;
-  };
-
-  useEffect(() => {
-    const verifyAuthentication = async () => {
+      return false;
+    };
+  
+    const verifyAuthentication = async (): Promise<React.ReactNode> => {
       const token = localStorage.getItem("token");
+  
       if (!userDetail.token && token) {
         const success = await loadDataTokenToUserDetail(token);
+        console.log("Token loaded successfully:", success);
+  
         if (!success) {
-          navigate("/login");
+          console.log("Navigating to Login due to unsuccessful token loading");
+          return <Login />;
         }
       } else if (!userDetail.token) {
-        navigate("/login");
+        console.log("No token found, redirecting to Login");
+        return <Login />;
       }
-
-      if (userDetail.role?.Admin && location.pathname !== "/admin") {
-        navigate("/admin");
-      } else if (!userDetail.role?.Admin && location.pathname === "/admin") {
-        navigate("/");
-      }
-      setLoading(false);
-    };
-
-    verifyAuthentication();
-  }, [userDetail.token, location.pathname, dispatch, navigate]);
-setTimeout(() => {
   
-}, 5000);
-
-  if (loading) {
-    // Optionally render a loading spinner
-    return <LoadingComponent/>;
-  }
-
-  return <>{children}</>;
-};
+      if (userDetail.role?.Admin && location.pathname !== "/admin") {
+        return <Admin />;
+      } else if (!userDetail.role?.Admin && location.pathname === "/admin") {
+        return <Home />;
+      }
+  
+      return children; // Render the protected content
+    };
+  
+    useEffect(() => {
+      const authenticate = async () => {
+        const componentToRender = await verifyAuthentication();
+        setRedirectComponent(componentToRender);
+        setLoading(false);
+      };
+  
+      authenticate();
+    }, [userDetail.token, location.pathname, dispatch]);
+  
+    if (loading) {
+      return <LoadingComponent />; // Optionally show a loading spinner
+    }
+  
+    return <>{redirectComponent}</>;
+  };
+  
 function App() {
-  // const ServerUrl = "http://localhost:8000"
-  const ServerUrl = "https://codegalaxy-server.onrender.com"
+
  const dispatch = useDispatch()
  const userDetail = useSelector((state: RootStateType) =>  state.userDetail);
   const defaultProfilePicture =
@@ -167,6 +179,7 @@ function App() {
     const jsondata  = await result.json();
     return jsondata
   }
+  
 
   return (
     <>

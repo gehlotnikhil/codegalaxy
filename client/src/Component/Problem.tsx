@@ -1,12 +1,15 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { FaCode } from "react-icons/fa";
 import { BsFillGridFill } from "react-icons/bs";
 import { GiConvergenceTarget } from "react-icons/gi";
 import { AiOutlineRobot } from "react-icons/ai";
 import { useLocation, useSearchParams } from "react-router";
 import { Link } from "react-router-dom";
+import MainContext from "../context/main";
 
 const Problem: React.FC = () => {
+  const context = useContext(MainContext);
+  const {ServerUrl} = context;
   type Question = {
     id?: string;
     problemNo?: number;
@@ -150,7 +153,7 @@ const Problem: React.FC = () => {
     const page = pageno || 1;
 
     const response = await fetch(
-      `http://localhost:8000/api/problemset/getproblemdetails/${page}`,
+      `${ServerUrl}/api/problemset/getproblemdetails/${page || 1}`,
       {
         method: "GET",
         headers: {

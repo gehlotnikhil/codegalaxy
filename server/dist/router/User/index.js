@@ -215,20 +215,28 @@ router.post("/login", [
         }
         let { email, password } = req.body;
         console.log("2");
+        console.log(email, "---", password);
         let check1 = yield UserFunctions_1.default.isUserExist(email);
+        console.log("check1-", check1);
         if (!check1) {
             return res.send({ success, msg: "User Not Exist" });
         }
+        console.log("c1");
         let u1 = yield prisma.user.findFirst({ where: { email } });
+        console.log("c2-", u1);
         console.log("u1-", password, "---", u1 === null || u1 === void 0 ? void 0 : u1.password);
+        console.log("c3");
         let result = yield bcrypt.compare(password, u1 === null || u1 === void 0 ? void 0 : u1.password);
+        console.log("c4");
         console.log("final-", result);
+        console.log("c5");
         if (!result) {
             return res.status(404).send({ success, msg: "Password is Incorrect" });
         }
         let data = {
             id: u1 === null || u1 === void 0 ? void 0 : u1.id,
         };
+        console.log("c6");
         let token = yield jwt.sign(data, JWT_Secret);
         success = true;
         return res.send({ success, result: Object.assign(Object.assign({}, u1), { token: token }) }); // Sending the user object as response
