@@ -1,11 +1,11 @@
 const dotenv = require("dotenv");
 dotenv.config();  
 const express = require("express");
-const cors = require("cors");
-const { prismaMain } = require("./test");
+import cors, { CorsOptions } from 'cors';
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient(); 
- 
+import helmet from 'helmet';
+
 const app = express();
 const PORT = (process.env.PORT as number | undefined) || 8000;
 
@@ -14,7 +14,24 @@ const PORT = (process.env.PORT as number | undefined) || 8000;
 app.use(express.json());
 
 // Add CORS Middleware
-app.use(cors());
+const allowedOrigins = [
+  'http://localhost:5173', // Frontend for local development
+  'https://codegalaxy1.vercel.app/'  // Deployed production frontend
+ 
+];
+
+// Custom CORS configuration
+const corsOptions: CorsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true); // Allow the request
+    } else {
+      callback(new Error('Not allowed by CORS')); // Reject the request
+    }
+  },
+};
+
+app.use(cors(corsOptions));
 
 
 
@@ -37,12 +54,21 @@ app.get("/test", async (req: any, res: any) => {
   res.send({ success: true });
 });
 
+
+// Add Helmet Middleware
+app.use(
+  helmet({
+    crossOriginOpenerPolicy: { policy: 'unsafe-none' }, // Set COOP to "unsafe-none"
+  })
+);
+
+
 // Route definitions
 app.use("/api/user", require("./router/User/index"));
 app.use("/api/problemset", require("./router/ProblemSet/index"));
 app.use("/api/contest", require("./router/Contest/index"));
 
 // Start server
-app.listen(8000, () => {
+app.listen(PORT, () => {
   console.log(`--> Server running at port 8000`);
 });
