@@ -20,6 +20,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const router = (0, express_1.Router)();
 const axios = require("axios");
+// const ServerUrl = "http://localhost:8000"
+const ServerUrl = "https://codegalaxy-server.onrender.com";
 const GoogleLogin_1 = __importDefault(require("./GoogleLogin"));
 const prisma = new client_1.PrismaClient();
 const faker_1 = require("@faker-js/faker");
@@ -111,7 +113,7 @@ router.put("/update/", [
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
-        const response = yield axios.post(`http://localhost:8000/api/user/tokentodata`, { token: req.body.token }, {
+        const response = yield axios.post(`${ServerUrl}/api/user/tokentodata`, { token: req.body.token }, {
             headers: {
                 "Content-Type": "application/json",
             },

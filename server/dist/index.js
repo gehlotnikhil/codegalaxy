@@ -8,16 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const express = require("express");
 const dotenv = require("dotenv");
+dotenv.config();
+const express = require("express");
 const cors = require("cors");
 const { prismaMain } = require("./test");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8000;
-console.log(PORT);
 // Middleware to parse JSON
 app.use(express.json());
 // Add CORS Middleware

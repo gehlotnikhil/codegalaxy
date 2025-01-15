@@ -6,7 +6,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const router = Router();
 const axios = require("axios");
-
+  // const ServerUrl = "http://localhost:8000"
+const ServerUrl = "https://codegalaxy-server.onrender.com"
 import GoogleLogin from "./GoogleLogin";
 const prisma = new PrismaClient();
 import { faker } from "@faker-js/faker";
@@ -121,7 +122,7 @@ router.put(
     let success = false;
     try {
       const response = await axios.post(
-        `http://localhost:8000/api/user/tokentodata`,
+        `${ServerUrl}/api/user/tokentodata`,
         { token: req.body.token },
         {
           headers: {

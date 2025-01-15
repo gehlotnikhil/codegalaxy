@@ -1,16 +1,14 @@
-const express = require("express");
 const dotenv = require("dotenv");
+dotenv.config();  
+const express = require("express");
 const cors = require("cors");
 const { prismaMain } = require("./test");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient(); 
-
-dotenv.config();  
-
+ 
 const app = express();
 const PORT = (process.env.PORT as number | undefined) || 8000;
 
-console.log(PORT);
 
 // Middleware to parse JSON
 app.use(express.json());
