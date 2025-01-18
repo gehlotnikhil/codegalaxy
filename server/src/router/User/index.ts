@@ -1,13 +1,13 @@
 import { Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
-import { body, Result, validationResult } from "express-validator";
+import { body, validationResult } from "express-validator";
 import UserFunctions from "../lib/UserFunctions";
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const router = Router();
 const axios = require("axios");
-  // const ServerUrl = "http://localhost:8000"
-const ServerUrl = "https://codegalaxy-server.onrender.com"
+  const ServerUrl = "http://localhost:8000"
+// const ServerUrl = "https://codegalaxy-server.onrender.com"
 import GoogleLogin from "./GoogleLogin";
 const prisma = new PrismaClient();
 import { faker } from "@faker-js/faker";
@@ -61,13 +61,9 @@ router.post(
           email: email,
           password: hashPassword,
           userName: userName,
-          totalRank: 1000,
-          noOfProblemSolved: 0,
           solvedProblemDetails: [],
-          noOfContestParticipated: 0,
-          contestDetails: [],
           googleLoginAccess: false,
-          role: { User: true, Admin: false },
+          isAdmin: false,
           profilePictureUrl:
             "https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk",
         },
@@ -99,17 +95,10 @@ router.put(
     body("email", "Please fill email field").exists(),
     body("password", "Please fill password field").exists(),
     body("userName", "Please fill userName field").exists(),
-    body("totalRank", "Please fill totalRank field").exists(),
-    body("noOfProblemSolved", "Please fill noOfProblemSolved field").exists(),
     body(
       "solvedProblemDetails",
       "Please fill solvedProblemDetails field"
     ).exists(),
-    body(
-      "noOfContestParticipated",
-      "Please fill noOfContestParticipated field"
-    ).exists(),
-    body("contestDetails", "Please fill contestDetails field").exists(),
     body("gender", "Please fill gender field").exists(),
     body("collegeName", "Please fill collegeName field").exists(),
     body("state", "Please fill state field").exists(),
@@ -156,21 +145,10 @@ router.put(
       if (req.body.userName) {
         query.userName = req.body.userName;
       }
-      if (req.body.totalRank) {
-        query.totalRank = req.body.totalRank;
-      }
-      if (req.body.noOfProblemSolved) {
-        query.noOfProblemSolved = req.body.noOfProblemSolved;
-      }
       if (req.body.solvedProblemDetails) {
         query.solvedProblemDetails = req.body.solvedProblemDetails;
       }
-      if (req.body.noOfContestParticipated) {
-        query.noOfContestParticipated = req.body.noOfContestParticipated;
-      }
-      if (req.body.contestDetails) {
-        query.contestDetails = req.body.contestDetails;
-      }
+   
       if (req.body.gender) {
         query.gender = req.body.gender;
       }
@@ -180,8 +158,8 @@ router.put(
       if (req.body.country) {
         query.country = req.body.country;
       }
-      if (req.body.role) {
-        query.role = req.body.role;
+      if (req.body.isAdmin) {
+        query.isAdmin = req.body.isAdmin;
       }
       if (req.body.googleLoginAccess) {
         query.googleLoginAccess = req.body.googleLoginAccess;
@@ -333,6 +311,8 @@ router.post(
       console.log(id);
 
       let result = await prisma.user.findFirst({ where: { id } });
+      console.log("res-", result);
+      
       success = true;
       return res.send({ success, result });
     } catch (error) {

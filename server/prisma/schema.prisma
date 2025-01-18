@@ -7,6 +7,57 @@ generator client {
   provider = "prisma-client-js"
 }
 
+
+
+model User {
+  id                      String           @id @default(auto()) @map("_id") @db.ObjectId
+  name                    String?
+  age                     Int?
+  email                   String           @unique
+  password                String?
+  userName                String          @unique
+  totalRank               Int              @default(1000)
+  solvedProblemDetails    ProblemSetInfo[] 
+  gender                  String?
+  collegeName             String?
+  state                   String?
+  country                 String?
+  isAdmin                 Boolean
+  googleLoginAccess       Boolean
+  profilePictureUrl       String
+}
+
+model ProblemSet {
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+  problemNo         Int               @unique
+  problemName       String
+  description       String
+  companies         String[]
+  like              Int               @default(0)
+  dislike           Int               @default(0)
+  sampleInputOutput InputOutputType[]
+  testcases         InputOutputType[]
+  constraint        String[]
+  topic             TopicEnum[]
+  accepted          Int               @default(0)
+  submission        Int               @default(0)
+  category          categoryEnum
+  aboveCodeTemplate CodeTemplateType
+  belowCodeTemplate CodeTemplateType
+  middleCode        CodeTemplateType
+}
+
+model Contest {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  contestNo        Int      @unique
+  contestName      String
+  duration         Int
+  startTime        DateTime
+  problems         Int[]
+  status           String
+  noOfParticipated Int
+}
+
 type ContestInfo {
   contestId String
 }
@@ -27,38 +78,6 @@ type Role {
   Admin Boolean
 }
 
-// type Test_Type{
-//   input String
-//   output String
-// }
-model User {
-  id                      String           @id @default(auto()) @map("_id") @db.ObjectId
-  name                    String?
-  age                     Int?
-  email                   String           @unique
-  password                String?
-  userName                String?          @unique
-  totalRank               Int?
-  noOfProblemSolved       Int?
-  solvedProblemDetails    ProblemSetInfo[]
-  noOfContestParticipated Int?
-  contestDetails          ContestInfo[]
-  gender                  String?
-  collegeName             String?
-  state                   String?
-  country                 String?
-  role                    Role?
-  googleLoginAccess       Boolean?
-  profilePictureUrl       String
-}
-
-// model Problem_Set{
-//   id       String    @id @default(auto()) @map("_id") @db.ObjectId
-//   problem_no Int 
-//   like Int
-//   dislike Int
-
-// }
 type InputOutputType {
   input  String
   output String
@@ -89,34 +108,3 @@ type CodeTemplateType{
 }
 
 
-model ProblemSet {
-  id                String            @id @default(auto()) @map("_id") @db.ObjectId
-  problemNo         Int               @unique
-  problemName       String
-  description       String
-  companies         String[]
-  like              Int
-  dislike           Int
-  sampleInputOutput InputOutputType[]
-  testcases         InputOutputType[]
-  constraint        String[]
-  topic             TopicEnum[]
-  accepted          Int
-  submission        Int
-  status            StatusEnum
-  category          categoryEnum
-  aboveCodeTemplate CodeTemplateType
-  belowCodeTemplate CodeTemplateType
-  middleCode        CodeTemplateType
-}
-
-model Contest {
-  id               String   @id @default(auto()) @map("_id") @db.ObjectId
-  contestNo        Int      @unique
-  contestName      String
-  duration         Int
-  startTime        DateTime
-  problems         Int[]
-  status           String
-  noOfParticipated Int
-}
