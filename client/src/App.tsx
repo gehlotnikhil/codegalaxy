@@ -24,8 +24,8 @@ import LoadingComponent from "./Component/Loading";
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
-const ServerUrl = "http://localhost:8000"
-  // const ServerUrl = "https://codegalaxy-server.onrender.com"
+// const ServerUrl = "http://localhost:8000"
+  const ServerUrl = "https://codegalaxy-server.onrender.com"
   const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     const dispatch = useDispatch();
     const location = useLocation();

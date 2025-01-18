@@ -6,8 +6,8 @@ import UserFunctions from "../lib/UserFunctions";
 
 const axios = require("axios")
 const prisma = new PrismaClient();
-const ServerUrl = "http://localhost:8000"
-// const ServerUrl = "https://codegalaxy-server.onrender.com"
+// const ServerUrl = "http://localhost:8000"
+const ServerUrl = "https://codegalaxy-server.onrender.com"
 const router = Router();
 router.get("/", (req: Request, res: Response) => {
   res.send({ success: "ProblemSet Routing is on" });

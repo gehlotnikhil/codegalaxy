@@ -6,8 +6,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const router = Router();
 const axios = require("axios");
-  const ServerUrl = "http://localhost:8000"
-// const ServerUrl = "https://codegalaxy-server.onrender.com"
+  // const ServerUrl = "http://localhost:8000"
+const ServerUrl = "https://codegalaxy-server.onrender.com"
 import GoogleLogin from "./GoogleLogin";
 const prisma = new PrismaClient();
 import { faker } from "@faker-js/faker";
