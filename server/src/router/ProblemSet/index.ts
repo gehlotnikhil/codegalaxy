@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { body, validationResult } from "express-validator";
 import executeproblem from "./ExecuteProblem";
-import { PrismaClient } from "@prisma/client";
+import { Language, PrismaClient } from "@prisma/client";
 import axios from "axios";
 const prisma = new PrismaClient();
 const ServerUrl = process.env.ServerUrl || "http://localhost:8000"
@@ -32,6 +32,7 @@ router.post(
     body("aboveCodeTemplate", "Please Enter a aboveCodeTemplate").exists(),
     body("middleCode", "Please Enter a middleCode").exists(),
     body("belowCodeTemplate", "Please Enter a belowCodeTemplate").exists(),
+
   ],
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
@@ -59,8 +60,8 @@ router.post(
         belowCodeTemplate,
         middleCode
       } = req.body;
-      console.log("topic-",topic);
-      
+      console.log("topic-", topic);
+
       let t = await prisma.problemSet.findMany();
       let newNumber = 1;
       if (t.length > 0) {
@@ -85,6 +86,7 @@ router.post(
           aboveCodeTemplate: aboveCodeTemplate,
           belowCodeTemplate: belowCodeTemplate,
           middleCode: middleCode,
+
         },
       });
       console.log(result);
@@ -97,6 +99,68 @@ router.post(
     }
   }
 );
+
+
+
+router.post(
+  "/createpraticeproblem",
+  [
+    body("problemName", "Please Enter a problem name").exists(),
+    body("description", "Please Enter a description ").exists(),
+    body("constraint", "Please Enter a constraint").exists(),
+    body("language", "Please Enter a language").exists(),
+    body("sampleInputOutput", "Please Enter a sampleInputOutput").exists(),
+    body("testcase", "Please Enter a testcase").exists(),
+    body("aboveCodeTemplate", "Please Enter a aboveCodeTemplate").exists(),
+    body("middleCode", "Please Enter a middleCode").exists(),
+    body("belowCodeTemplate", "Please Enter a belowCodeTemplate").exists(),
+
+  ],
+  async (req: Request, res: Response): Promise<any> => {
+    let success = false;
+
+    try {
+      let error = validationResult(req.body);
+      if (!error.isEmpty()) {
+        return res.status(404).send({ success, error: error.array() });
+      }
+      let {
+        problemName,
+        description,
+        constraint,
+        language,
+        sampleInputOutput,
+        testcases,
+        aboveCodeTemplate,
+        belowCodeTemplate,
+        middleCode
+      } = req.body;
+
+      let result = await prisma.praticeProblem.create({
+        data: {
+          problemName: problemName,
+          description: description,
+          testcases: testcases,
+          constraint: constraint,
+          language: language,
+          sampleInputOutput: sampleInputOutput,
+          aboveCodeTemplate: aboveCodeTemplate,
+          belowCodeTemplate: belowCodeTemplate,
+          middleCode: middleCode,
+
+        },
+      });
+      console.log(result);
+      success = true;
+      return res.send({ success, body: req.body, msg: "Pratice Problem Created" });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({ success, error });
+    }
+  }
+);
+
+
 
 router.put(
   "/update/:problemno",
@@ -249,7 +313,7 @@ router.get(
       console.log(error);
       return res.status(500).send({ success, error });
     }
-  } 
+  }
 );
 // Get problem details
 router.post("/getproblemdetails/:pageno?", async (req: Request, res: Response): Promise<any> => {
@@ -314,6 +378,59 @@ router.post("/getproblemdetails/:pageno?", async (req: Request, res: Response): 
   }
 }
 );
+router.post("/getpraticeproblemdetails", async (req: Request, res: Response): Promise<any> => {
+  let success = false; 
+  try {
+    const token = req.body.token;
+    const language = req.body.language
+    if (!token) {
+      return res.status(400).send({ success, msg: "Token is required" });
+    }
+    const response = await axios.post(`${ServerUrl}/api/user/tokentodata`, { token: (token || "") }, {
+      headers: { "Content-Type": "application/json" },
+    });
+    if (!response.data.success) {
+      return res.status(401).send({ success, msg: "Invalid token" });
+    }
+    const data = response.data;
+    console.log("data.success-",data.success);
+    console.log("data.result-",data.result);
+
+    
+    let result: any = await prisma.praticeProblem.findMany({
+      where:{language:language},
+      select: {
+        id: true,
+        problemName: true,
+        language: true,
+      },
+    });
+    console.log("game-",data.result.praticeCourseDetail[`${language}`].solvedProblemDetails);
+    
+    const solvedProblemDetails:string[] = data.result.praticeCourseDetail[`${language}`].solvedProblemDetails
+console.log("1");
+
+result = result.map((value: any) => {
+  const check = solvedProblemDetails.find(((v: any) => v === value.id))
+  console.log("2");
+  if (check) {
+    value.status = "SOLVED";
+      } else {
+        value.status = "UNSOLVED";
+      }
+      return value
+    })
+    console.log("final -", result);
+
+    const totalCount = await prisma.praticeProblem.count();
+    success = true;
+    return res.send({ success, result, totalCount });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({ success, error: error });
+  }
+}
+);
 
 router.post(
   "/getspecificproblem",
@@ -364,11 +481,67 @@ router.post(
       if (no) {
         result = await prisma.problemSet.findFirst({ where: { problemNo: Number.parseInt(no as string) } })
       }
-      if (result === null) { 
+      if (result === null) {
         success = false;
       } else {
         success = true;
 
+      }
+
+      return res.send({ success, result });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({ success, error });
+    }
+  }
+);
+
+router.post(
+  "/getspecificpraticeproblem",
+  async (req: Request, res: Response): Promise<any> => {
+    let success = false;
+    try {
+      const token = req.body.token || "";
+      if (!token) {
+        return res.status(400).send({ success: false, msg: "Token is required" });
+      }
+      const { id } = req.query;
+      if (!id) {
+        return res.send({ success, msg: "Please enter a valid id " })
+      }
+      console.log(id, "-----");
+      let result: any = await prisma.praticeProblem.findFirst({ where: { id: (id as string) } })
+      console.log("result--", result);
+
+      if (result === null) {
+        return res.send({ success, result });
+      }
+      const response = await axios.post(`${ServerUrl}/api/user/tokentodata`, { token: (token || "") }, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.data.success) {
+        return res.status(401).send({ success, msg: "Invalid token" });
+      }
+      const data = response.data;
+      console.log("data-success:", data);
+      console.log(data.result);
+
+      const solvedProblemDetails = data.result.praticeCourseDetail[`${result.language}`].solvedProblemDetails
+      const check = solvedProblemDetails.find((v: any) => v === result.id)
+      console.log(solvedProblemDetails, "<---->", result.id)
+      if (check) {
+        result.status = "SOLVED";
+      } else {
+        result.status = "UNSOLVED";
+      }
+
+      console.log("final -", result);
+
+
+
+      if (result !== null) {
+        success = true;
       }
 
       return res.send({ success, result });

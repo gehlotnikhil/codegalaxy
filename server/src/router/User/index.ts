@@ -6,9 +6,9 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const router = Router();
 const axios = require("axios");
-  const ServerUrl = process.env.ServerUrl||"http://localhost:8000"
-  console.log(ServerUrl);
-  
+const ServerUrl = process.env.ServerUrl || "http://localhost:8000"
+console.log(ServerUrl);
+
 import GoogleLogin from "./GoogleLogin";
 const prisma = new PrismaClient();
 import { faker } from "@faker-js/faker";
@@ -63,11 +63,25 @@ router.post(
           userName: userName,
           totalRank: 1000,
           solvedProblemDetails: [],
-         
+
           googleLoginAccess: false,
           isAdmin: false,
           profilePictureUrl:
             "https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk",
+          praticeCourseDetail: {
+            c: {
+              solvedProblemDetails: [],
+            },
+            cpp: {
+              solvedProblemDetails: [],
+            },
+            java: {
+              solvedProblemDetails: [],
+            },
+            go: {
+              solvedProblemDetails: [],
+            },
+          }
         },
       });
       //create access token
@@ -79,8 +93,8 @@ router.post(
       console.log("User created:", result);
 
       success = true;
-      
-      res.send({ success, result:{...result,token:token} }); // Sending the user object as response
+
+      res.send({ success, result: { ...result, token: token } }); // Sending the user object as response
     } catch (error) {
       console.error("Error during user creation:", error);
       res.status(500).send({ success, error });
@@ -146,7 +160,7 @@ router.put(
         query.name = req.body.name;
       }
       if (req.body.age) {
-        query.age =  Number(req.body.age);
+        query.age = Number(req.body.age);
       }
       if (req.body.email) {
         query.email = req.body.email;
@@ -189,8 +203,8 @@ router.put(
       }
       if (req.body.password) {
         let salt = await bcrypt.genSalt(10);
-        console.log("-------password-",req.body.password);
-        
+        console.log("-------password-", req.body.password);
+
         let hashPassword = await bcrypt.hash(req.body.password, salt);
         query.password = hashPassword;
       }
@@ -201,9 +215,9 @@ router.put(
       if (Object.keys(query).length === 0) {
         return res.send({ success, msg: "Empty Content" });
       }
-      console.log({...query});
+      console.log({ ...query });
       console.log("id-", userDetails.result.id);
-      
+
       let result = await prisma.user.update({
         where: { id: userDetails.result.id },
         data: {
@@ -212,7 +226,7 @@ router.put(
       });
 
       success = true;
-    return  res.send({ success, result:{...result,token:req.body.token} }); // Sending the user object as response
+      return res.send({ success, result: { ...result, token: req.body.token } }); // Sending the user object as response
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
@@ -233,32 +247,32 @@ router.post(
       console.log("1");
       console.log("1");
       console.log("1");
-      
+
       let error = validationResult(req.body);
       if (!error.isEmpty) {
         return res.status(404).send({ success, error: error.array() });
       }
       let { email, password } = req.body;
       console.log("2");
-      console.log(email,"---",password);
-      
+      console.log(email, "---", password);
+
       let check1 = await UserFunctions.isUserExist(email);
-      console.log("check1-",check1);
-      
+      console.log("check1-", check1);
+
       if (!check1) {
         return res.send({ success, msg: "User Not Exist" });
       }
       console.log("c1");
-      
+
       let u1 = await prisma.user.findFirst({ where: { email } });
-      console.log("c2-",u1);
-      console.log("u1-",password,"---",u1?.password);
+      console.log("c2-", u1);
+      console.log("u1-", password, "---", u1?.password);
       console.log("c3");
       let result = await bcrypt.compare(password, u1?.password);
       console.log("c4");
-      console.log("final-",result);
+      console.log("final-", result);
       console.log("c5");
-      
+
       if (!result) {
         return res.status(404).send({ success, msg: "Password is Incorrect" });
       }
@@ -268,7 +282,7 @@ router.post(
       console.log("c6");
       let token = await jwt.sign(data, JWT_Secret);
       success = true;
-   return   res.send({ success, result:{...u1,token:token} }); // Sending the user object as response
+      return res.send({ success, result: { ...u1, token: token } }); // Sending the user object as response
     } catch (error) {
       console.log(error);
       res.status(500).send({ success, error });

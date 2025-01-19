@@ -72,6 +72,20 @@ router.post("/registeruser", [
                 googleLoginAccess: false,
                 isAdmin: false,
                 profilePictureUrl: "https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk",
+                praticeCourseDetail: {
+                    c: {
+                        solvedProblemDetails: [],
+                    },
+                    cpp: {
+                        solvedProblemDetails: [],
+                    },
+                    java: {
+                        solvedProblemDetails: [],
+                    },
+                    go: {
+                        solvedProblemDetails: [],
+                    },
+                }
             },
         });
         //create access token

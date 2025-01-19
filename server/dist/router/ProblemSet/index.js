@@ -85,6 +85,46 @@ router.post("/create", [
         return res.status(500).send({ success, error });
     }
 }));
+router.post("/createpraticeproblem", [
+    (0, express_validator_1.body)("problemName", "Please Enter a problem name").exists(),
+    (0, express_validator_1.body)("description", "Please Enter a description ").exists(),
+    (0, express_validator_1.body)("constraint", "Please Enter a constraint").exists(),
+    (0, express_validator_1.body)("language", "Please Enter a language").exists(),
+    (0, express_validator_1.body)("sampleInputOutput", "Please Enter a sampleInputOutput").exists(),
+    (0, express_validator_1.body)("testcase", "Please Enter a testcase").exists(),
+    (0, express_validator_1.body)("aboveCodeTemplate", "Please Enter a aboveCodeTemplate").exists(),
+    (0, express_validator_1.body)("middleCode", "Please Enter a middleCode").exists(),
+    (0, express_validator_1.body)("belowCodeTemplate", "Please Enter a belowCodeTemplate").exists(),
+], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let success = false;
+    try {
+        let error = (0, express_validator_1.validationResult)(req.body);
+        if (!error.isEmpty()) {
+            return res.status(404).send({ success, error: error.array() });
+        }
+        let { problemName, description, constraint, language, sampleInputOutput, testcases, aboveCodeTemplate, belowCodeTemplate, middleCode } = req.body;
+        let result = yield prisma.praticeProblem.create({
+            data: {
+                problemName: problemName,
+                description: description,
+                testcases: testcases,
+                constraint: constraint,
+                language: language,
+                sampleInputOutput: sampleInputOutput,
+                aboveCodeTemplate: aboveCodeTemplate,
+                belowCodeTemplate: belowCodeTemplate,
+                middleCode: middleCode,
+            },
+        });
+        console.log(result);
+        success = true;
+        return res.send({ success, body: req.body, msg: "Pratice Problem Created" });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).send({ success, error });
+    }
+}));
 router.put("/update/:problemno", [
     (0, express_validator_1.body)("problemName", "Please Enter a problem name").exists(),
     (0, express_validator_1.body)("description", "Please Enter a description ").exists(),
@@ -279,6 +319,55 @@ router.post("/getproblemdetails/:pageno?", (req, res) => __awaiter(void 0, void 
         return res.status(500).send({ success, error: error });
     }
 }));
+router.post("/getpraticeproblemdetails", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let success = false;
+    try {
+        const token = req.body.token;
+        const language = req.body.language;
+        if (!token) {
+            return res.status(400).send({ success, msg: "Token is required" });
+        }
+        const response = yield axios_1.default.post(`${ServerUrl}/api/user/tokentodata`, { token: (token || "") }, {
+            headers: { "Content-Type": "application/json" },
+        });
+        if (!response.data.success) {
+            return res.status(401).send({ success, msg: "Invalid token" });
+        }
+        const data = response.data;
+        console.log("data.success-", data.success);
+        console.log("data.result-", data.result);
+        let result = yield prisma.praticeProblem.findMany({
+            where: { language: language },
+            select: {
+                id: true,
+                problemName: true,
+                language: true,
+            },
+        });
+        console.log("game-", data.result.praticeCourseDetail[`${language}`].solvedProblemDetails);
+        const solvedProblemDetails = data.result.praticeCourseDetail[`${language}`].solvedProblemDetails;
+        console.log("1");
+        result = result.map((value) => {
+            const check = solvedProblemDetails.find(((v) => v === value.id));
+            console.log("2");
+            if (check) {
+                value.status = "SOLVED";
+            }
+            else {
+                value.status = "UNSOLVED";
+            }
+            return value;
+        });
+        console.log("final -", result);
+        const totalCount = yield prisma.praticeProblem.count();
+        success = true;
+        return res.send({ success, result, totalCount });
+    }
+    catch (error) {
+        console.error(error);
+        return res.status(500).send({ success, error: error });
+    }
+}));
 router.post("/getspecificproblem", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
@@ -325,6 +414,52 @@ router.post("/getspecificproblem", (req, res) => __awaiter(void 0, void 0, void 
             success = false;
         }
         else {
+            success = true;
+        }
+        return res.send({ success, result });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).send({ success, error });
+    }
+}));
+router.post("/getspecificpraticeproblem", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let success = false;
+    try {
+        const token = req.body.token || "";
+        if (!token) {
+            return res.status(400).send({ success: false, msg: "Token is required" });
+        }
+        const { id } = req.query;
+        if (!id) {
+            return res.send({ success, msg: "Please enter a valid id " });
+        }
+        console.log(id, "-----");
+        let result = yield prisma.praticeProblem.findFirst({ where: { id: id } });
+        console.log("result--", result);
+        if (result === null) {
+            return res.send({ success, result });
+        }
+        const response = yield axios_1.default.post(`${ServerUrl}/api/user/tokentodata`, { token: (token || "") }, {
+            headers: { "Content-Type": "application/json" },
+        });
+        if (!response.data.success) {
+            return res.status(401).send({ success, msg: "Invalid token" });
+        }
+        const data = response.data;
+        console.log("data-success:", data);
+        console.log(data.result);
+        const solvedProblemDetails = data.result.praticeCourseDetail[`${result.language}`].solvedProblemDetails;
+        const check = solvedProblemDetails.find((v) => v === result.id);
+        console.log(solvedProblemDetails, "<---->", result.id);
+        if (check) {
+            result.status = "SOLVED";
+        }
+        else {
+            result.status = "UNSOLVED";
+        }
+        console.log("final -", result);
+        if (result !== null) {
             success = true;
         }
         return res.send({ success, result });
