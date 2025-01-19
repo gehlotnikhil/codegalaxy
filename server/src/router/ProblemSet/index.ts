@@ -6,8 +6,9 @@ import UserFunctions from "../lib/UserFunctions";
 
 const axios = require("axios")
 const prisma = new PrismaClient();
-const ServerUrl = "http://localhost:8000"
-// const ServerUrl = "https://codegalaxy-server.onrender.com"
+const ServerUrl = process.env.ServerUrl || "http://localhost:8000"
+console.log(ServerUrl);
+
 const router = Router();
 router.get("/", (req: Request, res: Response) => {
   res.send({ success: "ProblemSet Routing is on" });
@@ -216,10 +217,10 @@ router.get(
       console.log(error);
       return res.status(500).send({ success, error });
     }
-  }
+  } 
 );
 // Get problem details
-router.get("/getproblemdetails/:pageno?", async (req: Request, res: Response): Promise<any> => {
+router.post("/getproblemdetails/:pageno?", async (req: Request, res: Response): Promise<any> => {
   let success = false;
   try {
     const { pageno } = req.params;
@@ -229,7 +230,7 @@ router.get("/getproblemdetails/:pageno?", async (req: Request, res: Response): P
       return res.status(400).send({ success, msg: "Token is required" });
     }
 
-    const response = await axios.post(`${ServerUrl}/api/user/tokentodata`, { token }, {
+    const response = await axios.post(`${ServerUrl}/api/user/tokentodata`, { token: (token || "") }, {
       headers: { "Content-Type": "application/json" },
     });
 
@@ -246,7 +247,7 @@ router.get("/getproblemdetails/:pageno?", async (req: Request, res: Response): P
 
     const page = Number(pageno) || 1;
     const pageSize = 10;
-    const result = await prisma.problemSet.findMany({
+    let result: any = await prisma.problemSet.findMany({
       skip: (page - 1) * pageSize,
       take: pageSize,
       select: {
@@ -259,8 +260,20 @@ router.get("/getproblemdetails/:pageno?", async (req: Request, res: Response): P
         topic: true,
       },
     });
-  
-      const totalCount = await prisma.problemSet.count();
+    const solvedProblemDetails = data.result.solvedProblemDetails
+
+    result = result.map((value: any) => {
+      const check = solvedProblemDetails.find(((v: any) => v === value.id))
+      if (check) {
+        value.status = "SOLVED";
+      } else {
+        value.status = "UNSOLVED";
+      }
+      return value
+    })
+    console.log("final -", result);
+
+    const totalCount = await prisma.problemSet.count();
     success = true;
     return res.send({ success, result, totalCount });
   } catch (error) {
@@ -270,7 +283,7 @@ router.get("/getproblemdetails/:pageno?", async (req: Request, res: Response): P
 });
 
 
-router.get(
+router.post(
   "/getspecificproblem",
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
@@ -280,9 +293,41 @@ router.get(
         return res.send({ success, msg: "Please enter a valid id or no" })
       }
       console.log(id, "-----", no);
-      let result;
+      let result: any;
       if (id) {
         result = await prisma.problemSet.findFirst({ where: { id: (id as string) } })
+        console.log("result--", result);
+
+        if (result === null) {
+          return res.send({ success, result });
+        }
+        const token = req.body.token || "";
+        if (!token) {
+          return res.status(400).send({ success: false, msg: "Token is required" });
+        }
+
+        const response = await axios.post(`${ServerUrl}/api/user/tokentodata`, { token: (token || "") }, {
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (!response.data.success) {
+          return res.status(401).send({ success, msg: "Invalid token" });
+        }
+        const data = response.data;
+        console.log("data-success:", data);
+        console.log(data.result);
+
+        const solvedProblemDetails = data.result.solvedProblemDetails
+        const check = solvedProblemDetails.find((v: any) => v === result.id)
+        console.log(solvedProblemDetails, "<---->", result.id)
+        if (check) {
+          result.status = "SOLVED";
+        } else {
+          result.status = "UNSOLVED";
+        }
+
+        console.log("final -", result);
+
       }
       if (no) {
         result = await prisma.problemSet.findFirst({ where: { problemNo: Number.parseInt(no as string) } })

@@ -6,9 +6,11 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const router = Router();
 const axios = require("axios");
-  const ServerUrl = "http://localhost:8000"
-// const ServerUrl = "https://codegalaxy-server.onrender.com"
+  const ServerUrl = process.env.ServerUrl||"http://localhost:8000"
+  console.log(ServerUrl);
+  
 import GoogleLogin from "./GoogleLogin";
+
 const prisma = new PrismaClient();
 import { faker } from "@faker-js/faker";
 
@@ -157,6 +159,9 @@ router.put(
       }
       if (req.body.country) {
         query.country = req.body.country;
+      }
+      if (req.body.state) {
+        query.state = req.body.state;
       }
       if (req.body.isAdmin) {
         query.isAdmin = req.body.isAdmin;
@@ -322,7 +327,7 @@ router.post(
   }
 );
 
-router.get(
+router.post(
   "/usernametodata",
   [body("userName", "Please enter a username").exists()],
   async (req: Request, res: Response): Promise<any> => {
@@ -338,7 +343,7 @@ router.get(
       let result = await prisma.user.findFirst({ where: { userName } });
       console.log("res-", result);
       if (!result) {
-        return res.send({ success, msg: "Username name exist" });
+        return res.send({ success, msg: "Username not exist" });
       }
       success = true;
       return res.send({ success, result });

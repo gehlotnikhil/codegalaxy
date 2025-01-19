@@ -16,8 +16,10 @@ interface ProfileFieldValueType {
   age?: number;
   email: string;
   userName: string;
+  state:string;
+  country:string;
   // gender?: string;
-  // collegeName?: string;
+  collegeName: string;
   // state?: string;
   // country?: string;
   // deleteProfileChecked?: boolean;
@@ -47,6 +49,9 @@ const EditProfile: React.FC = () => {
       age: userDetail.age ?? 0, // Allow null for optional fields
       userName: userDetail.userName || "",
       email: userDetail.email || "",
+      state:userDetail.state || "",
+      country:userDetail.country || "",
+      collegeName:userDetail.collegeName || ""
     },
   });
   function trimUrlExtension(url: any) {
@@ -210,6 +215,32 @@ const EditProfile: React.FC = () => {
               <input type="text" {...register("userName")} />
             </label>
             <p className="error-message">{errors.userName?.message}</p>
+          </div>
+
+          {/* CollegeName */}
+          <div style={{ marginBottom: "15px" }}>
+            <label>
+              Set College Name: <span style={{ color: "red" }}>*</span>
+              <input type="text" {...register("collegeName")} />
+            </label>
+            <p className="error-message">{errors.collegeName?.message}</p>
+          </div>
+          {/* State */}
+          <div style={{ marginBottom: "15px" }}>
+            <label>
+              Set State: <span style={{ color: "red" }}>*</span>
+              <input type="text" {...register("state")} />
+            </label>
+            <p className="error-message">{errors.state?.message}</p>
+          </div>
+
+          {/* Country */}
+          <div style={{ marginBottom: "15px" }}>
+            <label>
+              Set Country: <span style={{ color: "red" }}>*</span>
+              <input type="text" {...register("country")} />
+            </label>
+            <p className="error-message">{errors.country?.message}</p>
           </div>
 
           {/* Submit Button */}

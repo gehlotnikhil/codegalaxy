@@ -1,5 +1,5 @@
 import "./App.css";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"; // Ensure this is `react-router-dom`
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom"; // Ensure this is `react-router-dom`
 import Login from "./Component/Login";
 import AppNavbar from "./Component/Navbar";
 import SignUp from "./Component/SignUp";
@@ -27,6 +27,7 @@ interface ProtectedRouteProps {
 const ServerUrl = "http://localhost:8000"
   // const ServerUrl = "https://codegalaxy-server.onrender.com"
   const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+    const navigate = useNavigate()
     const dispatch = useDispatch();
     const location = useLocation();
     const userDetail = useSelector((state: RootStateType) => state.userDetail);
@@ -66,16 +67,20 @@ const ServerUrl = "http://localhost:8000"
   
         if (!success) {
           console.log("Navigating to Login due to unsuccessful token loading");
+          navigate("/login")
           return <Login />;
         }
       } else if (!userDetail.token) {
         console.log("No token found, redirecting to Login");
+        navigate("/login")
         return <Login />;
       }
   
       if (userDetail.role?.Admin && location.pathname !== "/admin") {
+        navigate("/admin")
         return <Admin />;
       } else if (!userDetail.role?.Admin && location.pathname === "/admin") {
+        navigate("/")
         return <Home />;
       }
   

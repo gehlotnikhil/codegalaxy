@@ -498,7 +498,7 @@ function Admin() {
       const response = await fetch(
         `${ServerUrl}/api/problemset/getspecificproblem?no=${problemNo}`,
         {
-          method: "GET",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
@@ -535,7 +535,7 @@ function Admin() {
       const response = await fetch(
         `${ServerUrl}/api/contest/getspecificcontest?no=${contestNo}`,
         {
-          method: "GET",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },

@@ -18,8 +18,8 @@ const ExecuteProblem_1 = __importDefault(require("./ExecuteProblem"));
 const client_1 = require("@prisma/client");
 const axios = require("axios");
 const prisma = new client_1.PrismaClient();
-const ServerUrl = "http://localhost:8000";
-// const ServerUrl = "https://codegalaxy-server.onrender.com"
+const ServerUrl = process.env.ServerUrl || "http://localhost:8000";
+console.log(ServerUrl);
 const router = (0, express_1.Router)();
 router.get("/", (req, res) => {
     res.send({ success: "ProblemSet Routing is on" });
@@ -195,7 +195,7 @@ router.get("/getallproblem/:pageno?", (req, res) => __awaiter(void 0, void 0, vo
     }
 }));
 // Get problem details
-router.get("/getproblemdetails/:pageno?", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/getproblemdetails/:pageno?", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
         const { pageno } = req.params;
@@ -203,7 +203,7 @@ router.get("/getproblemdetails/:pageno?", (req, res) => __awaiter(void 0, void 0
         if (!token) {
             return res.status(400).send({ success, msg: "Token is required" });
         }
-        const response = yield axios.post(`${ServerUrl}/api/user/tokentodata`, { token }, {
+        const response = yield axios.post(`${ServerUrl}/api/user/tokentodata`, { token: (token || "") }, {
             headers: { "Content-Type": "application/json" },
         });
         const data = response.data;
@@ -217,7 +217,7 @@ router.get("/getproblemdetails/:pageno?", (req, res) => __awaiter(void 0, void 0
         }
         const page = Number(pageno) || 1;
         const pageSize = 10;
-        const result = yield prisma.problemSet.findMany({
+        let result = yield prisma.problemSet.findMany({
             skip: (page - 1) * pageSize,
             take: pageSize,
             select: {
@@ -230,6 +230,18 @@ router.get("/getproblemdetails/:pageno?", (req, res) => __awaiter(void 0, void 0
                 topic: true,
             },
         });
+        const solvedProblemDetails = data.result.solvedProblemDetails;
+        result = result.map((value) => {
+            const check = solvedProblemDetails.find(((v) => v === value.id));
+            if (check) {
+                value.status = "SOLVED";
+            }
+            else {
+                value.status = "UNSOLVED";
+            }
+            return value;
+        });
+        console.log("final -", result);
         const totalCount = yield prisma.problemSet.count();
         success = true;
         return res.send({ success, result, totalCount });
@@ -239,7 +251,7 @@ router.get("/getproblemdetails/:pageno?", (req, res) => __awaiter(void 0, void 0
         return res.status(500).send({ success, error: error });
     }
 }));
-router.get("/getspecificproblem", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/getspecificproblem", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
         const { id, no } = req.query;
@@ -250,6 +262,33 @@ router.get("/getspecificproblem", (req, res) => __awaiter(void 0, void 0, void 0
         let result;
         if (id) {
             result = yield prisma.problemSet.findFirst({ where: { id: id } });
+            console.log("result--", result);
+            if (result === null) {
+                return res.send({ success, result });
+            }
+            const token = req.body.token || "";
+            if (!token) {
+                return res.status(400).send({ success: false, msg: "Token is required" });
+            }
+            const response = yield axios.post(`${ServerUrl}/api/user/tokentodata`, { token: (token || "") }, {
+                headers: { "Content-Type": "application/json" },
+            });
+            if (!response.data.success) {
+                return res.status(401).send({ success, msg: "Invalid token" });
+            }
+            const data = response.data;
+            console.log("data-success:", data);
+            console.log(data.result);
+            const solvedProblemDetails = data.result.solvedProblemDetails;
+            const check = solvedProblemDetails.find((v) => v === result.id);
+            console.log(solvedProblemDetails, "<---->", result.id);
+            if (check) {
+                result.status = "SOLVED";
+            }
+            else {
+                result.status = "UNSOLVED";
+            }
+            console.log("final -", result);
         }
         if (no) {
             result = yield prisma.problemSet.findFirst({ where: { problemNo: Number.parseInt(no) } });

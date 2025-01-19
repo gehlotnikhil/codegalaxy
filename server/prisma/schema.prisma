@@ -17,7 +17,7 @@ model User {
   password                String?
   userName                String          @unique
   totalRank               Int              @default(1000)
-  solvedProblemDetails    ProblemSetInfo[] 
+  solvedProblemDetails    String[] 
   gender                  String?
   collegeName             String?
   state                   String?

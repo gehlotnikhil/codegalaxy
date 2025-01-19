@@ -1,17 +1,29 @@
 import { useContext, useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import MainContext from "../context/main";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../store";
-import logo from '../assets/logo.png';
+import logo from "../assets/logo.png";
 
 function AppNavbar() {
-  const locationHook = useLocation()
+  const locationHook = useLocation();
+  const [ProfileName, setProfileName] = useState("");
+  useEffect(() => {
+    console.log(ProfileName);
+  }, [ProfileName]);
   const context = useContext(MainContext);
   const userDetails = useSelector((state: RootStateType) => {
     return state.userDetail;
   });
   const { defaultProfilePicture } = context;
+  const navigate = useNavigate()
+
+  const handleSearchProfile =  (e:any) => {
+    e.preventDefault()
+        navigate(`/u/${ProfileName}`)
+   
+  };
+
   function handleClickSignOut(): void {
     console.log("hi--");
     localStorage.removeItem("token");
@@ -22,11 +34,12 @@ function AppNavbar() {
     homeLink: true,
     aboutLink: true,
     profileIcon: true,
-    prfileLink:true,
-    playgroundLink:true
+    prfileLink: true,
+    playgroundLink: true,
+    profilename:true
 
   });
-  
+
   useEffect(() => {
     const updatedStatus = {
       loginLink: true,
@@ -34,8 +47,9 @@ function AppNavbar() {
       homeLink: true,
       aboutLink: true,
       profileIcon: true,
-      prfileLink:true,
-      playgroundLink:true
+      prfileLink: true,
+      playgroundLink: true,
+      profilename:true
     };
 
     if (locationHook.pathname === "/login") {
@@ -43,43 +57,52 @@ function AppNavbar() {
       updatedStatus.aboutLink = false;
       updatedStatus.loginLink = false;
       updatedStatus.profileIcon = false;
-      updatedStatus.prfileLink = false
-      updatedStatus.playgroundLink = false
+      updatedStatus.prfileLink = false;
+      updatedStatus.playgroundLink = false;
+      updatedStatus.profilename = false;
+      
     } else if (locationHook.pathname === "/signup") {
       updatedStatus.homeLink = false;
       updatedStatus.aboutLink = false;
       updatedStatus.signupLink = false;
       updatedStatus.profileIcon = false;
-      updatedStatus.prfileLink = false
-      updatedStatus.playgroundLink = false
-
-
+      updatedStatus.prfileLink = false;
+      updatedStatus.playgroundLink = false;
+      updatedStatus.profilename = false;
     } else if (locationHook.pathname === "/admin") {
       updatedStatus.homeLink = false;
       updatedStatus.aboutLink = false;
       updatedStatus.loginLink = false;
       updatedStatus.signupLink = false;
       updatedStatus.profileIcon = true;
-      updatedStatus.prfileLink = false
-      updatedStatus.playgroundLink = false
-
-    }
-    else {
+      updatedStatus.prfileLink = false;
+      updatedStatus.playgroundLink = false;
+      updatedStatus.profilename = false;
+    }else if (locationHook.pathname.startsWith("/u/")) {
+      updatedStatus.homeLink = true;
+      updatedStatus.aboutLink = true;
       updatedStatus.loginLink = false;
-      updatedStatus.playgroundLink = true
+      updatedStatus.signupLink = false;
+      updatedStatus.profileIcon = true;
+      updatedStatus.prfileLink = true;
+      updatedStatus.playgroundLink = true;
+      updatedStatus.profilename = true;
+    } 
+    else {
+      updatedStatus.profilename = false;
+      updatedStatus.loginLink = false;
+      updatedStatus.playgroundLink = true;
       updatedStatus.signupLink = false;
     }
-console.log("i an in",updatedStatus);
+    console.log("i an in", updatedStatus);
 
     setNavbarLinkStatus(updatedStatus);
   }, [locationHook]);
 
   useEffect(() => {
     console.log(NavbarLinkStatus);
-    
-  }, [NavbarLinkStatus])
-  
-  
+  }, [NavbarLinkStatus]);
+
   return (
     <>
       <nav className="navbar navbar-expand-lg bg-body-tertiary bg-nav">
@@ -111,7 +134,11 @@ console.log("i an in",updatedStatus);
             id="navbarSupportedContent"
           >
             <ul className="navbar-nav me-auto mb-2 mb-lg-0 ">
-              <li className={`nav-item d-${NavbarLinkStatus.homeLink ===true?"inline":"none"}`}>
+              <li
+                className={`nav-item d-${
+                  NavbarLinkStatus.homeLink === true ? "inline" : "none"
+                }`}
+              >
                 <Link
                   className="white nav-link active white"
                   aria-current="page"
@@ -120,34 +147,65 @@ console.log("i an in",updatedStatus);
                   Home
                 </Link>
               </li>
-              <li className={`nav-item d-${NavbarLinkStatus.aboutLink ===true?"inline":"none"}`}>
+              <li
+                className={`nav-item d-${
+                  NavbarLinkStatus.aboutLink === true ? "inline" : "none"
+                }`}
+              >
                 <Link className="white nav-link" to="/about">
                   About
                 </Link>
               </li>
-             
             </ul>
 
             <div className="d-flex ">
               <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              <li className={`nav-item d-${NavbarLinkStatus.loginLink ===true?"inline":"none"}`}>
+                <li
+                  className={`nav-item d-${
+                    NavbarLinkStatus.loginLink === true ? "inline" : "none"
+                  }`}
+                >
                   <Link className="white nav-link " to="/login">
                     Login
                   </Link>
                 </li>
-                <li className={`nav-item d-${NavbarLinkStatus.signupLink ===true?"inline":"none"}`}>
-                <Link className="white nav-link" to="/signup">
+                <li
+                  className={`nav-item d-${
+                    NavbarLinkStatus.signupLink === true ? "inline" : "none"
+                  }`}
+                >
+                  <Link className="white nav-link" to="/signup">
                     Sign Up
                   </Link>
+                </li>
+                <li  className={`nav-item d-${
+                    NavbarLinkStatus.profilename === true ? "inline" : "none"
+                  }`}>
+                  <form className="d-flex " style={{ marginRight: "1rem" }}>
+                    <input
+                      className="form-control me-2"
+                      type="search"
+                      placeholder="Search Profile"
+                      aria-label="Search"
+                      onChange={(e) => setProfileName(e.target.value)}
+                    />
+                    <button
+                      className="btn btn-outline-success"
+                      onClick={(e) => handleSearchProfile(e)}
+                    >
+                      Search
+                    </button>
+                  </form>
                 </li>
               </ul>
             </div>
           </div>
           <div className={`btn-group dropstart `}>
-          
             <button
               type="button"
-              className={`btn btn-secondary profile-icon d-${NavbarLinkStatus.profileIcon ===true?"inline":"none"}`}
+              className={`btn btn-secondary profile-icon d-${
+                NavbarLinkStatus.profileIcon === true ? "inline" : "none"
+              }`}
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
@@ -156,7 +214,7 @@ console.log("i an in",updatedStatus);
             <ul className="dropdown-menu">
               <li>
                 <img
-                  style={{ height: "43px",width:"48px", marginLeft: "5px" }}
+                  style={{ height: "43px", width: "48px", marginLeft: "5px" }}
                   // src="./profilePicture.png"
                   src={`${
                     userDetails.profilePictureUrl === defaultProfilePicture
@@ -169,13 +227,25 @@ console.log("i an in",updatedStatus);
                 <span style={{ marginLeft: "5px" }}>Nikhil Gehlot</span>
               </li>
               <hr style={{ margin: "0" }} className="my-2" />
-              <li style={{ display: "flex", alignItems: "center" }} className={`d-${NavbarLinkStatus.prfileLink===true?"inline":"none"}`}>
-                <Link className="dropdown-item" to={`/u/${userDetails.userName}`}>
+              <li
+                style={{ display: "flex", alignItems: "center" }}
+                className={`d-${
+                  NavbarLinkStatus.prfileLink === true ? "inline" : "none"
+                }`}
+              >
+                <Link
+                  className="dropdown-item"
+                  to={`/u/${userDetails.userName}`}
+                >
                   Profile
                 </Link>
               </li>
-              <li className={` d-${NavbarLinkStatus.playgroundLink ===true?"inline":"none"}`}>
-                <Link  className="dropdown-item"  to="/playground">
+              <li
+                className={` d-${
+                  NavbarLinkStatus.playgroundLink === true ? "inline" : "none"
+                }`}
+              >
+                <Link className="dropdown-item" to="/playground">
                   PlayGround
                 </Link>
               </li>

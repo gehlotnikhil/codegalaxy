@@ -8,8 +8,11 @@ import TopicTag from "./TopicTag";
 import MainContext from "../context/main";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router";
+import { useSelector } from "react-redux";
+import { RootStateType } from "../store";
 
 const ProblemPage: React.FC = () => {
+  const userDetail = useSelector((state:RootStateType)=>state.userDetail)
   interface MainQuestionType {
     id?: string;
     problemNo?: number;
@@ -38,10 +41,12 @@ const ProblemPage: React.FC = () => {
 
   const loadMainQuestion = async (id: string) => {
     const response = await fetch(`${ServerUrl}/api/problemset/getspecificproblem?id=${id}`,{
-      method: "GET",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
-      }
+      },
+      body:JSON.stringify({token:userDetail.token})
+
     })
     const jsondata = await response.json();
     console.log("jsondata--------------------",jsondata);

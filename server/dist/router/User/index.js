@@ -20,8 +20,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const router = (0, express_1.Router)();
 const axios = require("axios");
-const ServerUrl = "http://localhost:8000";
-// const ServerUrl = "https://codegalaxy-server.onrender.com"
+const ServerUrl = process.env.ServerUrl || "http://localhost:8000";
+console.log(ServerUrl);
 const GoogleLogin_1 = __importDefault(require("./GoogleLogin"));
 const prisma = new client_1.PrismaClient();
 const faker_1 = require("@faker-js/faker");
@@ -146,6 +146,9 @@ router.put("/update/", [
         }
         if (req.body.country) {
             query.country = req.body.country;
+        }
+        if (req.body.state) {
+            query.state = req.body.state;
         }
         if (req.body.isAdmin) {
             query.isAdmin = req.body.isAdmin;
@@ -285,7 +288,7 @@ router.post("/tokentodata", [(0, express_validator_1.body)("token", "Please ente
         return res.status(500).send({ success, error });
     }
 }));
-router.get("/usernametodata", [(0, express_validator_1.body)("userName", "Please enter a username").exists()], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/usernametodata", [(0, express_validator_1.body)("userName", "Please enter a username").exists()], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
         let error = (0, express_validator_1.validationResult)(req.body);
@@ -297,7 +300,7 @@ router.get("/usernametodata", [(0, express_validator_1.body)("userName", "Please
         let result = yield prisma.user.findFirst({ where: { userName } });
         console.log("res-", result);
         if (!result) {
-            return res.send({ success, msg: "Username name exist" });
+            return res.send({ success, msg: "Username not exist" });
         }
         success = true;
         return res.send({ success, result });

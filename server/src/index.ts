@@ -1,16 +1,17 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import cors, { CorsOptions } from "cors";
 import helmet from "helmet";
-import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
-
+ 
 // Initialize environment variables and Prisma client
-dotenv.config();
 const prisma = new PrismaClient();
 
 const app = express();
 const PORT = Number(process.env.PORT) || 8000;
-
+ console.log(process.env.PORT);
+ 
 // Middleware to parse JSON
 app.use(express.json());
 
@@ -18,7 +19,7 @@ app.use(express.json());
 const allowedOrigins = [
   "http://localhost:5173", // Frontend for local development
   "https://codegalaxy1.vercel.app", // Deployed production frontend
-];
+]; 
 
 // Custom CORS configuration
 const corsOptions: CorsOptions = {
@@ -30,7 +31,7 @@ const corsOptions: CorsOptions = {
     }
   },
 };
-
+ 
 // Use CORS middleware
 app.use(cors(corsOptions));
 

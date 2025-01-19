@@ -6,8 +6,11 @@ import { AiOutlineRobot } from "react-icons/ai";
 import { useLocation, useSearchParams } from "react-router";
 import { Link } from "react-router-dom";
 import MainContext from "../context/main";
+import { useSelector } from "react-redux";
+import { RootStateType } from "../store";
 
 const Problem: React.FC = () => {
+  const userDetail = useSelector((state:RootStateType)=>state.userDetail)
   const context = useContext(MainContext);
   const {ServerUrl} = context;
   type Question = {
@@ -155,10 +158,11 @@ const Problem: React.FC = () => {
     const response = await fetch(
       `${ServerUrl}/api/problemset/getproblemdetails/${page || 1}`,
       {
-        method: "GET",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        body:JSON.stringify({token:userDetail.token})
       }
     );
     const data = await response.json();
