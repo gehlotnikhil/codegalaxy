@@ -5,7 +5,9 @@ import TestStatus from "./TestBox";
 
 import MainContext from "../context/main";
 import { toast } from "react-toastify";
-import { useLocation, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
+import { useSelector } from "react-redux";
+import { RootStateType } from "../store";
 
 
 const SolvedPraticeProblem: React.FC = () => {
@@ -14,6 +16,7 @@ const SolvedPraticeProblem: React.FC = () => {
     id?: string;
     problemName?: string;
     description?: string;
+    language?:"c"|"cpp"|"java"|"go";
     constraint?: string[];
     status?: "SOLVED" | "UNSOLVED";
     sampleInputOutput?: { input: string; output: string }[];
@@ -22,54 +25,57 @@ const SolvedPraticeProblem: React.FC = () => {
     middleCode?: { go: string; java: string; cpp: string; c: string };
     belowCodeTemplate?: { go: string; java: string; cpp: string; c: string };
   }
+  const userDetail = useSelector((state:RootStateType)=>state.userDetail)
   const [MainQuestion, setMainQuestion] = useState<MainQuestionType>({});
   const context = useContext(MainContext);
-//   const { ServerUrl } = context;
+  const { ServerUrl } = context;
   const param = useParams<{ problemid: string }>();
-//   const navigate = useNavigate();
+  const navigate = useNavigate();
 
-//   const loadMainQuestion = async (id: string) => {
-  const loadMainQuestion =  (p0: string) => {
-    console.log(p0);
+  const loadMainQuestion =  async(id: string) => {
     
-    // const response = await fetch(
-    //   `${ServerUrl}/api/problemset/getspecificproblem?id=${id}`,
-    //   {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({ token: userDetail.token }),
-    //   }
-    // );
-    // const jsondata = await response.json();
-    // console.log("jsondata--------------------", jsondata);
-    // if (jsondata.success) {
+    const response = await fetch(
+      `${ServerUrl}/api/problemset/getspecificpraticeproblem?id=${id}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token: userDetail.token }),
+      }
+    );
+    const jsondata = await response.json();
+    console.log("jsondata--------------------", jsondata);
+    if (jsondata.success) {
     
-      console.log(Question);
-      setMainQuestion(Question as MainQuestionType);
-      setCode(Question.middleCode[SelectedLanguage]);
-      setQuestionStatus(Question.status === "SOLVED");
-    // } else {
-    //   navigate("/error");
-    // }
+      console.log(jsondata.result);
+      setMainQuestion(jsondata.result as MainQuestionType);
+      setCode(jsondata.result.middleCode[SelectedLanguage]);
+      setQuestionStatus(jsondata.result.status === "SOLVED");
+    } else {
+      navigate("/error");
+    }
   };
   useEffect(() => {
     console.log(typeof param.problemid, "param", param.problemid);
     loadMainQuestion(param.problemid as string);
-    setSelectedLanguage(()=>{
-        const l = ((locationHook.pathname).replace("/pratice/","")).substring(0, (((locationHook.pathname).replace("/pratice/","")).indexOf("/")))
-        if(l === "c" || l === "java" || l==="go" || l==="cpp")
-            return l
-        return "c"
-    });
+    setSelectedLanguage(MainQuestion.language || "c");
     ((locationHook.pathname).replace("/pratice/","")).substring(0, (((locationHook.pathname).replace("/pratice/","")).indexOf("/")))
   }, []);
+  const [SelectedLanguage, setSelectedLanguage] = useState<Language>("c");
+
+  useEffect(() => {
+    
+  console.log(MainQuestion);
+  setSelectedLanguage(MainQuestion.language || "c")
+  
+  }, [MainQuestion])
+  
+  
 
   const { handleCodeExecution } = context;
   type Language = "go" | "java" | "cpp" | "c";
 
-  const [SelectedLanguage, setSelectedLanguage] = useState<Language>("c");
   
   const [code, setCode] = useState(
     MainQuestion.middleCode ? MainQuestion.middleCode.c : ""
@@ -237,7 +243,7 @@ const SolvedPraticeProblem: React.FC = () => {
               onChange={handleLanguageChange}
               style={styles.languageDropdown}
             >
-              <option value={`${SelectedLanguage}`}>{SelectedLanguage.substring(0,1).toUpperCase()}{SelectedLanguage.substring(1)}</option>
+              <option value={`${SelectedLanguage}`}>{SelectedLanguage.toUpperCase()}</option>
               
             </select>
           </div>
@@ -398,108 +404,4 @@ const styles2 = {
     fontSize: "14px",
   },
 };
-
-const Question = {
-  id: "6783b0d81ffece704ef085b3",
-  problemNo: 1,
-  problemName: "Add Two Numbers",
-  description: "This is a simple problem to add two numbers.",
-  constraint: ["return only integer"],
-  status: "SOLVED",
-  sampleInputOutput: [
-    {
-      input: "45 7",
-      output: "54",
-    },
-    {
-      input: "559 100",
-      output: "659",
-    },
-  ],
-  testcases: [
-    {
-      input: "23 54",
-      output: "77",
-    },
-    // {
-    //   input: "99 66 ",
-    //   output: "165",
-    // },
-    // {
-    //   input: "100 200 ",
-    //   output: "300",
-    // },
-  ],
-  aboveCodeTemplate: {
-    go: `package main
-
-import (
-	"fmt"
-)
-
-`,
-    java: `import java.util.Scanner;
-
-public class Main {
-`,
-    cpp: `#include <iostream>
-using namespace std;
-
-`,
-    c: `#include <stdio.h>
-
-`,
-  },
-  middleCode: {
-    go: `func addTwoNumber(a int, b int) int {
-	// Logic
-}`,
-    java: `public static int addTwoNumber(int a, int b) {
-   // Logic
-}`,
-    cpp: `int addTwoNumber(int a,int b){
-   //Logic
-}`,
-    c: `int addTwoNumber(int a, int b) {
-    //Logic
-}`,
-  },
-  belowCodeTemplate: {
-    go: `
-func main() {
-	var a, b int
-	fmt.Scan(&a)
-	fmt.Scan(&b)
-	fmt.Println(addTwoNumber(a, b))
-}
-`,
-    java: `    
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        int a = scanner.nextInt();
-        int b = scanner.nextInt();
-        System.out.println(addTwoNumber(a, b));
-        scanner.close();
-    }
-}
-`,
-    cpp: `
-    int main() {
-   int a,b;
-   cin>>a;
-   cin>>b;
-   cout<<addTwoNumber(a,b);
-   return 0;
-  }`,
-    c: `
-  int main() {
-    int a, b;
-    scanf("%d", &a);
-    scanf("%d", &b);
-    printf("%d", addTwoNumber(a, b));
-    return 0;
-}`,
-  },
-};
-
 export default SolvedPraticeProblem;

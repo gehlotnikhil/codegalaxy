@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link } from "react-router";
 import styled from "styled-components";
 
@@ -40,24 +41,22 @@ const TableBody = styled.tbody`
     color: #e2e8f0;
   }
 `;
-
-const PraticeProblem = () => {
-  interface ProblemDetailType{
-    name:string;
-    status:"SOLVED"|"UNSOLVED";
-  }
-  const problems:ProblemDetailType[] = [
-    { name: "Code Output - MCQ", status: "SOLVED" },
-    { name: "Print Coding, Chef!", status: "SOLVED" },
-    { name: "Identify Correct Syntax", status: "SOLVED" },
-    { name: "Print difference of 10 and 3", status: "SOLVED" },
-    { name: "Correct Syntax for Header", status: "SOLVED" },
-    { name: "Print String num", status: "SOLVED" },
-    { name: "Print 6 divided by 2", status: "SOLVED" },
-    { name: "Identify Incorrect Syntax", status: "SOLVED" },
-    { name: "Print 108 using 9 and 12", status: "SOLVED" },
-  ];
-
+interface QuestionType{
+  id?:string,
+  problemName?:string,
+  language?: "java"|"c"|"cpp"|"go",
+  status?:"SOLVED"|"UNSOLVED"
+}
+interface propType{
+  Question:QuestionType[]
+}
+const PraticeProblem = (prop:propType) => {
+ 
+  useEffect(() => {
+    console.log(prop.Question);
+   
+  }, [])
+  
   return (
     <TableWrapper>
       <Table>
@@ -68,13 +67,13 @@ const PraticeProblem = () => {
           </tr>
         </TableHead>
         <TableBody>
-          {problems.map((problem, index) => (
+          {prop.Question.map((problem, index) => (
             <tr key={index}>
               <td>
               <Link
                     className="problem-highlight"
-                    to={`/pratice/c/1234567890`}
-                  > {problem.name}</Link>
+                    to={`/pratice/${problem.language}/${problem.id}`}
+                  > {problem.problemName}</Link>
               </td>
               <td>{problem.status}</td>
             </tr>

@@ -336,6 +336,25 @@ router.post("/getpraticeproblemdetails", (req, res) => __awaiter(void 0, void 0,
         const data = response.data;
         console.log("data.success-", data.success);
         console.log("data.result-", data.result);
+        let r = yield prisma.praticeProblem.findMany({
+            select: {
+                language: true,
+            },
+        });
+        const jdata = r;
+        console.log("jdata----------------", jdata);
+        const entireCount = { c: 0, cpp: 0, java: 0, go: 0 };
+        jdata.map((v) => {
+            if (v.language === "c")
+                entireCount.c++;
+            else if (v.language === "cpp")
+                entireCount.cpp++;
+            else if (v.language === "java")
+                entireCount.java++;
+            else if (v.language === "go")
+                entireCount.go++;
+            return v;
+        });
         let result = yield prisma.praticeProblem.findMany({
             where: { language: language },
             select: {
@@ -361,7 +380,7 @@ router.post("/getpraticeproblemdetails", (req, res) => __awaiter(void 0, void 0,
         console.log("final -", result);
         const totalCount = yield prisma.praticeProblem.count();
         success = true;
-        return res.send({ success, result, totalCount });
+        return res.send({ success, result, totalCount, entireCount });
     }
     catch (error) {
         console.error(error);

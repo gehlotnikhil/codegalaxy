@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
+import { RootStateType } from "../store";
+import MainContext from "../context/main";
 
 type CardProps = {
   headerColor: string;
@@ -12,7 +15,9 @@ type CardProps = {
 };
 
 const Card: React.FC<CardProps> = ({ headerColor, icon, title, description, problems, level,course }) => {
-  const navigate = useNavigate();
+ const navigate = useNavigate()
+
+  
   return (
     <div style={{ ...styles.card, borderTop: `6px solid ${headerColor}` }}  >
       <div style={styles.header}>
@@ -41,6 +46,42 @@ const Card: React.FC<CardProps> = ({ headerColor, icon, title, description, prob
 };
 
 const PraticeCourse: React.FC = () => {
+  const userDetail = useSelector((state:RootStateType)=>state.userDetail)
+  const context = useContext(MainContext)
+  const {ServerUrl} = context
+  const [EntireLanguageCount, setEntireLanguageCount] = useState({c:0,cpp:0,java:0,go:0})
+  useEffect(() => {
+    console.log("EntireLanguageCount--",EntireLanguageCount);
+    
+  }, [EntireLanguageCount])
+  
+  useEffect(() => {
+    loadProblemDetail("c")
+  }, [])
+ const loadProblemDetail = async(language:string)=>{
+   try {
+     const result = await fetch(`${ServerUrl}/api/problemset/getpraticeproblemdetails`,{
+       method: "POST",
+       headers: {
+         "Content-Type": "application/json",
+       },
+       body: JSON.stringify({
+         token:userDetail.token,
+         language:language
+       }),
+     })
+     const jsondata  = await result.json()
+     console.log("jsondata--",jsondata);
+     if(jsondata.success){
+       setEntireLanguageCount(jsondata.entireCount)
+     }
+     
+   } catch (error) {
+     console.log(error);
+     
+   }
+ }
+
   const cards = [
     {
       course:"c",
@@ -48,7 +89,7 @@ const PraticeCourse: React.FC = () => {
       icon: "https://upload.wikimedia.org/wikipedia/commons/3/35/The_C_Programming_Language_logo.svg",
       title: "Practice C",
       description: "Solve C practice problems to enhance your skills. Dive into pointers, structures, and algorithms.",
-      problems: 20,
+      problems: EntireLanguageCount.c,
       level: "Beginner level",
     },
     {
@@ -57,7 +98,7 @@ const PraticeCourse: React.FC = () => {
       icon: "https://upload.wikimedia.org/wikipedia/commons/1/18/ISO_C%2B%2B_Logo.svg",
       title: "Practice C++",
       description: "Master C++ with coding challenges covering OOP, STL, and advanced programming topics.",
-      problems: 20,
+      problems: EntireLanguageCount.cpp,
       level: "Intermediate level",
     },
     {
@@ -66,7 +107,7 @@ const PraticeCourse: React.FC = () => {
       icon: "https://upload.wikimedia.org/wikipedia/en/3/30/Java_programming_language_logo.svg",
       title: "Practice Java",
       description: "Explore Java concepts like OOP, multithreading, and collections through coding problems.",
-      problems: 20,
+      problems: EntireLanguageCount.java,
       level: "Beginner level",
     },
     {
@@ -75,7 +116,7 @@ const PraticeCourse: React.FC = () => {
       icon: "https://go.dev/blog/go-brand/Go-Logo/PNG/Go-Logo_LightBlue.png",
       title: "Practice Go",
       description: "Solve Go problems to learn concurrency, Goroutines, and Efficient and data handling with ease.",
-      problems: 20,
+      problems: EntireLanguageCount.go,
       level: "Beginner level",
     },
   ];

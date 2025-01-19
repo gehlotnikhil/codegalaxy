@@ -379,7 +379,7 @@ router.post("/getproblemdetails/:pageno?", async (req: Request, res: Response): 
 }
 );
 router.post("/getpraticeproblemdetails", async (req: Request, res: Response): Promise<any> => {
-  let success = false; 
+  let success = false;
   try {
     const token = req.body.token;
     const language = req.body.language
@@ -393,38 +393,55 @@ router.post("/getpraticeproblemdetails", async (req: Request, res: Response): Pr
       return res.status(401).send({ success, msg: "Invalid token" });
     }
     const data = response.data;
-    console.log("data.success-",data.success);
-    console.log("data.result-",data.result);
-
+    console.log("data.success-", data.success);
+    console.log("data.result-", data.result);
+    let r: any = await prisma.praticeProblem.findMany({
+      select: {
+        language: true,
+      },
+    });
+    const jdata =  r
+    console.log("jdata----------------",jdata);
     
+    const entireCount = {c:0,cpp:0,java:0,go:0}
+    jdata.map((v:any)=>{
+      if(v.language === "c") entireCount.c++;
+      else if(v.language === "cpp") entireCount.cpp++;
+      else if(v.language === "java") entireCount.java++;
+      else if(v.language === "go") entireCount.go++;
+
+      return v
+    })
+
     let result: any = await prisma.praticeProblem.findMany({
-      where:{language:language},
+      where: { language: language },
       select: {
         id: true,
         problemName: true,
         language: true,
       },
     });
-    console.log("game-",data.result.praticeCourseDetail[`${language}`].solvedProblemDetails);
-    
-    const solvedProblemDetails:string[] = data.result.praticeCourseDetail[`${language}`].solvedProblemDetails
-console.log("1");
+    console.log("game-", data.result.praticeCourseDetail[`${language}`].solvedProblemDetails);
 
-result = result.map((value: any) => {
-  const check = solvedProblemDetails.find(((v: any) => v === value.id))
-  console.log("2");
-  if (check) {
-    value.status = "SOLVED";
+    const solvedProblemDetails: string[] = data.result.praticeCourseDetail[`${language}`].solvedProblemDetails
+    console.log("1");
+
+    result = result.map((value: any) => {
+      const check = solvedProblemDetails.find(((v: any) => v === value.id))
+      console.log("2");
+      if (check) {
+        value.status = "SOLVED";
       } else {
         value.status = "UNSOLVED";
       }
       return value
     })
+    
     console.log("final -", result);
 
     const totalCount = await prisma.praticeProblem.count();
     success = true;
-    return res.send({ success, result, totalCount });
+    return res.send({ success, result, totalCount, entireCount });
   } catch (error) {
     console.error(error);
     return res.status(500).send({ success, error: error });

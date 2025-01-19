@@ -1,22 +1,98 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import PraticeProblem from "./PraticeProblem";
+import { useSelector } from "react-redux";
+import { RootStateType } from "../store";
+import { useParams } from "react-router";
+import MainContext from "../context/main";
 
 
 const PraticeCourseArena = () => {
-
+  const userDetail = useSelector((state:RootStateType)=>state.userDetail)
+  const params = useParams()
+  const context = useContext(MainContext)
+  const {ServerUrl} = context
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
+  interface PraticeQuestionType{
+    id?:string,
+    problemName?:string,
+    language?: "java"|"c"|"cpp"|"go",
+    status?:"SOLVED"|"UNSOLVED"
+
+  }
+
+  
+  const loadProblemDetail = async(language:string)=>{
+    try {
+      const result = await fetch(`${ServerUrl}/api/problemset/getpraticeproblemdetails`,{
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token:userDetail.token,
+          language:language
+        }),
+      })
+      const jsondata  = await result.json()
+      console.log("jsondata--",jsondata);
+      if(jsondata.success){
+        setPraticeQuestion(jsondata.result)
+      }
+      
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+  useEffect(() => {
+    console.log("language-",params.course);
+    loadProblemDetail(params.course || "")
+    setCourseName(()=>{
+      const course = params.course
+      if(course === "c") return "C"
+      else if(course === "cpp") return "C++"
+      else if(course === "java") return "Java"
+      else if(course === "go") return "Go"
+      
+      return ""
+    })
+  }, [])
+  const [ProgressPercent, setProgressPercent] = useState<number>(0)
+  useEffect(() => {
+    console.log(ProgressPercent);
+     }, [ProgressPercent])
+  const [PraticeQuestion, setPraticeQuestion] = useState<PraticeQuestionType[]>([])
+  useEffect(() => {
+    console.log(PraticeQuestion);
+    let Count =0;
+    PraticeQuestion.map((v)=>{
+      if(v.status === "SOLVED")
+        Count++;
+      return v
+    })
+    setProgressPercent(()=>Number(((Count/PraticeQuestion.length)*100).toFixed(0)) )
+ 
+  }, [PraticeQuestion])
+  
+  const [CourseName, setCourseName] = useState("")
+  useEffect(() => {
+    console.log(CourseName);
+    
+  }, [CourseName])
+  
   return (
     <Wrapper>
       <br />
       <br />
       <br />
-      <Logo>C++</Logo>
-      <Title>Practice C++</Title>
+      
+      <Logo>{CourseName}</Logo>
+      <Title>Practice {CourseName}</Title>
       <Description>
-        Solve C++ Practice problems online with the Practice C++ path on
-        CodeChef. Answer MCQs exercises and write code for over 200 C++ coding
+        Solve {CourseName} Practice problems online with the Practice {CourseName} path on
+        CodeGalaxy. Answer MCQs exercises and write code for over {PraticeQuestion.length} {CourseName} coding
         challenges.
       </Description>
       <Stats>
@@ -25,7 +101,7 @@ const PraticeCourseArena = () => {
           <p>(11036 reviews)</p>
         </Stat>
         <Stat>
-          <span>20</span>
+          <span>{PraticeQuestion.length}</span>
           <p>Problems</p>
         </Stat>
         <Stat>
@@ -61,15 +137,15 @@ const PraticeCourseArena = () => {
 
       <Button>Start Practice</Button>
       <ProgressBarContainer>
-        <ProgressBar style={{ width: "0%" }} />
+        <ProgressBar style={{ width: `${ProgressPercent || 0}%` }} />
       </ProgressBarContainer>
       <ProgressLabel>
         <span>Your Progress:</span>
-        <span>0%</span>
+        <span>{ProgressPercent || 0}%</span>
       </ProgressLabel>
       <br />
       <br />
-      <PraticeProblem />
+      <PraticeProblem  Question={PraticeQuestion}/>
     </Wrapper>
   );
 };
