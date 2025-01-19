@@ -105,7 +105,7 @@ function AppNavbar() {
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg bg-body-tertiary bg-nav">
+      <nav className="navbar navbar-expand-lg bg-body-tertiary bg-nav" style={{position:"sticky",top:"0" ,zIndex:"1"}}>
         <div className="container-fluid">
           <img
             className="nav-item me-3"

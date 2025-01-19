@@ -292,3 +292,9 @@ body{
     opacity: 1;
   }
 }
+
+/* Pratice Course Arena */
+.pratice-title:hover{
+  color:blue;
+  text-decoration:underline
+}

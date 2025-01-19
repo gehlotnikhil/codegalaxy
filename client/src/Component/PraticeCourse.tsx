@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router";
 
 type CardProps = {
   headerColor: string;
@@ -7,17 +8,19 @@ type CardProps = {
   description: string;
   problems: number;
   level: string;
+  course:string;
 };
 
-const Card: React.FC<CardProps> = ({ headerColor, icon, title, description, problems, level }) => {
+const Card: React.FC<CardProps> = ({ headerColor, icon, title, description, problems, level,course }) => {
+  const navigate = useNavigate();
   return (
-    <div style={{ ...styles.card, borderTop: `6px solid ${headerColor}` }}>
+    <div style={{ ...styles.card, borderTop: `6px solid ${headerColor}` }}  >
       <div style={styles.header}>
         <div style={{ ...styles.iconContainer, backgroundColor: headerColor }}>
           <img src={icon} alt={`${title} icon`} style={styles.icon} />
         </div>
       </div>
-      <h3 style={styles.title}>{title}</h3>
+      <h3 style={{...styles.title}} className="pratice-title" onClick={()=>navigate(`/pratice/${course}`)} >{title}</h3>
       <p style={styles.description}>{description}</p>
       <div style={styles.info}>
         <div>
@@ -40,6 +43,7 @@ const Card: React.FC<CardProps> = ({ headerColor, icon, title, description, prob
 const PraticeCourse: React.FC = () => {
   const cards = [
     {
+      course:"c",
       headerColor: "#1e90ff", // Blue for C
       icon: "https://upload.wikimedia.org/wikipedia/commons/3/35/The_C_Programming_Language_logo.svg",
       title: "Practice C",
@@ -48,6 +52,7 @@ const PraticeCourse: React.FC = () => {
       level: "Beginner level",
     },
     {
+      course:"cpp",
       headerColor: "#0066cc", // Darker blue for C++
       icon: "https://upload.wikimedia.org/wikipedia/commons/1/18/ISO_C%2B%2B_Logo.svg",
       title: "Practice C++",
@@ -56,6 +61,7 @@ const PraticeCourse: React.FC = () => {
       level: "Intermediate level",
     },
     {
+      course:"java",
       headerColor: "#d87c1a", // Orange for Java
       icon: "https://upload.wikimedia.org/wikipedia/en/3/30/Java_programming_language_logo.svg",
       title: "Practice Java",
@@ -64,6 +70,7 @@ const PraticeCourse: React.FC = () => {
       level: "Beginner level",
     },
     {
+      course:"go",
       headerColor: "#00ADD8", // Teal for Go
       icon: "https://go.dev/blog/go-brand/Go-Logo/PNG/Go-Logo_LightBlue.png",
       title: "Practice Go",
@@ -76,7 +83,7 @@ const PraticeCourse: React.FC = () => {
   return (
     <div style={styles.container}>
       {cards.map((card, index) => (
-        <Card key={index} {...card} />
+        <Card key={index} {...card}  />
       ))}
     </div>
   );

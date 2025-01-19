@@ -21,6 +21,8 @@ import PlayGround from "./Component/PlayGround";
 import { toast } from "react-toastify";
 import ProblemPage from "./Component/ProblemSetArea";
 import LoadingComponent from "./Component/Loading";
+import PraticeCourseArena from "./Component/PraticeCourseArena";
+import SolvedPraticeProblem from "./Component/SolvedPraticeProblem";
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
@@ -294,6 +296,22 @@ function App() {
               element={
                 <ProtectedRoute>
                   <EditProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/pratice/:course"
+              element={
+                <ProtectedRoute>
+                  <PraticeCourseArena />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/pratice/:course/:problemid"
+              element={
+                <ProtectedRoute>
+                  <SolvedPraticeProblem />
                 </ProtectedRoute>
               }
             />
