@@ -16,7 +16,7 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const ExecuteProblem_1 = __importDefault(require("./ExecuteProblem"));
 const client_1 = require("@prisma/client");
-const axios = require("axios");
+const axios_1 = __importDefault(require("axios"));
 const prisma = new client_1.PrismaClient();
 const ServerUrl = process.env.ServerUrl || "http://localhost:8000";
 console.log(ServerUrl);
@@ -28,9 +28,14 @@ router.post("/create", [
     (0, express_validator_1.body)("problemName", "Please Enter a problem name").exists(),
     (0, express_validator_1.body)("description", "Please Enter a description ").exists(),
     (0, express_validator_1.body)("companies", "Please Enter a companies ").exists(),
+    (0, express_validator_1.body)("like", "Please Enter a like ").exists(),
+    (0, express_validator_1.body)("dislike", "Please Enter a dislike").exists(),
     (0, express_validator_1.body)("testcase", "Please Enter a testcase").exists(),
     (0, express_validator_1.body)("constraint", "Please Enter a constraint").exists(),
     (0, express_validator_1.body)("topic", "Please Enter a topic").exists(),
+    (0, express_validator_1.body)("accepted", "Please Enter a accepted").exists(),
+    (0, express_validator_1.body)("submission", "Please Enter a submission").exists(),
+    (0, express_validator_1.body)("status", "Please Enter a status").exists(),
     (0, express_validator_1.body)("category", "Please Enter a category").exists(),
     (0, express_validator_1.body)("sampleInputOutput", "Please Enter a sampleInputOutput").exists(),
     (0, express_validator_1.body)("aboveCodeTemplate", "Please Enter a aboveCodeTemplate").exists(),
@@ -43,7 +48,7 @@ router.post("/create", [
         if (!error.isEmpty()) {
             return res.status(404).send({ success, error: error.array() });
         }
-        let { problemName, description, companies, testcases, constraint, topic, category, sampleInputOutput, aboveCodeTemplate, belowCodeTemplate, middleCode } = req.body;
+        let { problemName, description, companies, like, dislike, testcases, constraint, topic, accepted, submission, status, category, sampleInputOutput, aboveCodeTemplate, belowCodeTemplate, middleCode } = req.body;
         console.log("topic-", topic);
         let t = yield prisma.problemSet.findMany();
         let newNumber = 1;
@@ -57,9 +62,13 @@ router.post("/create", [
                 problemName: problemName,
                 description: description,
                 companies: companies,
+                like: like,
+                dislike: dislike,
                 testcases: testcases,
                 constraint: constraint,
                 topic: topic,
+                accepted: accepted,
+                submission: submission,
                 category: category,
                 sampleInputOutput: sampleInputOutput,
                 aboveCodeTemplate: aboveCodeTemplate,
@@ -80,10 +89,15 @@ router.put("/update/:problemno", [
     (0, express_validator_1.body)("problemName", "Please Enter a problem name").exists(),
     (0, express_validator_1.body)("description", "Please Enter a description ").exists(),
     (0, express_validator_1.body)("companies", "Please Enter a companies ").exists(),
+    (0, express_validator_1.body)("like", "Please Enter a like ").exists(),
+    (0, express_validator_1.body)("dislike", "Please Enter a dislike").exists(),
     (0, express_validator_1.body)("testcase", "Please Enter a testcase").exists(),
     (0, express_validator_1.body)("constraint", "Please Enter a constraint").exists(),
     (0, express_validator_1.body)("topic", "Please Enter a topic").exists(),
+    (0, express_validator_1.body)("accepted", "Please Enter a accepted").exists(),
     (0, express_validator_1.body)("category", "Please Enter a category").exists(),
+    (0, express_validator_1.body)("submission", "Please Enter a submission").exists(),
+    (0, express_validator_1.body)("status", "Please Enter a status").exists(),
     (0, express_validator_1.body)("sampleInputOutput", "Please Enter a sampleInputOutput").exists(),
     (0, express_validator_1.body)("aboveCodeTemplate", "Please Enter a aboveCodeTemplate").exists(),
     (0, express_validator_1.body)("belowCodeTemplate", "Please Enter a belowCodeTemplate").exists(),
@@ -105,6 +119,12 @@ router.put("/update/:problemno", [
         if (req.body.companies) {
             query.companies = req.body.companies;
         }
+        if (req.body.like) {
+            query.like = req.body.like;
+        }
+        if (req.body.dislike) {
+            query.dislike = req.body.dislike;
+        }
         if (req.body.testcases) {
             query.testcases = req.body.testcases;
         }
@@ -114,8 +134,17 @@ router.put("/update/:problemno", [
         if (req.body.topic) {
             query.topic = req.body.topic;
         }
+        if (req.body.accepted) {
+            query.accepted = req.body.accepted;
+        }
         if (req.body.category) {
             query.category = req.body.category;
+        }
+        if (req.body.submission) {
+            query.submission = req.body.submission;
+        }
+        if (req.body.status) {
+            query.status = req.body.status;
         }
         if (req.body.sampleInputOutput) {
             query.sampleInputOutput = req.body.sampleInputOutput;
@@ -175,17 +204,16 @@ router.delete("/delete/:problemno", (req, res) => __awaiter(void 0, void 0, void
 router.get("/getallproblem/:pageno?", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
-        let result = [];
         console.log(req.params.pageno, "----", typeof req.params.pageno);
         if (req.params.pageno) {
-            result = yield prisma.problemSet.findMany({
+            let result = yield prisma.problemSet.findMany({
                 skip: Number(req.params.pageno) === 0 ? 0 : (Number(req.params.pageno) - 1) * 10,
                 take: 10
             });
             success = true;
             return res.send({ success, result });
         }
-        result = (yield prisma.problemSet.findMany());
+        let result = (yield prisma.problemSet.findMany());
         success = true;
         return res.send({ success, result });
     }
@@ -203,7 +231,7 @@ router.post("/getproblemdetails/:pageno?", (req, res) => __awaiter(void 0, void 
         if (!token) {
             return res.status(400).send({ success, msg: "Token is required" });
         }
-        const response = yield axios.post(`${ServerUrl}/api/user/tokentodata`, { token: (token || "") }, {
+        const response = yield axios_1.default.post(`${ServerUrl}/api/user/tokentodata`, { token: (token || "") }, {
             headers: { "Content-Type": "application/json" },
         });
         const data = response.data;
@@ -270,7 +298,7 @@ router.post("/getspecificproblem", (req, res) => __awaiter(void 0, void 0, void 
             if (!token) {
                 return res.status(400).send({ success: false, msg: "Token is required" });
             }
-            const response = yield axios.post(`${ServerUrl}/api/user/tokentodata`, { token: (token || "") }, {
+            const response = yield axios_1.default.post(`${ServerUrl}/api/user/tokentodata`, { token: (token || "") }, {
                 headers: { "Content-Type": "application/json" },
             });
             if (!response.data.success) {

@@ -40,7 +40,7 @@ const RatingDisplay: React.FC<RatingProps> = ({ number }) => {
   }, []);
 
   useEffect(() => {
-    console.log(division);
+    console.log("division - ",division);
   }, [division]);
 
   const stars = getStars(number);

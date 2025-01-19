@@ -2,9 +2,7 @@ import { Request, Response, Router } from "express";
 import { body, validationResult } from "express-validator";
 import executeproblem from "./ExecuteProblem";
 import { PrismaClient } from "@prisma/client";
-import UserFunctions from "../lib/UserFunctions";
-
-const axios = require("axios")
+import axios from "axios";
 const prisma = new PrismaClient();
 const ServerUrl = process.env.ServerUrl || "http://localhost:8000"
 console.log(ServerUrl);
@@ -14,15 +12,21 @@ router.get("/", (req: Request, res: Response) => {
   res.send({ success: "ProblemSet Routing is on" });
 });
 
+
 router.post(
   "/create",
   [
     body("problemName", "Please Enter a problem name").exists(),
     body("description", "Please Enter a description ").exists(),
     body("companies", "Please Enter a companies ").exists(),
+    body("like", "Please Enter a like ").exists(),
+    body("dislike", "Please Enter a dislike").exists(),
     body("testcase", "Please Enter a testcase").exists(),
     body("constraint", "Please Enter a constraint").exists(),
     body("topic", "Please Enter a topic").exists(),
+    body("accepted", "Please Enter a accepted").exists(),
+    body("submission", "Please Enter a submission").exists(),
+    body("status", "Please Enter a status").exists(),
     body("category", "Please Enter a category").exists(),
     body("sampleInputOutput", "Please Enter a sampleInputOutput").exists(),
     body("aboveCodeTemplate", "Please Enter a aboveCodeTemplate").exists(),
@@ -41,17 +45,22 @@ router.post(
         problemName,
         description,
         companies,
+        like,
+        dislike,
         testcases,
         constraint,
         topic,
+        accepted,
+        submission,
+        status,
         category,
         sampleInputOutput,
         aboveCodeTemplate,
         belowCodeTemplate,
         middleCode
       } = req.body;
-      console.log("topic-", topic);
-
+      console.log("topic-",topic);
+      
       let t = await prisma.problemSet.findMany();
       let newNumber = 1;
       if (t.length > 0) {
@@ -64,9 +73,13 @@ router.post(
           problemName: problemName,
           description: description,
           companies: companies,
+          like: like,
+          dislike: dislike,
           testcases: testcases,
           constraint: constraint,
           topic: topic,
+          accepted: accepted,
+          submission: submission,
           category: category,
           sampleInputOutput: sampleInputOutput,
           aboveCodeTemplate: aboveCodeTemplate,
@@ -91,10 +104,15 @@ router.put(
     body("problemName", "Please Enter a problem name").exists(),
     body("description", "Please Enter a description ").exists(),
     body("companies", "Please Enter a companies ").exists(),
+    body("like", "Please Enter a like ").exists(),
+    body("dislike", "Please Enter a dislike").exists(),
     body("testcase", "Please Enter a testcase").exists(),
     body("constraint", "Please Enter a constraint").exists(),
     body("topic", "Please Enter a topic").exists(),
+    body("accepted", "Please Enter a accepted").exists(),
     body("category", "Please Enter a category").exists(),
+    body("submission", "Please Enter a submission").exists(),
+    body("status", "Please Enter a status").exists(),
     body("sampleInputOutput", "Please Enter a sampleInputOutput").exists(),
     body("aboveCodeTemplate", "Please Enter a aboveCodeTemplate").exists(),
     body("belowCodeTemplate", "Please Enter a belowCodeTemplate").exists(),
@@ -117,6 +135,12 @@ router.put(
       if (req.body.companies) {
         query.companies = req.body.companies
       }
+      if (req.body.like) {
+        query.like = req.body.like
+      }
+      if (req.body.dislike) {
+        query.dislike = req.body.dislike
+      }
       if (req.body.testcases) {
         query.testcases = req.body.testcases
       }
@@ -126,8 +150,17 @@ router.put(
       if (req.body.topic) {
         query.topic = req.body.topic
       }
+      if (req.body.accepted) {
+        query.accepted = req.body.accepted
+      }
       if (req.body.category) {
         query.category = req.body.category
+      }
+      if (req.body.submission) {
+        query.submission = req.body.submission
+      }
+      if (req.body.status) {
+        query.status = req.body.status
       }
       if (req.body.sampleInputOutput) {
         query.sampleInputOutput = req.body.sampleInputOutput
@@ -149,6 +182,7 @@ router.put(
           ...query
         }
       })
+
 
       success = true;
       return res.send({ success, result, msg: "Update Successfull" });
@@ -198,11 +232,9 @@ router.get(
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
     try {
-      let result = [];
-
       console.log(req.params.pageno, "----", typeof req.params.pageno);
       if (req.params.pageno) {
-        result = await prisma.problemSet.findMany({
+        let result = await prisma.problemSet.findMany({
           skip: Number(req.params.pageno) === 0 ? 0 : (Number(req.params.pageno) - 1) * 10,
           take: 10
         });
@@ -210,7 +242,7 @@ router.get(
         return res.send({ success, result });
       }
 
-      result = (await prisma.problemSet.findMany())
+      let result = (await prisma.problemSet.findMany())
       success = true;
       return res.send({ success, result });
     } catch (error) {
@@ -280,8 +312,8 @@ router.post("/getproblemdetails/:pageno?", async (req: Request, res: Response): 
     console.error(error);
     return res.status(500).send({ success, error: error });
   }
-});
-
+}
+);
 
 router.post(
   "/getspecificproblem",
@@ -332,7 +364,7 @@ router.post(
       if (no) {
         result = await prisma.problemSet.findFirst({ where: { problemNo: Number.parseInt(no as string) } })
       }
-      if (result === null) {
+      if (result === null) { 
         success = false;
       } else {
         success = true;

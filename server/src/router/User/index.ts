@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
-import { body, validationResult } from "express-validator";
+import { body, Result, validationResult } from "express-validator";
 import UserFunctions from "../lib/UserFunctions";
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -10,10 +10,8 @@ const axios = require("axios");
   console.log(ServerUrl);
   
 import GoogleLogin from "./GoogleLogin";
-
 const prisma = new PrismaClient();
 import { faker } from "@faker-js/faker";
-
 function generateRandomName() {
   // Generate a random name using faker
   const firstName = faker.person.firstName(); // Random first name
@@ -63,7 +61,9 @@ router.post(
           email: email,
           password: hashPassword,
           userName: userName,
+          totalRank: 1000,
           solvedProblemDetails: [],
+         
           googleLoginAccess: false,
           isAdmin: false,
           profilePictureUrl:
@@ -97,10 +97,17 @@ router.put(
     body("email", "Please fill email field").exists(),
     body("password", "Please fill password field").exists(),
     body("userName", "Please fill userName field").exists(),
+    body("totalRank", "Please fill totalRank field").exists(),
+    body("noOfProblemSolved", "Please fill noOfProblemSolved field").exists(),
     body(
       "solvedProblemDetails",
       "Please fill solvedProblemDetails field"
     ).exists(),
+    body(
+      "noOfContestParticipated",
+      "Please fill noOfContestParticipated field"
+    ).exists(),
+    body("contestDetails", "Please fill contestDetails field").exists(),
     body("gender", "Please fill gender field").exists(),
     body("collegeName", "Please fill collegeName field").exists(),
     body("state", "Please fill state field").exists(),
@@ -147,10 +154,21 @@ router.put(
       if (req.body.userName) {
         query.userName = req.body.userName;
       }
+      if (req.body.totalRank) {
+        query.totalRank = req.body.totalRank;
+      }
+      if (req.body.noOfProblemSolved) {
+        query.noOfProblemSolved = req.body.noOfProblemSolved;
+      }
       if (req.body.solvedProblemDetails) {
         query.solvedProblemDetails = req.body.solvedProblemDetails;
       }
-   
+      if (req.body.noOfContestParticipated) {
+        query.noOfContestParticipated = req.body.noOfContestParticipated;
+      }
+      if (req.body.contestDetails) {
+        query.contestDetails = req.body.contestDetails;
+      }
       if (req.body.gender) {
         query.gender = req.body.gender;
       }
@@ -316,8 +334,6 @@ router.post(
       console.log(id);
 
       let result = await prisma.user.findFirst({ where: { id } });
-      console.log("res-", result);
-      
       success = true;
       return res.send({ success, result });
     } catch (error) {

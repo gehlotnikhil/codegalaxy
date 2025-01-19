@@ -27,25 +27,7 @@ model User {
   profilePictureUrl       String
 }
 
-model ProblemSet {
-  id                String            @id @default(auto()) @map("_id") @db.ObjectId
-  problemNo         Int               @unique
-  problemName       String
-  description       String
-  companies         String[]
-  like              Int               @default(0)
-  dislike           Int               @default(0)
-  sampleInputOutput InputOutputType[]
-  testcases         InputOutputType[]
-  constraint        String[]
-  topic             TopicEnum[]
-  accepted          Int               @default(0)
-  submission        Int               @default(0)
-  category          categoryEnum
-  aboveCodeTemplate CodeTemplateType
-  belowCodeTemplate CodeTemplateType
-  middleCode        CodeTemplateType
-}
+
 
 model Contest {
   id               String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -78,6 +60,19 @@ type Role {
   Admin Boolean
 }
 
+// type Test_Type{
+//   input String
+//   output String
+// }
+
+
+// model Problem_Set{
+//   id       String    @id @default(auto()) @map("_id") @db.ObjectId
+//   problem_no Int 
+//   like Int
+//   dislike Int
+
+// }
 type InputOutputType {
   input  String
   output String
@@ -106,5 +101,28 @@ type CodeTemplateType{
   java String
   go String
 }
+
+
+model ProblemSet {
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+  problemNo         Int               @unique
+  problemName       String
+  description       String
+  companies         String[]
+  like              Int
+  dislike           Int
+  sampleInputOutput InputOutputType[]
+  testcases         InputOutputType[]
+  constraint        String[]
+  topic             TopicEnum[]
+  accepted          Int
+  submission        Int
+  status            StatusEnum
+  category          categoryEnum
+  aboveCodeTemplate CodeTemplateType
+  belowCodeTemplate CodeTemplateType
+  middleCode        CodeTemplateType
+}
+
 
 

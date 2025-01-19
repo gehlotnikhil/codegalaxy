@@ -67,6 +67,7 @@ router.post("/registeruser", [
                 email: email,
                 password: hashPassword,
                 userName: userName,
+                totalRank: 1000,
                 solvedProblemDetails: [],
                 googleLoginAccess: false,
                 isAdmin: false,
@@ -94,7 +95,11 @@ router.put("/update/", [
     (0, express_validator_1.body)("email", "Please fill email field").exists(),
     (0, express_validator_1.body)("password", "Please fill password field").exists(),
     (0, express_validator_1.body)("userName", "Please fill userName field").exists(),
+    (0, express_validator_1.body)("totalRank", "Please fill totalRank field").exists(),
+    (0, express_validator_1.body)("noOfProblemSolved", "Please fill noOfProblemSolved field").exists(),
     (0, express_validator_1.body)("solvedProblemDetails", "Please fill solvedProblemDetails field").exists(),
+    (0, express_validator_1.body)("noOfContestParticipated", "Please fill noOfContestParticipated field").exists(),
+    (0, express_validator_1.body)("contestDetails", "Please fill contestDetails field").exists(),
     (0, express_validator_1.body)("gender", "Please fill gender field").exists(),
     (0, express_validator_1.body)("collegeName", "Please fill collegeName field").exists(),
     (0, express_validator_1.body)("state", "Please fill state field").exists(),
@@ -135,8 +140,20 @@ router.put("/update/", [
         if (req.body.userName) {
             query.userName = req.body.userName;
         }
+        if (req.body.totalRank) {
+            query.totalRank = req.body.totalRank;
+        }
+        if (req.body.noOfProblemSolved) {
+            query.noOfProblemSolved = req.body.noOfProblemSolved;
+        }
         if (req.body.solvedProblemDetails) {
             query.solvedProblemDetails = req.body.solvedProblemDetails;
+        }
+        if (req.body.noOfContestParticipated) {
+            query.noOfContestParticipated = req.body.noOfContestParticipated;
+        }
+        if (req.body.contestDetails) {
+            query.contestDetails = req.body.contestDetails;
         }
         if (req.body.gender) {
             query.gender = req.body.gender;
@@ -279,7 +296,6 @@ router.post("/tokentodata", [(0, express_validator_1.body)("token", "Please ente
         let id = decode.id;
         console.log(id);
         let result = yield prisma.user.findFirst({ where: { id } });
-        console.log("res-", result);
         success = true;
         return res.send({ success, result });
     }
