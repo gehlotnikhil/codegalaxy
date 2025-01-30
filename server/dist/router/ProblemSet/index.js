@@ -330,15 +330,23 @@ router.post("/getpraticeproblemdetails", (req, res) => __awaiter(void 0, void 0,
         const response = yield axios_1.default.post(`${ServerUrl}/api/user/tokentodata`, { token }, {
             headers: { "Content-Type": "application/json" },
         });
+        console.log("q1-response-", response);
+        console.log("q1");
         if (!response.data.success) {
             return res.status(401).send({ success, msg: "Invalid token" });
         }
+        console.log("q2");
         const data = response.data;
+        console.log("q3");
         const allProblems = yield prisma.praticeProblem.findMany({ select: { language: true } });
+        console.log("q4-allproblem-", allProblems);
+        console.log("q4");
         const entireCount = allProblems.reduce((acc, problem) => {
             acc[problem.language] = (acc[problem.language] || 0) + 1;
             return acc;
         }, {});
+        console.log("q5-entirecount - ", entireCount);
+        console.log("q5");
         let problems = yield prisma.praticeProblem.findMany({
             where: { language },
             select: {
@@ -347,8 +355,13 @@ router.post("/getpraticeproblemdetails", (req, res) => __awaiter(void 0, void 0,
                 language: true,
             },
         });
+        console.log("q6-problems - ", problems);
+        console.log("q6");
         const solvedProblemDetails = ((_a = data.result.praticeCourseDetail[language]) === null || _a === void 0 ? void 0 : _a.solvedProblemDetails) || [];
+        console.log("q7");
         problems = problems.map((problem) => (Object.assign(Object.assign({}, problem), { status: solvedProblemDetails.includes(problem.id) ? "SOLVED" : "UNSOLVED" })));
+        console.log("q8-final ", problems);
+        console.log("q8");
         success = true;
         return res.send({ success, result: problems, totalCount: problems.length, entireCount });
     }
