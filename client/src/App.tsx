@@ -26,8 +26,14 @@ import SolvedPraticeProblem from "./Component/SolvedPraticeProblem";
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
-const ServerUrl =  process.env.ServerUrl || "http://localhost:8000"
-  // const ServerUrl = process.env.ServerUrl || "https://codegalaxy-server.onrender.com"
+// const ServerUrl =  process.env.ServerUrl || "http://localhost:8000"
+useEffect(() => {
+  
+  console.log("Serverurl-", process.env.ServerUrl);
+
+}, [])
+
+  const ServerUrl = process.env.ServerUrl || "https://codegalaxy-server.onrender.com"
   const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     const navigate = useNavigate()
     const dispatch = useDispatch();
