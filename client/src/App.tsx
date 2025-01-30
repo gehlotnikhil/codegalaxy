@@ -27,15 +27,7 @@ interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 // const ServerUrl =  process.env.ServerUrl || "http://localhost:8000"
-useEffect(() => {
-  try {
-    console.log("Serverurl-", process.env.ServerUrl||1);
-    
-  } catch (error) {
-    
-  }
 
-}, [])
 
   const ServerUrl = process.env.ServerUrl || "https://codegalaxy-server.onrender.com"
   const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
@@ -46,7 +38,15 @@ useEffect(() => {
   
     const [loading, setLoading] = useState(true);
     const [redirectComponent, setRedirectComponent] = useState<React.ReactNode>(null);
-  
+    useEffect(() => {
+      try {
+        console.log("Serverurl-", process.env.ServerUrl||1);
+        
+      } catch (error) {
+        
+      }
+    
+    }, [])
     const loadDataTokenToUserDetail = async (token: string | null): Promise<boolean> => {
       try {
         const response = await fetch(`${ServerUrl}/api/user/tokentodata`, {
