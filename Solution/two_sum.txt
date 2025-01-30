@@ -1,0 +1,206 @@
+c++:
+#include <iostream>
+#include <map>
+#include <vector>
+
+using namespace std;
+
+vector<int> twoSum(vector<int>& nums, int target) {
+    map<int, int> numMap; // Replace unordered_map with map
+    for (size_t i = 0; i < nums.size(); ++i) {
+        int complement = target - nums[i];
+        map<int, int>::iterator it = numMap.find(complement);
+        if (it != numMap.end()) {
+            vector<int> result; // Manually create a vector
+            result.push_back(it->second); // First index
+            result.push_back(i); // Second index
+            return result;
+        }
+        numMap[nums[i]] = static_cast<int>(i);
+    }
+    return vector<int>(); // Return an empty vector if no solution
+}
+
+int main() {
+    int n, target;
+    
+    // Get the size of the array from user
+    cin >> n;
+    
+    vector<int> nums;
+    
+    // Take array input from user
+    for (int i = 0; i < n; ++i) {
+        int num;
+        cin >> num;
+        nums.push_back(num);
+    }
+
+    // Get the target value from user
+    cin >> target;
+
+    // Call the twoSum function
+    vector<int> result = twoSum(nums, target);
+
+    // Output the result
+    if (result.empty()) {
+        cout << "No solution found." << endl;
+    } else {
+        cout << "["<<result[0] << "," << result[1]<<"]" << endl;
+    }
+    
+    return 0;
+}
+
+
+c:
+#include <stdio.h>
+#include <stdlib.h>
+
+// Function to find two indices whose sum equals the target
+int* twoSum(int* nums, int numsSize, int target, int* returnSize) {
+    int* result = (int*)malloc(2 * sizeof(int)); // Allocate memory for two indices
+    *returnSize = 2;
+
+    for (int i = 0; i < numsSize; i++) {
+        for (int j = i + 1; j < numsSize; j++) {
+            if (nums[i] + nums[j] == target) {
+                result[0] = i;
+                result[1] = j;
+                return result;
+            }
+        }
+    }
+
+    *returnSize = 0;
+    free(result);
+    return NULL; // Return NULL if no solution is found
+}
+
+int main() {
+    int n, target;
+
+    // Get the size of the array from user
+    scanf("%d", &n);
+    int* nums = (int*)malloc(n * sizeof(int));
+
+    // Take array input from user
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &nums[i]);
+    }
+
+    // Get the target value from user
+    scanf("%d", &target);
+
+    // Call the twoSum function
+    int returnSize;
+    int* result = twoSum(nums, n, target, &returnSize);
+
+    // Output the result
+    if (result == NULL) {
+        printf("No solution found.\n");
+    } else {
+        printf("[%d,%d]\n", result[0], result[1]);
+        free(result); // Free allocated memory
+    }
+
+    free(nums); // Free allocated memory for nums
+    return 0;
+}
+
+go:
+package main
+
+import (
+	"fmt"
+)
+
+func twoSum(nums []int, target int) []int {
+	numMap := make(map[int]int) // Replace map<int, int> with a Go map[int]int
+
+	for i, num := range nums {
+		complement := target - num
+		if index, found := numMap[complement]; found {
+			return []int{index, i} // Returning the indices
+		}
+		numMap[num] = i
+	}
+	return []int{} // Returning an empty slice if no solution is found
+}
+
+func main() {
+	var n, target int
+
+	// Get the size of the array from user
+	fmt.Scan(&n)
+
+	nums := make([]int, n)
+
+	// Take array input from user
+	for i := 0; i < n; i++ {
+		fmt.Scan(&nums[i])
+	}
+
+	// Get the target value from user
+	fmt.Scan(&target)
+
+	// Call the twoSum function
+	result := twoSum(nums, target)
+
+	// Output the result
+	if len(result) == 0 {
+		fmt.Println("No solution found.")
+	} else {
+		fmt.Printf("[%d,%d]\n", result[0], result[1])
+	}
+}
+
+
+java:
+import java.util.*;
+
+public class TwoSum {
+    public static int[] twoSum(int[] nums, int target) {
+        Map<Integer, Integer> numMap = new HashMap<>(); // Replacing map<int, int> with HashMap<Integer, Integer>
+        
+        for (int i = 0; i < nums.length; i++) {
+            int complement = target - nums[i];
+            
+            if (numMap.containsKey(complement)) {
+                return new int[]{numMap.get(complement), i}; // Returning the indices
+            }
+            
+            numMap.put(nums[i], i);
+        }
+        return new int[]{}; // Returning an empty array if no solution is found
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Get the size of the array from user
+        int n = scanner.nextInt();
+
+        int[] nums = new int[n];
+
+        // Take array input from user
+        for (int i = 0; i < n; i++) {
+            nums[i] = scanner.nextInt();
+        }
+
+        // Get the target value from user
+        int target = scanner.nextInt();
+
+        // Call the twoSum function
+        int[] result = twoSum(nums, target);
+
+        // Output the result
+        if (result.length == 0) {
+            System.out.println("No solution found.");
+        } else {
+            System.out.println("[" + result[0] + "," + result[1] + "]");
+        }
+
+        scanner.close();
+    }
+}

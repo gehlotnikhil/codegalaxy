@@ -28,14 +28,9 @@ router.post("/create", [
     (0, express_validator_1.body)("problemName", "Please Enter a problem name").exists(),
     (0, express_validator_1.body)("description", "Please Enter a description ").exists(),
     (0, express_validator_1.body)("companies", "Please Enter a companies ").exists(),
-    (0, express_validator_1.body)("like", "Please Enter a like ").exists(),
-    (0, express_validator_1.body)("dislike", "Please Enter a dislike").exists(),
     (0, express_validator_1.body)("testcase", "Please Enter a testcase").exists(),
     (0, express_validator_1.body)("constraint", "Please Enter a constraint").exists(),
     (0, express_validator_1.body)("topic", "Please Enter a topic").exists(),
-    (0, express_validator_1.body)("accepted", "Please Enter a accepted").exists(),
-    (0, express_validator_1.body)("submission", "Please Enter a submission").exists(),
-    (0, express_validator_1.body)("status", "Please Enter a status").exists(),
     (0, express_validator_1.body)("category", "Please Enter a category").exists(),
     (0, express_validator_1.body)("sampleInputOutput", "Please Enter a sampleInputOutput").exists(),
     (0, express_validator_1.body)("aboveCodeTemplate", "Please Enter a aboveCodeTemplate").exists(),
@@ -48,7 +43,7 @@ router.post("/create", [
         if (!error.isEmpty()) {
             return res.status(404).send({ success, error: error.array() });
         }
-        let { problemName, description, companies, like, dislike, testcases, constraint, topic, accepted, submission, status, category, sampleInputOutput, aboveCodeTemplate, belowCodeTemplate, middleCode } = req.body;
+        let { problemName, description, companies, testcases, constraint, topic, category, sampleInputOutput, aboveCodeTemplate, belowCodeTemplate, middleCode } = req.body;
         console.log("topic-", topic);
         let t = yield prisma.problemSet.findMany();
         let newNumber = 1;
@@ -62,13 +57,13 @@ router.post("/create", [
                 problemName: problemName,
                 description: description,
                 companies: companies,
-                like: like,
-                dislike: dislike,
+                like: 0,
+                dislike: 0,
                 testcases: testcases,
                 constraint: constraint,
                 topic: topic,
-                accepted: accepted,
-                submission: submission,
+                accepted: 0,
+                submission: 0,
                 category: category,
                 sampleInputOutput: sampleInputOutput,
                 aboveCodeTemplate: aboveCodeTemplate,

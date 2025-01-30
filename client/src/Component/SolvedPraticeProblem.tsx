@@ -179,7 +179,7 @@ const SolvedPraticeProblem: React.FC = () => {
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <h1 style={styles.title}>
                {MainQuestion.problemName}
-            </h1>
+            </h1> 
             <div
               style={styles.status}
               className={`d-${QuestionStatus ? "inline-block" : "none"}`}
@@ -188,7 +188,7 @@ const SolvedPraticeProblem: React.FC = () => {
               <span style={styles.checkmark}>✅</span>
             </div>
           </div>
-          <p style={styles.description}>{MainQuestion.description}</p>
+          <pre style={styles.description}>{MainQuestion.description}</pre>
           <div>
             {/* Test Cases */}
             {sampleTestCases &&

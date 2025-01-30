@@ -333,7 +333,7 @@ const ProblemPage: React.FC = () => {
               <span style={styles.checkmark}>✅</span>
             </div>
           </div>
-          <p style={styles.description}>{MainQuestion.description}</p>
+          <pre  style={{...styles.description,overflow:"unset",textWrap:"pretty",fontFamily:"-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji"}}>{MainQuestion.description}</pre>
           <div>
             {/* Test Cases */}
             {sampleTestCases && sampleTestCases.map((testCase, index) => (
@@ -416,7 +416,7 @@ const ProblemPage: React.FC = () => {
                   style={{ cursor: "pointer" }}
                 >
                   <FontAwesomeIcon icon={faThumbsUp} className="me-1" />
-                  <span>767</span>
+                  <span>{MainQuestion.like}</span>
                 </div>
                 {/* Thumbs Down */}
                 <div
@@ -425,7 +425,7 @@ const ProblemPage: React.FC = () => {
                   style={{ cursor: "pointer" }}
                 >
                   <FontAwesomeIcon icon={faThumbsDown} className="me-1" />
-                  <span>99</span>
+                  <span>{MainQuestion.dislike}</span>
                 </div>
               </div>
             </div>

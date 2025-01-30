@@ -1,5 +1,11 @@
 import "./App.css";
-import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom"; // Ensure this is `react-router-dom`
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation,
+  useNavigate,
+} from "react-router-dom"; // Ensure this is `react-router-dom`
 import Login from "./Component/Login";
 import AppNavbar from "./Component/Navbar";
 import SignUp from "./Component/SignUp";
@@ -16,7 +22,7 @@ import DisplayPage from "./Component/DisplayPage";
 import Testing1 from "./Component/Testing1";
 import { useDispatch, useSelector } from "react-redux";
 import { RootStateType } from "./store";
-import {setUserDetail} from './store/slice/UserDetailSlice'
+import { setUserDetail } from "./store/slice/UserDetailSlice";
 import PlayGround from "./Component/PlayGround";
 import { toast } from "react-toastify";
 import ProblemPage from "./Component/ProblemSetArea";
@@ -26,98 +32,96 @@ import SolvedPraticeProblem from "./Component/SolvedPraticeProblem";
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
-const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:8000";
-  // const SERVER_URL = "https://codegalaxy-server.onrender.com"
-  const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-    const navigate = useNavigate()
-    const dispatch = useDispatch();
-    const location = useLocation();
-    const userDetail = useSelector((state: RootStateType) => state.userDetail);
-  
-    const [loading, setLoading] = useState(true);
-    const [redirectComponent, setRedirectComponent] = useState<React.ReactNode>(null);
-    useEffect(() => {
-      try {
-        console.log("SERVER_URL-", process.env.SERVER_URL||1);
-        
-      } catch (error) {
-        
+// const SERVER_URL = "http://localhost:8000";
+const SERVER_URL = "https://codegalaxy-server.onrender.com"
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const userDetail = useSelector((state: RootStateType) => state.userDetail);
+
+  const [loading, setLoading] = useState(true);
+  const [redirectComponent, setRedirectComponent] =
+    useState<React.ReactNode>(null);
+  useEffect(() => {
+    try {
+      console.log("SERVER_URL-", process.env.SERVER_URL || 1);
+    } catch (error) {}
+  }, []);
+  const loadDataTokenToUserDetail = async (
+    token: string | null
+  ): Promise<boolean> => {
+    try {
+      const response = await fetch(`${SERVER_URL}/api/user/tokentodata`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token }),
+      });
+
+      const jsonData = await response.json();
+      console.log("Token validation response:", jsonData);
+
+      if (jsonData.success) {
+        dispatch(setUserDetail({ ...jsonData.result, token }));
+        return true;
       }
-    
-    }, [])
-    const loadDataTokenToUserDetail = async (token: string | null): Promise<boolean> => {
-      try {
-        const response = await fetch(`${SERVER_URL}/api/user/tokentodata`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ token }),
-        });
-  
-        const jsonData = await response.json();
-        console.log("Token validation response:", jsonData);
-  
-        if (jsonData.success) {
-          dispatch(setUserDetail({ ...jsonData.result, token }));
-          return true;
-        }
-      } catch (error) {
-        console.error("Error verifying token:", error);
-      }
-      return false;
-    };
-  
-    const verifyAuthentication = async (): Promise<React.ReactNode> => {
-      const token = localStorage.getItem("token");
-  
-      if (!userDetail.token && token) {
-        const success = await loadDataTokenToUserDetail(token);
-        console.log("Token loaded successfully:", success);
-  
-        if (!success) {
-          console.log("Navigating to Login due to unsuccessful token loading");
-          navigate("/login")
-          return <Login />;
-        }
-      } else if (!userDetail.token) {
-        console.log("No token found, redirecting to Login");
-        navigate("/login")
+    } catch (error) {
+      console.error("Error verifying token:", error);
+    }
+    return false;
+  };
+
+  const verifyAuthentication = async (): Promise<React.ReactNode> => {
+    const token = localStorage.getItem("token");
+
+    if (!userDetail.token && token) {
+      const success = await loadDataTokenToUserDetail(token);
+      console.log("Token loaded successfully:", success);
+
+      if (!success) {
+        console.log("Navigating to Login due to unsuccessful token loading");
+        navigate("/login");
         return <Login />;
       }
-  
-      if (userDetail.role?.Admin && location.pathname !== "/admin") {
-        navigate("/admin")
-        return <Admin />;
-      } else if (!userDetail.role?.Admin && location.pathname === "/admin") {
-        navigate("/")
-        return <Home />;
-      }
-  
-      return children; // Render the protected content
-    };
-  
-    useEffect(() => {
-      const authenticate = async () => {
-        const componentToRender = await verifyAuthentication();
-        setRedirectComponent(componentToRender);
-        setLoading(false);
-      };
-  
-      authenticate();
-    }, [userDetail.token, location.pathname, dispatch]);
-  
-    if (loading) {
-      return <LoadingComponent />; // Optionally show a loading spinner
+    } else if (!userDetail.token) {
+      console.log("No token found, redirecting to Login");
+      navigate("/login");
+      return <Login />;
     }
-  
-    return <>{redirectComponent}</>;
-  };
-  
-function App() {
 
- const dispatch = useDispatch()
- const userDetail = useSelector((state: RootStateType) =>  state.userDetail);
+    if (userDetail.role?.Admin && location.pathname !== "/admin") {
+      navigate("/admin");
+      return <Admin />;
+    } else if (!userDetail.role?.Admin && location.pathname === "/admin") {
+      navigate("/");
+      return <Home />;
+    }
+
+    return children; // Render the protected content
+  };
+
+  useEffect(() => {
+    const authenticate = async () => {
+      const componentToRender = await verifyAuthentication();
+      setRedirectComponent(componentToRender);
+      setLoading(false);
+    };
+
+    authenticate();
+  }, [userDetail.token, location.pathname, dispatch]);
+
+  if (loading) {
+    return <LoadingComponent />; // Optionally show a loading spinner
+  }
+
+  return <>{redirectComponent}</>;
+};
+
+function App() {
+  const dispatch = useDispatch();
+  const userDetail = useSelector((state: RootStateType) => state.userDetail);
   const defaultProfilePicture =
     "https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk";
 
@@ -142,7 +146,7 @@ function App() {
   }, [ShowProfile]);
 
   const ChangeCodeEditorDesign = () => {};
- 
+
   function handleShowProfileToggle(): void {
     if (ShowEditProfile === true) {
       setShowEditProfile(false);
@@ -156,9 +160,9 @@ function App() {
     }
   }
   const updateProfileInformation = async (data: any) => {
-    console.log("updateProfileInformation-",data);
-    console.log("token -",userDetail.token);
-    
+    console.log("updateProfileInformation-", data);
+    console.log("token -", userDetail.token);
+
     const result = await fetch(`${SERVER_URL}/api/user/update/`, {
       method: "PUT",
       headers: {
@@ -171,30 +175,28 @@ function App() {
     });
     const jsondata = await result.json();
     console.log(jsondata);
-    if(jsondata.success){
-      console.log("go--------------------------",jsondata);
-      
-    dispatch(setUserDetail(jsondata.result))
-    toast("Updated")
-    
-    }else{
-      toast("Not Updated")
+    if (jsondata.success) {
+      console.log("go--------------------------", jsondata);
+
+      dispatch(setUserDetail(jsondata.result));
+      toast("Updated");
+    } else {
+      toast("Not Updated");
     }
   };
-  const handleCodeExecution = async(data:any)=>{
+  const handleCodeExecution = async (data: any) => {
     const result = await fetch(`${SERVER_URL}/api/problemset/executeproblem`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        ...data
+        ...data,
       }),
     });
-    const jsondata  = await result.json();
-    return jsondata
-  }
-  
+    const jsondata = await result.json();
+    return jsondata;
+  };
 
   return (
     <>
@@ -222,17 +224,41 @@ function App() {
           <AppNavbar />
           <Routes>
             {/* Public Routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/problem/:problemid" element={<ProblemPage />} />
+            <Route
+              path="/login"
+              element={
+                <ProtectedRoute>
+                  <Login />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/signup"
+              element={
+                <ProtectedRoute>
+                  <SignUp />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/problem/:problemid"
+              element={
+                <ProtectedRoute>
+                  <ProblemPage />
+                </ProtectedRoute>
+              }
+            />
 
             <Route path="*" element={<Error />} />
-            <Route path="/playground" element={
-              <ProtectedRoute>
-              <PlayGround />
-               </ProtectedRoute>
-              } />
-            
+            <Route
+              path="/playground"
+              element={
+                <ProtectedRoute>
+                  <PlayGround />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Protected Routes */}
             <Route
@@ -246,7 +272,7 @@ function App() {
             <Route
               path="/admin"
               element={
-                <ProtectedRoute >
+                <ProtectedRoute>
                   <Admin />
                 </ProtectedRoute>
               }
@@ -279,7 +305,7 @@ function App() {
               path="/test2"
               element={
                 // <ProtectedRoute>
-                  <Testing1 />
+                <Testing1 />
                 // {/* </ProtectedRoute> */}
               }
             />
