@@ -320,74 +320,41 @@ router.post("/getproblemdetails/:pageno?", (req, res) => __awaiter(void 0, void 
     }
 }));
 router.post("/getpraticeproblemdetails", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     let success = false;
     try {
-        console.log("a1");
-        const token = req.body.token;
-        const language = req.body.language;
+        const { token, language } = req.body;
         if (!token) {
             return res.status(400).send({ success, msg: "Token is required" });
         }
-        const response = yield axios_1.default.post(`${ServerUrl}/api/user/tokentodata`, { token: (token || "") }, {
+        const response = yield axios_1.default.post(`${ServerUrl}/api/user/tokentodata`, { token }, {
             headers: { "Content-Type": "application/json" },
         });
         if (!response.data.success) {
             return res.status(401).send({ success, msg: "Invalid token" });
         }
         const data = response.data;
-        console.log("data.success-", data.success);
-        console.log("data.result-", data.result);
-        let r = yield prisma.praticeProblem.findMany({
-            select: {
-                language: true,
-            },
-        });
-        const jdata = r;
-        console.log("jdata----------------", jdata);
-        const entireCount = { c: 0, cpp: 0, java: 0, go: 0 };
-        jdata.map((v) => {
-            if (v.language === "c")
-                entireCount.c++;
-            else if (v.language === "cpp")
-                entireCount.cpp++;
-            else if (v.language === "java")
-                entireCount.java++;
-            else if (v.language === "go")
-                entireCount.go++;
-            return v;
-        });
-        let result = yield prisma.praticeProblem.findMany({
-            where: { language: language },
+        const allProblems = yield prisma.praticeProblem.findMany({ select: { language: true } });
+        const entireCount = allProblems.reduce((acc, problem) => {
+            acc[problem.language] = (acc[problem.language] || 0) + 1;
+            return acc;
+        }, {});
+        let problems = yield prisma.praticeProblem.findMany({
+            where: { language },
             select: {
                 id: true,
                 problemName: true,
                 language: true,
             },
         });
-        console.log("game-", data.result.praticeCourseDetail[`${language}`].solvedProblemDetails);
-        const solvedProblemDetails = data.result.praticeCourseDetail[`${language}`].solvedProblemDetails;
-        console.log("1");
-        result = result.map((value) => {
-            const check = solvedProblemDetails.find(((v) => v === value.id));
-            console.log("2");
-            if (check) {
-                value.status = "SOLVED";
-            }
-            else {
-                value.status = "UNSOLVED";
-            }
-            return value;
-        });
-        console.log("final -", result);
-        const totalCount = yield prisma.praticeProblem.count();
+        const solvedProblemDetails = ((_a = data.result.praticeCourseDetail[language]) === null || _a === void 0 ? void 0 : _a.solvedProblemDetails) || [];
+        problems = problems.map((problem) => (Object.assign(Object.assign({}, problem), { status: solvedProblemDetails.includes(problem.id) ? "SOLVED" : "UNSOLVED" })));
         success = true;
-        console.log("a2");
-        console.log("from server-", { success, result, totalCount, entireCount });
-        return res.send({ success, result, totalCount, entireCount });
+        return res.send({ success, result: problems, totalCount: problems.length, entireCount });
     }
     catch (error) {
         console.error(error);
-        return res.status(500).send({ success, error: error });
+        return res.status(500).send({ success, error });
     }
 }));
 router.post("/getspecificproblem", (req, res) => __awaiter(void 0, void 0, void 0, function* () {

@@ -381,77 +381,50 @@ router.post("/getproblemdetails/:pageno?", async (req: Request, res: Response): 
 router.post("/getpraticeproblemdetails", async (req: Request, res: Response): Promise<any> => {
   let success = false;
   try {
-    console.log("a1");
-    const token = req.body.token;
-    const language = req.body.language
+    const { token, language } = req.body;
     if (!token) {
       return res.status(400).send({ success, msg: "Token is required" });
     }
-    const response = await axios.post(`${ServerUrl}/api/user/tokentodata`, { token: (token || "") }, {
+
+    const response = await axios.post(`${ServerUrl}/api/user/tokentodata`, { token }, {
       headers: { "Content-Type": "application/json" },
     });
+
     if (!response.data.success) {
       return res.status(401).send({ success, msg: "Invalid token" });
     }
+
     const data = response.data;
-    console.log("data.success-", data.success);
-    console.log("data.result-", data.result);
-    let r: any = await prisma.praticeProblem.findMany({
-      select: {
-        language: true,
-      },
-    });
-    const jdata =  r
-    console.log("jdata----------------",jdata);
-    
-    const entireCount = {c:0,cpp:0,java:0,go:0}
-    jdata.map((v:any)=>{
-      if(v.language === "c") entireCount.c++;
-      else if(v.language === "cpp") entireCount.cpp++;
-      else if(v.language === "java") entireCount.java++;
-      else if(v.language === "go") entireCount.go++;
+    const allProblems = await prisma.praticeProblem.findMany({ select: { language: true } });
 
-      return v
-    })
+    const entireCount = allProblems.reduce((acc, problem) => {
+      acc[problem.language] = (acc[problem.language] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
 
-    let result: any = await prisma.praticeProblem.findMany({
-      where: { language: language },
+    let problems = await prisma.praticeProblem.findMany({
+      where: { language },
       select: {
         id: true,
         problemName: true,
         language: true,
       },
     });
-    console.log("game-", data.result.praticeCourseDetail[`${language}`].solvedProblemDetails);
 
-    const solvedProblemDetails: string[] = data.result.praticeCourseDetail[`${language}`].solvedProblemDetails
-    console.log("1");
+    const solvedProblemDetails = data.result.praticeCourseDetail[language]?.solvedProblemDetails || [];
 
-    result = result.map((value: any) => {
-      const check = solvedProblemDetails.find(((v: any) => v === value.id))
-      console.log("2");
-      if (check) {
-        value.status = "SOLVED";
-      } else {
-        value.status = "UNSOLVED";
-      }
-      return value
-    })
-    
-    console.log("final -", result);
+    problems = problems.map((problem) => ({
+      ...problem,
+      status: solvedProblemDetails.includes(problem.id) ? "SOLVED" : "UNSOLVED",
+    }));
 
-    const totalCount = await prisma.praticeProblem.count();
     success = true;
-    console.log("a2");
-    console.log("from server-",{ success, result, totalCount, entireCount });
-    
-    return res.send({ success, result, totalCount, entireCount });
+    return res.send({ success, result: problems, totalCount: problems.length, entireCount });
   } catch (error) {
     console.error(error);
-    return res.status(500).send({ success, error: error });
+    return res.status(500).send({ success, error });
   }
-}
-);
+});
 
 router.post(
   "/getspecificproblem",
