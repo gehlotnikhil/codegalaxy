@@ -323,6 +323,9 @@ router.post("/getpraticeproblemdetails", (req, res) => __awaiter(void 0, void 0,
     var _a;
     let success = false;
     try {
+        console.log("Prisma Client:", prisma);
+        console.log("Prisma Model:", prisma.praticeProblem);
+        console.log("ll");
         const { token, language } = req.body;
         if (!token) {
             return res.status(400).send({ success, msg: "Token is required" });

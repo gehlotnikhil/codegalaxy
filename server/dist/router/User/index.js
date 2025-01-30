@@ -299,7 +299,7 @@ router.get("/getalluser", (req, res) => __awaiter(void 0, void 0, void 0, functi
 router.post("/tokentodata", [(0, express_validator_1.body)("token", "Please enter a token").exists()], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
-        let error = (0, express_validator_1.validationResult)(req.body);
+        let error = (0, express_validator_1.validationResult)(req);
         if (!error.isEmpty()) {
             return res.status(404).send({ success, error: error.array() });
         }

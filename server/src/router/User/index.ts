@@ -336,7 +336,7 @@ router.post(
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
     try {
-      let error = validationResult(req.body);
+      let error = validationResult(req);
       if (!error.isEmpty()) {
         return res.status(404).send({ success, error: error.array() });
       }
