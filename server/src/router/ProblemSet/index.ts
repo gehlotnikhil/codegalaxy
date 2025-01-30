@@ -381,6 +381,7 @@ router.post("/getproblemdetails/:pageno?", async (req: Request, res: Response): 
 router.post("/getpraticeproblemdetails", async (req: Request, res: Response): Promise<any> => {
   let success = false;
   try {
+    console.log("a1");
     const token = req.body.token;
     const language = req.body.language
     if (!token) {
@@ -441,6 +442,9 @@ router.post("/getpraticeproblemdetails", async (req: Request, res: Response): Pr
 
     const totalCount = await prisma.praticeProblem.count();
     success = true;
+    console.log("a2");
+    console.log("from server-",{ success, result, totalCount, entireCount });
+    
     return res.send({ success, result, totalCount, entireCount });
   } catch (error) {
     console.error(error);

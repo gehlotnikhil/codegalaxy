@@ -92,7 +92,8 @@ const Problem: React.FC = () => {
       searchParams.get("page")
     );
   }, [page]);
-  useEffect(() => {}, [searchParams.get("page")]);
+  useEffect(() => {console.log("searchparam-",searchParams.get("page"));
+  }, [searchParams.get("page")]);
 
   const filteredQuestions = useMemo(() => {
     let filtered = Questions;
@@ -167,10 +168,16 @@ const Problem: React.FC = () => {
     );
     const data = await response.json();
     console.log("------", data.result);
+    console.log("checking true -",data.success && Object.keys(data.result).length === 0);
     if (data.success && Object.keys(data.result).length === 0) {
       console.log("No data found");
-      if (data.entireProblemCount !== 0) {
-        let p = Math.ceil(data.entireProblemCount / 10);
+      console.log("checking on -",data);
+      
+      if (data.totalCount !== 0) {
+        let p = Math.ceil(data.totalCount / 10);
+        console.log("-data--:-",data);
+        console.log(data.totalCount,"-calculation-",Math.ceil(data.totalCount / 10));
+        
         setPage(p);
         setSearchParams({ page: p.toString() });
       }
@@ -197,6 +204,11 @@ const Problem: React.FC = () => {
   // Handle the "Next" button click
   const handleNext = () => {
     setPage(page + 1);
+    if(searchParams.get("page")===null){
+      const pageParam = String(2);
+      setSearchParams({ page: pageParam ? pageParam : "1" });
+      setPage(1)
+    }
     const pageParam = String(Number(searchParams.get("page")) + 1);
     setSearchParams({ page: pageParam ? pageParam : "1" });
   };

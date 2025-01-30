@@ -322,6 +322,7 @@ router.post("/getproblemdetails/:pageno?", (req, res) => __awaiter(void 0, void 
 router.post("/getpraticeproblemdetails", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
+        console.log("a1");
         const token = req.body.token;
         const language = req.body.language;
         if (!token) {
@@ -380,6 +381,8 @@ router.post("/getpraticeproblemdetails", (req, res) => __awaiter(void 0, void 0,
         console.log("final -", result);
         const totalCount = yield prisma.praticeProblem.count();
         success = true;
+        console.log("a2");
+        console.log("from server-", { success, result, totalCount, entireCount });
         return res.send({ success, result, totalCount, entireCount });
     }
     catch (error) {

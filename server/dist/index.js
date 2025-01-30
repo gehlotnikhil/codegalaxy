@@ -25,7 +25,7 @@ const PORT = Number(process.env.PORT) || 8000;
 console.log(process.env.PORT);
 // Middleware to parse JSON
 app.use(express_1.default.json());
-// Define allowed origins
+// Define allowed origins 
 const allowedOrigins = [
     "http://localhost:5173", // Frontend for local development
     "https://codegalaxy1.vercel.app", // Deployed production frontend
