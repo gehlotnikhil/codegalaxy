@@ -29,7 +29,7 @@ interface ProtectedRouteProps {
 // const ServerUrl =  process.env.ServerUrl || "http://localhost:8000"
 useEffect(() => {
   try {
-    console.log("Serverurl-", process.env.ServerUrl);
+    console.log("Serverurl-", process.env.ServerUrl||1);
     
   } catch (error) {
     
