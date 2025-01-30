@@ -35,12 +35,12 @@ const ProblemPage: React.FC = () => {
   }
   const [MainQuestion, setMainQuestion] = useState<MainQuestionType>({});
   const context = useContext(MainContext);
-  const {ServerUrl} = context
+  const {SERVER_URL} = context
   const param = useParams<{ problemid: string }>();
   const navigate = useNavigate()
 
   const loadMainQuestion = async (id: string) => {
-    const response = await fetch(`${ServerUrl}/api/problemset/getspecificproblem?id=${id}`,{
+    const response = await fetch(`${SERVER_URL}/api/problemset/getspecificproblem?id=${id}`,{
       method: "POST",
       headers: {
         "Content-Type": "application/json",

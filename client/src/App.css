@@ -295,6 +295,12 @@ body{
 
 /* Pratice Course Arena */
 .pratice-title:hover{
-  color:blue;
+  color: rgb(0 122 255);;
   text-decoration:underline
+}
+.navbar-item-heading:hover{
+  color: rgb(0 122 255);
+}
+.navbar-item-heading{
+  color: white;
 }

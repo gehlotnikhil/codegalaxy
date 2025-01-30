@@ -48,7 +48,7 @@ const Card: React.FC<CardProps> = ({ headerColor, icon, title, description, prob
 const PraticeCourse: React.FC = () => {
   const userDetail = useSelector((state:RootStateType)=>state.userDetail)
   const context = useContext(MainContext)
-  const {ServerUrl} = context
+  const {SERVER_URL} = context
   const [EntireLanguageCount, setEntireLanguageCount] = useState({c:0,cpp:0,java:0,go:0})
   useEffect(() => {
     console.log("EntireLanguageCount--",EntireLanguageCount);
@@ -60,7 +60,7 @@ const PraticeCourse: React.FC = () => {
   }, [])
  const loadProblemDetail = async(language:string)=>{
    try {
-     const result = await fetch(`${ServerUrl}/api/problemset/getpraticeproblemdetails`,{
+     const result = await fetch(`${SERVER_URL}/api/problemset/getpraticeproblemdetails`,{
        method: "POST",
        headers: {
          "Content-Type": "application/json",

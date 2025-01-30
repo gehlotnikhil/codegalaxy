@@ -321,56 +321,33 @@ router.post("/getproblemdetails/:pageno?", (req, res) => __awaiter(void 0, void 
 }));
 router.post("/getpraticeproblemdetails", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    let success = false;
     try {
-        console.log("Prisma Client:", prisma);
-        console.log("Prisma Model:", prisma.praticeProblem);
-        console.log("ll");
         const { token, language } = req.body;
         if (!token) {
-            return res.status(400).send({ success, msg: "Token is required" });
+            return res.status(400).json({ success: false, msg: "Token is required" });
         }
-        const response = yield axios_1.default.post(`${ServerUrl}/api/user/tokentodata`, { token }, {
+        const { data } = yield axios_1.default.post(`${ServerUrl}/api/user/tokentodata`, { token }, {
             headers: { "Content-Type": "application/json" },
         });
-        console.log("q1-response-", response);
-        console.log("q1");
-        if (!response.data.success) {
-            return res.status(401).send({ success, msg: "Invalid token" });
+        if (!data.success) {
+            return res.status(401).json({ success: false, msg: "Invalid token" });
         }
-        console.log("q2");
-        const data = response.data;
-        console.log("q3");
         const allProblems = yield prisma.praticeProblem.findMany({ select: { language: true } });
-        console.log("q4-allproblem-", allProblems);
-        console.log("q4");
-        const entireCount = allProblems.reduce((acc, problem) => {
-            acc[problem.language] = (acc[problem.language] || 0) + 1;
+        const entireCount = allProblems.reduce((acc, { language }) => {
+            acc[language] = (acc[language] || 0) + 1;
             return acc;
         }, {});
-        console.log("q5-entirecount - ", entireCount);
-        console.log("q5");
-        let problems = yield prisma.praticeProblem.findMany({
+        const problems = yield prisma.praticeProblem.findMany({
             where: { language },
-            select: {
-                id: true,
-                problemName: true,
-                language: true,
-            },
+            select: { id: true, problemName: true, language: true },
         });
-        console.log("q6-problems - ", problems);
-        console.log("q6");
-        const solvedProblemDetails = ((_a = data.result.praticeCourseDetail[language]) === null || _a === void 0 ? void 0 : _a.solvedProblemDetails) || [];
-        console.log("q7");
-        problems = problems.map((problem) => (Object.assign(Object.assign({}, problem), { status: solvedProblemDetails.includes(problem.id) ? "SOLVED" : "UNSOLVED" })));
-        console.log("q8-final ", problems);
-        console.log("q8");
-        success = true;
-        return res.send({ success, result: problems, totalCount: problems.length, entireCount });
+        const solvedProblems = new Set(((_a = data.result.praticeCourseDetail[language]) === null || _a === void 0 ? void 0 : _a.solvedProblemDetails) || []);
+        const formattedProblems = problems.map((problem) => (Object.assign(Object.assign({}, problem), { status: solvedProblems.has(problem.id) ? "SOLVED" : "UNSOLVED" })));
+        res.json({ success: true, result: formattedProblems, totalCount: formattedProblems.length, entireCount });
     }
     catch (error) {
-        console.error(error);
-        return res.status(500).send({ success, error });
+        console.error("Error fetching practice problem details:", error);
+        res.status(500).json({ success: false, error: error.message || "Internal Server Error" });
     }
 }));
 router.post("/getspecificproblem", (req, res) => __awaiter(void 0, void 0, void 0, function* () {

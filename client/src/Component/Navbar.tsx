@@ -165,16 +165,16 @@ function AppNavbar() {
                     NavbarLinkStatus.loginLink === true ? "inline" : "none"
                   }`}
                 >
-                  <Link className="white nav-link " to="/login">
+                  <Link className=" nav-link navbar-item-heading"  to="/login">
                     Login
                   </Link>
                 </li>
-                <li
+                <li 
                   className={`nav-item d-${
                     NavbarLinkStatus.signupLink === true ? "inline" : "none"
                   }`}
                 >
-                  <Link className="white nav-link" to="/signup">
+                  <Link className=" nav-link navbar-item-heading" to="/signup">
                     Sign Up
                   </Link>
                 </li>

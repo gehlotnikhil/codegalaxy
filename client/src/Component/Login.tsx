@@ -2,15 +2,17 @@ import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { Link, useNavigate } from "react-router-dom";
 // import { useNavigate } from 'react-router-dom'
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.png';  
+import spinner from '../assets/tube-spinner.svg';
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";
 import { setUserDetail } from "../store/slice/UserDetailSlice";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import MainContext from "../context/main";
 import { toast } from "react-toastify";
+
 // Define the form schema using Yup
 const schema = yup.object({
   password: yup
@@ -28,7 +30,7 @@ interface LoginFormValues {
 function Login() {
   // const userDetail = useSelector((state:RootStateType)=>state.userDetail)
   const context = useContext(MainContext)
-  const {ServerUrl} = context
+  const {SERVER_URL} = context
   const dispatch = useDispatch()
   const navigate = useNavigate();
   interface JWTDECODETYPE {
@@ -41,32 +43,45 @@ function Login() {
   } = useForm<LoginFormValues>({
     resolver: yupResolver(schema),
   });
+const [spinnerStatus, setspinnerStatus] = useState(false)
+useEffect(() => {
+  console.log(spinnerStatus);
+  
+}, [spinnerStatus])
 
   const onSubmit: SubmitHandler<LoginFormValues> = (data) => {
     console.log(data);
     handleLoginAccount(data);
   };
   const handleLoginAccount = async (data: LoginFormValues) => {
-    const result = await fetch(`${ServerUrl}/api/user/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email: data.email, password: data.password }),
-    });
-    const jsondata = await result.json();
-    console.log(jsondata);
-    if(jsondata.success){
-    dispatch(setUserDetail(jsondata.result))
-    localStorage.setItem("token",jsondata.result.token)
-    
-    
-    navigate("/");
-    toast.success("Hello "+jsondata.result.name)
-    }else{
-      toast.error("Failed to Login")
-
+    setspinnerStatus(true)
+    try {
+      const result = await fetch(`${SERVER_URL}/api/user/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: data.email, password: data.password }),
+      });
+      const jsondata = await result.json();
+      console.log(jsondata);
+      if(jsondata.success){
+        dispatch(setUserDetail(jsondata.result))
+      localStorage.setItem("token",jsondata.result.token)
+      
+      
+      navigate("/");
+      toast.success("Hello "+jsondata.result.name)
+      }else{
+        toast.error("Failed to Login")
+  
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Internal Server Error")
     }
+    setspinnerStatus(false)
+   
   };
 
   return (
@@ -100,8 +115,8 @@ function Login() {
               <p className="error-message">{errors.password?.message}</p>
             </div>
 
-            <button type="submit" className="btn-submit">
-              Login
+            <button type="submit"  disabled={spinnerStatus} className="btn-submit">
+              Login <img className={`d-${spinnerStatus?"inline":"none"}`} src={spinner} height={"22px"} width={"22px"}/>
             </button>
             <p className="login-link text-dark">
               Create a account? <Link to="/signup">Sign Up</Link>
@@ -115,7 +130,7 @@ function Login() {
                     );
                     console.log(decode.email);
                     let result = await fetch(
-                      `${ServerUrl}/api/user/googlelogin`,
+                      `${SERVER_URL}/api/user/googlelogin`,
                       {
                         method: "POST",
                         headers: {

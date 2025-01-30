@@ -11,7 +11,7 @@ const PraticeCourseArena = () => {
   const userDetail = useSelector((state:RootStateType)=>state.userDetail)
   const params = useParams()
   const context = useContext(MainContext)
-  const {ServerUrl} = context
+  const {SERVER_URL} = context
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   interface PraticeQuestionType{
@@ -25,7 +25,7 @@ const PraticeCourseArena = () => {
   
   const loadProblemDetail = async(language:string)=>{
     try {
-      const result = await fetch(`${ServerUrl}/api/problemset/getpraticeproblemdetails`,{
+      const result = await fetch(`${SERVER_URL}/api/problemset/getpraticeproblemdetails`,{
         method: "POST",
         headers: {
           "Content-Type": "application/json",

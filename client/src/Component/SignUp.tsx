@@ -1,8 +1,10 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import spinner from '../assets/tube-spinner.svg';
+
 import logo from '../assets/logo.png';
 
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
@@ -36,10 +38,14 @@ interface JWTDECODETYPE {
 }
 
 const SignUp: React.FC = () => {
+  const [spinnerStatus, setspinnerStatus] = useState<boolean>(false)
+  useEffect(() => {
+    console.log(spinnerStatus);
+  }, [spinnerStatus])
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const context = useContext(MainContext)
-  const {ServerUrl} = context
+  const {SERVER_URL} = context
 
   const {
     register,
@@ -56,26 +62,33 @@ const SignUp: React.FC = () => {
   
   
   const handleCreateAccount = async(data:SignUpFormValues)=>{
-    let result = await fetch(
-      `${ServerUrl}/api/user/registeruser`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body:JSON.stringify({"userName":data.username,"email":data.email,"password":data.password})
-      }
-    );
-    const jsondata = await result.json();
-    console.log("Account Created - ",jsondata);
-    console.log(jsondata.result);
-    if(jsondata.success){
-       dispatch(setUserDetail(jsondata.result))
-       navigate("/");
-       toast.success("Account Created")
-       }else{
-        toast.error("Failed to Create Account")
-       }
+    setspinnerStatus(true)
+    try {
+      let result = await fetch(
+        `${SERVER_URL}/api/user/registeruser`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body:JSON.stringify({"userName":data.username,"email":data.email,"password":data.password})
+        }
+      );
+      const jsondata = await result.json();
+      console.log("Account Created - ",jsondata);
+      console.log(jsondata.result);
+      if(jsondata.success){
+         dispatch(setUserDetail(jsondata.result))
+         navigate("/");
+         toast.success("Account Created")
+         }else{
+          toast.error("Failed to Create Account")
+         }
+    } catch (error) {
+      toast.error("Internal Server Error")
+      console.log(error);    
+    }
+    setspinnerStatus(false)
   }
 
   return (
@@ -119,11 +132,11 @@ const SignUp: React.FC = () => {
             placeholder="E-mail address"
             {...register("email")}
             className={errors.email ? "error" : ""}
-          />
+          /> 
           <p className="error-message">{errors.email?.message}</p>
         </div>
-        <button type="submit"  className="btn-submit">
-          Sign Up
+        <button type="submit" disabled={spinnerStatus}   className="btn-submit">
+          Sign Up <img className={`d-${spinnerStatus?"inline":"none"}`} src={spinner} height={"22px"} width={"22px"}/>
         </button>
         <p className="signin-link text-dark">
           Have an account? <Link to="/login">Sign In</Link>
@@ -137,7 +150,7 @@ const SignUp: React.FC = () => {
             );
             console.log(decode.email);
             let result = await fetch(
-              `${ServerUrl}/api/user/googlelogin`,
+              `${SERVER_URL}/api/user/googlelogin`,
               {
                 method: "POST",
                 headers: {

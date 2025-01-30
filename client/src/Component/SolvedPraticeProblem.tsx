@@ -28,14 +28,14 @@ const SolvedPraticeProblem: React.FC = () => {
   const userDetail = useSelector((state:RootStateType)=>state.userDetail)
   const [MainQuestion, setMainQuestion] = useState<MainQuestionType>({});
   const context = useContext(MainContext);
-  const { ServerUrl } = context;
+  const { SERVER_URL } = context;
   const param = useParams<{ problemid: string }>();
   const navigate = useNavigate();
 
   const loadMainQuestion =  async(id: string) => {
     
     const response = await fetch(
-      `${ServerUrl}/api/problemset/getspecificpraticeproblem?id=${id}`,
+      `${SERVER_URL}/api/problemset/getspecificpraticeproblem?id=${id}`,
       {
         method: "POST",
         headers: {

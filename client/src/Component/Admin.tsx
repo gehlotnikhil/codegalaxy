@@ -14,7 +14,7 @@ function Admin() {
     console.log(CodeValue);
   }, [CodeValue]);
 
-  const { Demo, setDemo, ServerUrl } = context;
+  const { Demo, setDemo, SERVER_URL } = context;
   useEffect(() => {
     console.log("demo-", Demo);
   }, [Demo]);
@@ -212,7 +212,7 @@ function Admin() {
     problemsData.map((value) => {
       return Number(value);
     });
-      const response = await fetch(`${ServerUrl}/api/contest/create`, {
+      const response = await fetch(`${SERVER_URL}/api/contest/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -264,7 +264,7 @@ function Admin() {
     console.log(bodyData);
     try {
       const response = await fetch(
-        `${ServerUrl}/api/contest/update/${contestNo}`,
+        `${SERVER_URL}/api/contest/update/${contestNo}`,
         {
           method: "PUT",
           headers: {
@@ -286,7 +286,7 @@ function Admin() {
     }
     try {
       const response = await fetch(
-        `${ServerUrl}/api/contest/delete/${contestNo}`,
+        `${SERVER_URL}/api/contest/delete/${contestNo}`,
         {
           method: "DELETE",
           headers: {
@@ -351,7 +351,7 @@ function Admin() {
     };
 
   
-      const response = await fetch(`${ServerUrl}/api/problemset/create`, {
+      const response = await fetch(`${SERVER_URL}/api/problemset/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -413,7 +413,7 @@ function Admin() {
     console.log(bodyData);
     try {
       const response = await fetch(
-        `${ServerUrl}/api/problemset/update/${problemNo}`,
+        `${SERVER_URL}/api/problemset/update/${problemNo}`,
         {
           method: "PUT",
           headers: {
@@ -435,7 +435,7 @@ function Admin() {
     }
     try {
       const response = await fetch(
-        `${ServerUrl}/api/problemset/delete/${problemNo}`,
+        `${SERVER_URL}/api/problemset/delete/${problemNo}`,
         {
           method: "DELETE",
           headers: {
@@ -474,7 +474,7 @@ function Admin() {
   const handleGetAllProblem = async () => {
     try {
       const response = await fetch(
-        `${ServerUrl}/api/problemset/getallproblem`,
+        `${SERVER_URL}/api/problemset/getallproblem`,
         {
           method: "GET",
           headers: {
@@ -496,7 +496,7 @@ function Admin() {
     }
     try {
       const response = await fetch(
-        `${ServerUrl}/api/problemset/getspecificproblem?no=${problemNo}`,
+        `${SERVER_URL}/api/problemset/getspecificproblem?no=${problemNo}`,
         {
           method: "POST",
           headers: {
@@ -513,7 +513,7 @@ function Admin() {
   };
   const handleGetAllContest = async () => {
     try {
-      const response = await fetch(`${ServerUrl}/api/contest/getallcontest`, {
+      const response = await fetch(`${SERVER_URL}/api/contest/getallcontest`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -533,7 +533,7 @@ function Admin() {
     }
     try {
       const response = await fetch(
-        `${ServerUrl}/api/contest/getspecificcontest?no=${contestNo}`,
+        `${SERVER_URL}/api/contest/getspecificcontest?no=${contestNo}`,
         {
           method: "POST",
           headers: {

@@ -12,7 +12,7 @@ import { RootStateType } from "../store";
 const Problem: React.FC = () => {
   const userDetail = useSelector((state:RootStateType)=>state.userDetail)
   const context = useContext(MainContext);
-  const {ServerUrl} = context;
+  const {SERVER_URL} = context;
   type Question = {
     id?: string;
     problemNo?: number;
@@ -157,7 +157,7 @@ const Problem: React.FC = () => {
     const page = pageno || 1;
 
     const response = await fetch(
-      `${ServerUrl}/api/problemset/getproblemdetails/${page || 1}`,
+      `${SERVER_URL}/api/problemset/getproblemdetails/${page || 1}`,
       {
         method: "POST",
         headers: {

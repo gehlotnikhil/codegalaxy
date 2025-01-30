@@ -15,7 +15,7 @@ import { RootStateType } from "../store";
 function Profile() {
 const paramUsername = useParams()
   const context = useContext(MainContext);
-  const {ServerUrl} = context
+  const {SERVER_URL} = context
   const userDetail = useSelector((state:RootStateType)=>state.userDetail)
   const navigate = useNavigate();
   const locationHook = useLocation()
@@ -48,7 +48,7 @@ useEffect(() => {
   const {defaultProfilePicture } = context;
 
   const loadProfileDetailFromUserName = async(userName:string)=>{
-    const result = await fetch(`${ServerUrl}/api/user/usernametodata`,{
+    const result = await fetch(`${SERVER_URL}/api/user/usernametodata`,{
       method: "POST",
       headers: {
         "Content-Type": "application/json",
