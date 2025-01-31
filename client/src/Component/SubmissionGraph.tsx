@@ -1,94 +1,88 @@
 import React from "react";
 
 type SubmissionGraphProps = {
-  activeDays: number[]; // Array of active day numbers (1-365)
+  activeDays: number[];
 };
 
 const SubmissionGraph: React.FC<SubmissionGraphProps> = ({ activeDays }) => {
   const daysInYear = 365;
-  // const months = [
-  //   "Jan",
-  //   "Feb",
-  //   "Mar",
-  //   "Apr",
-  //   "May",
-  //   "Jun",
-  //   "Jul",
-  //   "Aug",
-  //   "Sep",
-  //   "Oct",
-  //   "Nov",
-  //   "Dec",
-  // ];
+  const weeksInYear = Math.ceil(daysInYear / 7);
 
-  // Create an array representing the year's activity
-  const activityData = Array.from({ length: daysInYear }, (_, index) =>
-    activeDays.includes(index + 1)
-  );
-
-  const maxStreak = activityData.reduce((max, current, index) => {
-    if (current) {
-      let streak = 1;
-      for (let i = index + 1; i < activityData.length && activityData[i]; i++) {
-        streak++;
-      }
-      return Math.max(max, streak);
-    }
-    return max;
-  }, 0);
-
-  const totalActiveDays = activeDays.length;
+  const activityData = Array.from({ length: daysInYear }, (_, index) => ({
+    day: index + 1,
+    active: activeDays.includes(index + 1),
+  }));
 
   return (
-    <div style={{ fontFamily: "Arial, sans-serif", padding: "20px"  }}>
-      <h3>{totalActiveDays} submissions in the past one year</h3>
-      <p>
-        Total active days: {totalActiveDays} | Max streak: {maxStreak}
-      </p>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(53, 10px)",
-          gap: "2px",
-          position: "relative",
-        }}
-      >
-        {activityData.map((active, index) => (
+    <div className="submission-graph">
+      <h3>{activeDays.length} Active Days in Current Year</h3>
+      <div className="grid-container">
+        {activityData.map(({ day, active }) => (
           <div
-            key={index}
-            style={{
-              width: "10px",
-              height: "10px",
-              backgroundColor: active ? "#4caf50" : "#D9D9D9",
-              borderRadius: "2px",
-              // border: "1px solid #222",
-            }}
+            key={day}
+            title={`Day ${day}`}
+            className={`grid-item `}
+            id={`${active ? "active" : "inactive"}`}
           ></div>
         ))}
       </div>
-      {/* <div
-  style={{
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(80px, 1fr))", // Dynamic column widths
-    gap: "2px",
-    marginTop: "10px",
-    position: "relative",
-  }}
->
-  {months.map((month, index) => (
-    <div
-      key={index}
-      style={{
-        fontSize: "12px",
-        color: "#888",
-        textAlign: "center", // Center align the text
-      }}
-    >
-      {month}
-    </div>
-  ))}
-</div> */}
+      <style >{`
+        .submission-graph {
+          font-family: Arial, sans-serif;
+          padding: 20px;
+          text-align: center;
+          background: #0d1117;
+          color: white;
+        }
 
+        .grid-container {
+          display: grid;
+          grid-template-columns: repeat(${weeksInYear}, minmax(8px, 12px));
+          grid-template-rows: repeat(7, minmax(8px, 12px));
+          gap: 3px;
+          justify-content: center;
+          margin: 10px auto;
+        }
+
+        .grid-item {
+          width: 10px;
+          height: 10px;
+          border-radius: 2px;
+          transition: background-color 0.2s ease-in-out;
+        }
+
+        #active {
+          background-color: #1bc71b;
+        }
+
+        #inactive {
+          background-color: #3a3a3a;
+        }
+
+        @media (max-width: 1200px) {
+          .grid-container {
+            grid-template-columns: repeat(30, minmax(6px, 10px));
+          }
+        }
+
+        @media (max-width: 768px) {
+          .grid-container {
+            grid-template-columns: repeat(15, minmax(5px, 8px));
+          }
+          h3 {
+            font-size: 18px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .grid-container {
+            grid-template-columns: repeat(7, minmax(4px, 6px));
+          }
+          h3 {
+            font-size: 16px;
+          }
+        }
+      `}</style>
     </div>
   );
 };

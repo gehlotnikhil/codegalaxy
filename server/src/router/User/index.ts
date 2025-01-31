@@ -63,6 +63,7 @@ router.post(
           userName: userName,
           totalRank: 1000,
           solvedProblemDetails: [],
+          activeDays:[],
 
           googleLoginAccess: false,
           isAdmin: false,
@@ -129,6 +130,7 @@ router.put(
     body("role", "Please fill role field").exists(),
     body("googleLoginAccess", "Please fill googleLoginAccess field").exists(),
     body("profilePictureUrl", "Please fill profilePictureUrl field").exists(),
+    body("activeDays", "Please fill activeDays field").exists(),
   ],
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
@@ -161,6 +163,9 @@ router.put(
       }
       if (req.body.age) {
         query.age = Number(req.body.age);
+      }
+      if (req.body.activeDays) {
+        query.activeDays = req.body.activeDays;
       }
       if (req.body.email) {
         query.email = req.body.email;

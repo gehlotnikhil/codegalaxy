@@ -278,14 +278,32 @@ router.delete(
   }
 );
 
-router.get(
-  "/getallproblem/:pageno?",
+router.post(
+  "/getallproblem/:pageno?",[
+  body("id", "Please Enter a id"),
+  body("problemName", "Please Enter a problem name"),
+  body("description", "Please Enter a description "),
+  body("companies", "Please Enter a companies "),
+  body("testcase", "Please Enter a testcase"),
+  body("constraint", "Please Enter a constraint"),
+  body("topic", "Please Enter a topic"),
+  body("Details", "Please Enter a Details"),
+  body("accepted", "Please Enter a accepted"),
+  body("category", "Please Enter a category"),
+  body("submission", "Please Enter a submission"),
+  body("status", "Please Enter a status"),
+  body("sampleInputOutput", "Please Enter a sampleInputOutput"),
+  body("aboveCodeTemplate", "Please Enter a aboveCodeTemplate"),
+  body("belowCodeTemplate", "Please Enter a belowCodeTemplate"),
+  body("middleCode", "Please Enter a middleCode")
+],
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
     try {
+      let result = {};
       console.log(req.params.pageno, "----", typeof req.params.pageno);
       if (req.params.pageno) {
-        let result = await prisma.problemSet.findMany({
+         result = await prisma.problemSet.findMany({
           skip: Number(req.params.pageno) === 0 ? 0 : (Number(req.params.pageno) - 1) * 10,
           take: 10
         });
@@ -293,9 +311,74 @@ router.get(
         return res.send({ success, result });
       }
 
-      let result = (await prisma.problemSet.findMany())
-      success = true;
-      return res.send({ success, result });
+     
+    
+
+
+    let query: any = {};
+    if (req.body.id) {
+      query.id = 1
+    } 
+    if (req.body.problemName) {
+      query.problemName = 1
+    } 
+    if (req.body.description) {
+      query.description = 1
+    }
+    if (req.body.companies) {
+      query.companies =1
+    }
+    if (req.body.Details) {
+      query.Details =1
+    }
+  
+    if (req.body.testcases) {
+      query.testcases =1
+    }
+    if (req.body.constraint) {
+      query.constraint =1
+    }
+    if (req.body.topic) {
+      query.topic =1
+    }
+    if (req.body.accepted) {
+      query.accepted =1
+    }
+    if (req.body.category) {
+      query.category =1
+    }
+    if (req.body.submission) {
+      query.submission =1
+    }
+    if (req.body.status) {
+      query.status =1
+    }
+    if (req.body.sampleInputOutput) {
+      query.sampleInputOutput =1
+    }
+    if (req.body.aboveCodeTemplate) {
+      query.aboveCodeTemplate =1
+    }
+    if (req.body.belowCodeTemplate) {
+      query.belowCodeTemplate = 1
+    }
+    if (req.body.middleCode) {
+      query.middleCode =1
+    }
+
+    if(!(Object.keys(query).length === 0))
+     result = await prisma.problemSet.findMany({select:{...query}})
+    else
+    result = await prisma.problemSet.findMany()
+
+    
+
+
+    success = true;
+    return res.send({ success, result });
+
+
+
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });

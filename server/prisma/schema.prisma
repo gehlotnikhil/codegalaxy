@@ -24,6 +24,7 @@ model User {
   googleLoginAccess    Boolean
   profilePictureUrl    String
   praticeCourseDetail praticeCourseDetailType
+  activeDays Int[]
 }
 
 type praticeCourseDetailType{

@@ -231,19 +231,89 @@ router.delete("/delete/:problemno", (req, res) => __awaiter(void 0, void 0, void
         return res.status(500).send({ success, error });
     }
 }));
-router.get("/getallproblem/:pageno?", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/getallproblem/:pageno?", [
+    (0, express_validator_1.body)("id", "Please Enter a id"),
+    (0, express_validator_1.body)("problemName", "Please Enter a problem name"),
+    (0, express_validator_1.body)("description", "Please Enter a description "),
+    (0, express_validator_1.body)("companies", "Please Enter a companies "),
+    (0, express_validator_1.body)("testcase", "Please Enter a testcase"),
+    (0, express_validator_1.body)("constraint", "Please Enter a constraint"),
+    (0, express_validator_1.body)("topic", "Please Enter a topic"),
+    (0, express_validator_1.body)("Details", "Please Enter a Details"),
+    (0, express_validator_1.body)("accepted", "Please Enter a accepted"),
+    (0, express_validator_1.body)("category", "Please Enter a category"),
+    (0, express_validator_1.body)("submission", "Please Enter a submission"),
+    (0, express_validator_1.body)("status", "Please Enter a status"),
+    (0, express_validator_1.body)("sampleInputOutput", "Please Enter a sampleInputOutput"),
+    (0, express_validator_1.body)("aboveCodeTemplate", "Please Enter a aboveCodeTemplate"),
+    (0, express_validator_1.body)("belowCodeTemplate", "Please Enter a belowCodeTemplate"),
+    (0, express_validator_1.body)("middleCode", "Please Enter a middleCode")
+], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
+        let result = {};
         console.log(req.params.pageno, "----", typeof req.params.pageno);
         if (req.params.pageno) {
-            let result = yield prisma.problemSet.findMany({
+            result = yield prisma.problemSet.findMany({
                 skip: Number(req.params.pageno) === 0 ? 0 : (Number(req.params.pageno) - 1) * 10,
                 take: 10
             });
             success = true;
             return res.send({ success, result });
         }
-        let result = (yield prisma.problemSet.findMany());
+        let query = {};
+        if (req.body.id) {
+            query.id = 1;
+        }
+        if (req.body.problemName) {
+            query.problemName = 1;
+        }
+        if (req.body.description) {
+            query.description = 1;
+        }
+        if (req.body.companies) {
+            query.companies = 1;
+        }
+        if (req.body.Details) {
+            query.Details = 1;
+        }
+        if (req.body.testcases) {
+            query.testcases = 1;
+        }
+        if (req.body.constraint) {
+            query.constraint = 1;
+        }
+        if (req.body.topic) {
+            query.topic = 1;
+        }
+        if (req.body.accepted) {
+            query.accepted = 1;
+        }
+        if (req.body.category) {
+            query.category = 1;
+        }
+        if (req.body.submission) {
+            query.submission = 1;
+        }
+        if (req.body.status) {
+            query.status = 1;
+        }
+        if (req.body.sampleInputOutput) {
+            query.sampleInputOutput = 1;
+        }
+        if (req.body.aboveCodeTemplate) {
+            query.aboveCodeTemplate = 1;
+        }
+        if (req.body.belowCodeTemplate) {
+            query.belowCodeTemplate = 1;
+        }
+        if (req.body.middleCode) {
+            query.middleCode = 1;
+        }
+        if (!(Object.keys(query).length === 0))
+            result = yield prisma.problemSet.findMany({ select: Object.assign({}, query) });
+        else
+            result = yield prisma.problemSet.findMany();
         success = true;
         return res.send({ success, result });
     }

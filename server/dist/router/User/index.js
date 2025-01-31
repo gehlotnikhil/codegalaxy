@@ -69,6 +69,7 @@ router.post("/registeruser", [
                 userName: userName,
                 totalRank: 1000,
                 solvedProblemDetails: [],
+                activeDays: [],
                 googleLoginAccess: false,
                 isAdmin: false,
                 profilePictureUrl: "https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk",
@@ -121,6 +122,7 @@ router.put("/update/", [
     (0, express_validator_1.body)("role", "Please fill role field").exists(),
     (0, express_validator_1.body)("googleLoginAccess", "Please fill googleLoginAccess field").exists(),
     (0, express_validator_1.body)("profilePictureUrl", "Please fill profilePictureUrl field").exists(),
+    (0, express_validator_1.body)("activeDays", "Please fill activeDays field").exists(),
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
@@ -147,6 +149,9 @@ router.put("/update/", [
         }
         if (req.body.age) {
             query.age = Number(req.body.age);
+        }
+        if (req.body.activeDays) {
+            query.activeDays = req.body.activeDays;
         }
         if (req.body.email) {
             query.email = req.body.email;

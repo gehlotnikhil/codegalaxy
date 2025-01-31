@@ -4,16 +4,16 @@ interface ProgressCircleProps {
   easy: number;
   medium: number;
   hard: number;
+  totalNumberOfQuestion:number;
 }
 
-const ProgressCircle2: React.FC<ProgressCircleProps> = ({ easy, medium, hard }) => {
+const ProgressCircle2: React.FC<ProgressCircleProps> = ({ easy, medium, hard,totalNumberOfQuestion }) => {
   const radius = 50; // Radius of the circle
   const strokeWidth = 8; // Width of the stroke
   const normalizedRadius = radius - strokeWidth / 2;
   const circumference = 2 * Math.PI * normalizedRadius;
 
-  const total = easy + medium + hard;
-
+const total = easy+medium+hard
   // Calculate proportions
   const easyProportion = (easy / total) * circumference;
   const mediumProportion = (medium / total) * circumference;
@@ -64,9 +64,9 @@ const ProgressCircle2: React.FC<ProgressCircleProps> = ({ easy, medium, hard }) 
           }}
         />
       </svg>
-      <div style={{ marginTop: "10px", textAlign: "center" }}>
+      <div style={{ marginTop: "10px", textAlign: "center",fontWeight:"bold" }}>
         <h2>
-          {total}/100 Solved
+          {easy+medium+hard}/{totalNumberOfQuestion} Solved
         </h2>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <span style={{ color: "#00cc88" }}>Easy: {easy}</span>

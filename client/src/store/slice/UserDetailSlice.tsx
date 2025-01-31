@@ -24,6 +24,7 @@ type UserDetailType = {
   token: null | string;
   profilePictureUrl: string;
   password: string;
+  activeDays:number[]
 };
 
 
@@ -50,6 +51,7 @@ const initialUserDetail: UserDetailType = {
   token: null,
   profilePictureUrl: '',
   password: '',
+  activeDays:[]
 };
 
 const UserDetailSlice = createSlice({

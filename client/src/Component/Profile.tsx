@@ -27,7 +27,13 @@ const paramUsername = useParams()
     collegeName:"",
     state:"",
     country:"",
-    totalRank:0
+    totalRank:0,
+    easy:0,
+    medium:0,
+    hard:0,
+    totalNumberOfQuestion:0,
+    solvedProblemDetails:[],
+    activeDays:[]
   })
   useEffect(() => {
     console.log("ProfileData--",ProfileData);
@@ -36,7 +42,10 @@ const paramUsername = useParams()
         return true;
       return false
     })
+    
   }, [ProfileData])
+
+
   
   const [EditButtonDisplay, setEditButtonDisplay] = useState(true)
 useEffect(() => {
@@ -46,6 +55,8 @@ useEffect(() => {
 }, [EditButtonDisplay])
 
   const {defaultProfilePicture } = context;
+
+
 
   const loadProfileDetailFromUserName = async(userName:string)=>{
     const result = await fetch(`${SERVER_URL}/api/user/usernametodata`,{
@@ -60,6 +71,48 @@ useEffect(() => {
     const jsondata = await result.json();
     console.log("loadProfileDetailFromUserName-",jsondata)
     if(jsondata.success){
+
+     const result2 = await fetch(`${SERVER_URL}/api/problemset/getallproblem/`,{
+method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        accepted:1,
+        submission:1,
+        id:1
+      }),
+    });
+    let easy = 0;
+    let medium = 0;
+    let hard = 0;
+    const jsondata2 = await result2.json();
+    console.log(jsondata2);
+    if(jsondata2.success){
+      let problems = jsondata2.result;
+      console.log("i am at here 1 -",jsondata.result.solvedProblemDetails);
+      
+      (jsondata.result.solvedProblemDetails || []).forEach((id:string) => {
+        let found = problems.find((item:any) => item.id === id);
+        if (found) {
+          let percentage = (found.accepted / found.submission) * 100;
+      
+          if (percentage >= 75 && percentage <= 100) {
+            easy++;
+          } else if (percentage >= 50 && percentage <= 74) {
+            medium++;
+          } else {
+            hard++;
+          }
+        }
+      });
+   
+    }
+
+ 
+
+
+
       setProfileData({
         profilePictureUrl:jsondata.result.profilePictureUrl,
         name:jsondata.result.name,
@@ -68,8 +121,16 @@ useEffect(() => {
         collegeName:jsondata.result.collegeName,
         state:jsondata.result.state,
         country:jsondata.result.country,
-        totalRank:jsondata.result.totalRank
+        totalRank:jsondata.result.totalRank,
+        activeDays:jsondata.result.activeDays,
+        solvedProblemDetails:jsondata.result.solvedProblemDetails,
+        totalNumberOfQuestion:(jsondata2.result).length,
+        easy,
+        medium,
+        hard
       })
+
+      
     }else{
       toast.error(`${userName} Username not exist`)
     }
@@ -84,6 +145,10 @@ useEffect(() => {
 }, [locationHook])
 
 
+useEffect(() => {
+    
+
+}, [])
 
 
 
@@ -200,14 +265,17 @@ useEffect(() => {
                 <hr />
                 <div className="">
                 <SubmissionGraph
-        activeDays={[
-          290, 159, 26, 98, 18, 96, 211, 53, 29, 296, 155, 75, 213, 4, 148, 95,
-          10, 49, 275, 21, 142, 253, 134, 274, 114, 88, 6, 131, 351, 225, 176,
-          166, 121, 319, 364, 85, 74, 195, 202, 138, 264, 361, 7, 103, 123, 310,
-          108, 272, 58, 39, 332, 362, 324, 292, 143, 358, 239, 99, 167, 360, 97,
-          189, 45, 335, 150,
-        ]}
+                activeDays = {ProfileData.activeDays}
+      
       />
+           {/* activeDays= [{
+           290, 159, 26, 98, 18, 96, 211, 53, 29, 296, 155, 75, 213, 4, 148, 95,
+           10, 49, 275, 21, 142, 253, 134, 274, 114, 88, 6, 131, 351, 225, 176,
+           166, 121, 319, 364, 85, 74, 195, 202, 138, 264, 361, 7, 103, 123, 310,
+           108, 272, 58, 39, 332, 362, 324, 292, 143, 358, 239, 99, 167, 360, 97,
+           189, 45, 335, 150,
+         ]} */}
+        
                 </div>
               </div>
             </div>
@@ -223,7 +291,7 @@ useEffect(() => {
                   </p>
                   <p className="text-muted mb-1">{ProfileData.userName}</p>
                   <hr />
-                  <ProgressCircle2 easy={1} medium={1} hard={1} />
+                  <ProgressCircle2 easy={ProfileData.easy} medium={ProfileData.medium} hard={ProfileData.hard} totalNumberOfQuestion={ProfileData.totalNumberOfQuestion} />
                 </div>
               </div>
             </div>

@@ -10,9 +10,11 @@ import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../store";
-
+import { useDispatch } from "react-redux";
+import { setUserDetail } from "../store/slice/UserDetailSlice";
 const ProblemPage: React.FC = () => {
-  const userDetail = useSelector((state:RootStateType)=>state.userDetail)
+  const dispatch = useDispatch();
+  const userDetail = useSelector((state: RootStateType) => state.userDetail);
   interface MainQuestionType {
     id?: string;
     problemNo?: number;
@@ -21,10 +23,16 @@ const ProblemPage: React.FC = () => {
     companies?: string[];
     constraint?: string[];
     Details?: {
-      like: string[],
-      dislike:string[]
-    }
-    topic?:  ("ARRAY" | "STRING" | "BINARYSEARCH" | "DYNAMICPROGRAMMING" | "GRAPH")[];
+      like: string[];
+      dislike: string[];
+    };
+    topic?: (
+      | "ARRAY"
+      | "STRING"
+      | "BINARYSEARCH"
+      | "DYNAMICPROGRAMMING"
+      | "GRAPH"
+    )[];
     accepted?: number;
     submission?: number;
     status?: "SOLVED" | "UNSOLVED";
@@ -37,62 +45,64 @@ const ProblemPage: React.FC = () => {
   }
   const [MainQuestion, setMainQuestion] = useState<MainQuestionType>({});
   useEffect(() => {
-    console.log("---",MainQuestion);
-    setLikeChoice(()=>{
-      let result = MainQuestion.Details?.like.includes(userDetail.id)
-      if(result) return 1;
-      else{
-        if(MainQuestion.Details?.dislike.includes(userDetail.id)) return -1;
+    console.log("---", MainQuestion);
+    setLikeChoice(() => {
+      let result = MainQuestion.Details?.like.includes(userDetail.id);
+      if (result) return 1;
+      else {
+        if (MainQuestion.Details?.dislike.includes(userDetail.id)) return -1;
         else return 0;
       }
-    })
-  }, [MainQuestion])
-  
-  const context = useContext(MainContext);
-  const {SERVER_URL} = context
-  const param = useParams<{ problemid: string }>();
-  const navigate = useNavigate()
-  const [LikeChoice, setLikeChoice] = useState(0)
-  useEffect(() => {
-    console.log("LikeChoice---",LikeChoice);
-    console.log(MainQuestion,"-----",userDetail.id);
-    console.log(MainQuestion.Details?.like.includes(userDetail.id)," ",MainQuestion.Details?.dislike.includes(userDetail.id));
-    
-    
-  }, [LikeChoice])
-  const loadMainQuestion = async (id: string) => {
-    const response = await fetch(`${SERVER_URL}/api/problemset/getspecificproblem?id=${id}`,{
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body:JSON.stringify({token:userDetail.token})
+    });
+  }, [MainQuestion]);
 
-    })
-    const jsondata = await response.json();
-    console.log("jsondata--------------------",jsondata);
-    if(jsondata.success){
-      console.log(jsondata.result);
-      setMainQuestion(jsondata.result)
-      setCode(jsondata.result.middleCode[SelectedLanguage])
-      setQuestionStatus(jsondata.result.status === "SOLVED")
-      
-    }else{
-      navigate("/error")
-    }
-  }
+  const context = useContext(MainContext);
+  const { SERVER_URL } = context;
+  const param = useParams<{ problemid: string }>();
+  const navigate = useNavigate();
+  const [LikeChoice, setLikeChoice] = useState(0);
   useEffect(() => {
-    console.log(typeof param.problemid,"param", param.problemid);
-    loadMainQuestion(param.problemid as string)
-  }, [])
-  
+    console.log("LikeChoice---", LikeChoice);
+    console.log(MainQuestion, "-----", userDetail.id);
+    console.log(
+      MainQuestion.Details?.like.includes(userDetail.id),
+      " ",
+      MainQuestion.Details?.dislike.includes(userDetail.id)
+    );
+  }, [LikeChoice]);
+  const loadMainQuestion = async (id: string) => {
+    const response = await fetch(
+      `${SERVER_URL}/api/problemset/getspecificproblem?id=${id}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token: userDetail.token }),
+      }
+    );
+    const jsondata = await response.json();
+    console.log("jsondata--------------------", jsondata);
+    if (jsondata.success) {
+      console.log(jsondata.result);
+      setMainQuestion(jsondata.result);
+      setCode(jsondata.result.middleCode[SelectedLanguage]);
+      setQuestionStatus(jsondata.result.status === "SOLVED");
+    } else {
+      navigate("/error");
+    }
+  };
+  useEffect(() => {
+    console.log(typeof param.problemid, "param", param.problemid);
+    loadMainQuestion(param.problemid as string);
+  }, []);
 
   const handleLikeChoice = async (value: number) => {
     if (!MainQuestion || !userDetail) return;
-  
+
     let updatedLike = [...(MainQuestion.Details?.like || [])];
     let updatedDislike = [...(MainQuestion.Details?.dislike || [])];
-  
+
     if (LikeChoice === value) {
       // If already liked/disliked, remove user ID from respective array
       updatedLike = updatedLike.filter((id) => id !== userDetail.id);
@@ -114,12 +124,12 @@ const ProblemPage: React.FC = () => {
       if (value === -1) updatedDislike.push(userDetail.id);
       setLikeChoice(value);
     }
-  
+
     // Prepare updated question data
     const bodyData = {
       Details: { like: updatedLike, dislike: updatedDislike },
     };
-  
+
     try {
       const response = await fetch(
         `${SERVER_URL}/api/problemset/update/${MainQuestion.problemNo}`,
@@ -131,7 +141,7 @@ const ProblemPage: React.FC = () => {
       );
       const jsondata = await response.json();
       console.log(jsondata);
-  
+
       if (jsondata.success) {
         setMainQuestion({
           ...MainQuestion,
@@ -142,13 +152,22 @@ const ProblemPage: React.FC = () => {
       console.error("Error updating like/dislike:", error);
     }
   };
-  
+  function getDayOfYear() {
+    const date = new Date();
+    const start = new Date(date.getFullYear(), 0, 0);
+    const diff = (date as any) - (start as any);
+    const oneDay = 1000 * 60 * 60 * 24;
+    return Math.floor(diff / oneDay);
+  }
+
   const { handleCodeExecution } = context;
   type Language = "go" | "java" | "cpp" | "c";
   const [SelectedLanguage, setSelectedLanguage] = useState<Language>("c");
   const topics = MainQuestion.topic;
   const companies = MainQuestion.companies;
-  const [code, setCode] = useState((MainQuestion.middleCode? MainQuestion.middleCode.c:""));
+  const [code, setCode] = useState(
+    MainQuestion.middleCode ? MainQuestion.middleCode.c : ""
+  );
   interface TestResult {
     isSuccess?: "pass" | "failed" | "pending";
   }
@@ -174,9 +193,8 @@ const ProblemPage: React.FC = () => {
       ),
       content: (
         <>
-          { topics && topics.map((topic) => (
-            <TopicTag key={topic} label={topic} />
-          ))}
+          {topics &&
+            topics.map((topic) => <TopicTag key={topic} label={topic} />)}
         </>
       ),
     },
@@ -193,13 +211,16 @@ const ProblemPage: React.FC = () => {
       ),
       content: (
         <>
-          {companies && companies.map((topic) => (
-            <TopicTag key={topic} label={topic} />
-          ))}
+          {companies &&
+            companies.map((topic) => <TopicTag key={topic} label={topic} />)}
         </>
       ),
     },
   ];
+
+  useEffect(() => {
+    console.log("day - ", getDayOfYear());
+  }, []);
 
   useEffect(() => {
     console.log(QuestionStatus);
@@ -207,7 +228,9 @@ const ProblemPage: React.FC = () => {
   useEffect(() => {
     console.log(SelectedLanguage);
     setResultOfTest([]);
-    setCode((MainQuestion.middleCode?MainQuestion.middleCode[SelectedLanguage]:""));
+    setCode(
+      MainQuestion.middleCode ? MainQuestion.middleCode[SelectedLanguage] : ""
+    );
   }, [SelectedLanguage]);
   useEffect(() => {
     console.log(code);
@@ -226,20 +249,22 @@ const ProblemPage: React.FC = () => {
     try {
       let accepted = MainQuestion.accepted || 0;
       let submission = MainQuestion.submission || 0;
-  
+
       let updatedSolvedProblems = [...userDetail.solvedProblemDetails];
 
-      if (status && updatedSolvedProblems.includes(MainQuestion.id)) {}
-      else if (status && !updatedSolvedProblems.includes(MainQuestion.id)){accepted++;submission++}
-      else if (!status && updatedSolvedProblems.includes(MainQuestion.id)){}
-      else if (!status && !updatedSolvedProblems.includes(MainQuestion.id)){submission++}
+      if (status && updatedSolvedProblems.includes(MainQuestion.id)) {
+      } else if (status && !updatedSolvedProblems.includes(MainQuestion.id)) {
+        accepted++;
+        submission++;
+      } else if (!status && updatedSolvedProblems.includes(MainQuestion.id)) {
+      } else if (!status && !updatedSolvedProblems.includes(MainQuestion.id)) {
+        submission++;
+      }
 
       if (status && !updatedSolvedProblems.includes(MainQuestion.id)) {
         updatedSolvedProblems.push(MainQuestion.id);
       }
-  
-      
-  
+
       const response = await fetch(`${SERVER_URL}/api/user/update/`, {
         method: "PUT",
         headers: {
@@ -250,105 +275,128 @@ const ProblemPage: React.FC = () => {
           solvedProblemDetails: updatedSolvedProblems,
         }),
       });
-      
-  
+
       const jsondata = await response.json();
       console.log("updatedUser------", jsondata);
-  
+
       if (jsondata.success) {
         // Update local state with correct values
-       
       }
 
-      const response2 = await fetch(`${SERVER_URL}/api/problemset/update/${MainQuestion.problemNo}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          accepted,submission
-        }),
-      });
-      
-  
+      const response2 = await fetch(
+        `${SERVER_URL}/api/problemset/update/${MainQuestion.problemNo}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            accepted,
+            submission,
+          }),
+        }
+      );
+
       const jsondata2 = await response2.json();
       console.log("updatedUser------", jsondata2);
-      if(jsondata2.success){
+      if (jsondata2.success) {
         setMainQuestion({
           ...MainQuestion,
           accepted,
           submission,
+
         });
+        dispatch(setUserDetail({solvedProblemDetails:updatedSolvedProblems}))
       }
-  
     } catch (error) {
       console.error("Error updating submission status:", error);
     }
   };
-  
-  
 
   const handleRunCode = async () => {
-    const testcases = MainQuestion.testcases?MainQuestion.testcases:[];
-    const aboveCodeTemplate = MainQuestion.aboveCodeTemplate?MainQuestion.aboveCodeTemplate[SelectedLanguage]:"";
-    const belowCodeTemplate = MainQuestion.belowCodeTemplate?MainQuestion.belowCodeTemplate[SelectedLanguage]:"";
+    const testcases = MainQuestion.testcases ? MainQuestion.testcases : [];
+    const aboveCodeTemplate = MainQuestion.aboveCodeTemplate
+      ? MainQuestion.aboveCodeTemplate[SelectedLanguage]
+      : "";
+    const belowCodeTemplate = MainQuestion.belowCodeTemplate
+      ? MainQuestion.belowCodeTemplate[SelectedLanguage]
+      : "";
     setResultOfTest(
-       testcases.map(() => {
+      testcases.map(() => {
         return { isSuccess: "pending" };
       })
     );
 
     const data = {
-      code:
-        aboveCodeTemplate +
-        code +
-        belowCodeTemplate,
+      code: aboveCodeTemplate + code + belowCodeTemplate,
       language: SelectedLanguage,
       testcases: MainQuestion.testcases,
     };
     try {
-    console.log("data send--", data);
-    let jsondata = await handleCodeExecution(data);
-    console.log(jsondata);
-    let finalMsg = false;
-    if (jsondata.success) {
-      finalMsg = true;
-      let finalStatus = jsondata.result.map((value: any) => {
-        if (value === true) {
-          return { isSuccess: "pass" };
-        } else {
-          finalMsg = false;
-          return { isSuccess: "failed" };
+      console.log("data send--", data);
+      let jsondata = await handleCodeExecution(data);
+
+      if (!userDetail.activeDays.includes(getDayOfYear())) {
+        const updateresult = await fetch(`${SERVER_URL}/api/user/update/`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            token: userDetail.token,
+            activeDays: [...userDetail.activeDays, getDayOfYear()],
+          }),
+        });
+        const jsondata2 = await updateresult.json();
+        console.log("ppppppp-----", jsondata2);
+
+        if (jsondata2.success) {
+          dispatch(
+            setUserDetail({
+              activeDays: [...userDetail.activeDays, getDayOfYear()],
+            })
+          );
         }
-      });
-      setResultOfTest(finalStatus);
-      if (finalMsg === true) {
-        setQuestionStatus(true);
-        toast.success("Passed");
-        updateSubmissionStatus(true)
-        
+      }
+
+      console.log(jsondata);
+      let finalMsg = false;
+      if (jsondata.success) {
+        finalMsg = true;
+        let finalStatus = jsondata.result.map((value: any) => {
+          if (value === true) {
+            return { isSuccess: "pass" };
+          } else {
+            finalMsg = false;
+            return { isSuccess: "failed" };
+          }
+        });
+        setResultOfTest(finalStatus);
+
+        if (finalMsg === true) {
+          setQuestionStatus(true);
+          toast.success("Passed");
+          updateSubmissionStatus(true);
+        } else {
+          toast.error("Failed");
+          updateSubmissionStatus(false);
+        }
       } else {
         toast.error("Failed");
-        updateSubmissionStatus(false)
-
-
+        setResultOfTest(
+          testcases.map(() => {
+            return { isSuccess: "failed" };
+          })
+        );
       }
-    } else {
-      toast.error("Failed");
+    } catch (error) {
+      console.log(error);
       setResultOfTest(
         testcases.map(() => {
           return { isSuccess: "failed" };
         })
       );
     }
-  } catch (error) {
-    console.log(error);
-    setResultOfTest(
-      testcases.map(() => {
-        return { isSuccess: "failed" };
-      })
-    );
-  }
   };
   const toggleQuestionInfo = (
     QuestionInfoKey: keyof typeof showQuestionInfos
@@ -376,24 +424,35 @@ const ProblemPage: React.FC = () => {
               <span style={styles.checkmark}>✅</span>
             </div>
           </div>
-          <pre  style={{...styles.description,overflow:"unset",textWrap:"pretty",fontFamily:"-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji"}}>{MainQuestion.description}</pre>
+          <pre
+            style={{
+              ...styles.description,
+              overflow: "unset",
+              textWrap: "pretty",
+              fontFamily:
+                "-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji",
+            }}
+          >
+            {MainQuestion.description}
+          </pre>
           <div>
             {/* Test Cases */}
-            {sampleTestCases && sampleTestCases.map((testCase, index) => (
-              <div key={index} style={styles.testCase}>
-                <p>
-                  <strong>Test case {index + 1}</strong>
-                </p>
-                <div style={styles.testIO}>
-                  <p style={styles.ioTitle}>Input</p>
-                  <div style={styles.ioBox}>{testCase.input}</div>
+            {sampleTestCases &&
+              sampleTestCases.map((testCase, index) => (
+                <div key={index} style={styles.testCase}>
+                  <p>
+                    <strong>Test case {index + 1}</strong>
+                  </p>
+                  <div style={styles.testIO}>
+                    <p style={styles.ioTitle}>Input</p>
+                    <div style={styles.ioBox}>{testCase.input}</div>
+                  </div>
+                  <div style={styles.testIO}>
+                    <p style={styles.ioTitle}>Output</p>
+                    <div style={styles.ioBox}>{testCase.output}</div>
+                  </div>
                 </div>
-                <div style={styles.testIO}>
-                  <p style={styles.ioTitle}>Output</p>
-                  <div style={styles.ioBox}>{testCase.output}</div>
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
           <div className="d-flex justify-content-between align-items-center ">
             <div>
@@ -407,7 +466,13 @@ const ProblemPage: React.FC = () => {
             <div>
               <span>Acceptance Rate</span>
               <span className="ms-2 fw-bold">
-                {MainQuestion.accepted && MainQuestion.submission?(((MainQuestion.accepted / MainQuestion.submission) * 100).toFixed(2)):0}%
+                {MainQuestion.accepted && MainQuestion.submission
+                  ? (
+                      (MainQuestion.accepted / MainQuestion.submission) *
+                      100
+                    ).toFixed(2)
+                  : 0}
+                %
               </span>
             </div>
           </div>
@@ -416,11 +481,12 @@ const ProblemPage: React.FC = () => {
           <div style={{}}>
             <h5 style={{}}>Constraints:</h5>
             <ul style={styles2.list}>
-              {constraints && constraints.map((constraint, index) => (
-                <li key={index} style={styles2.item}>
-                  <span style={styles2.box}>{constraint}</span>
-                </li>
-              ))}
+              {constraints &&
+                constraints.map((constraint, index) => (
+                  <li key={index} style={styles2.item}>
+                    <span style={styles2.box}>{constraint}</span>
+                  </li>
+                ))}
             </ul>
           </div>
 
@@ -458,7 +524,12 @@ const ProblemPage: React.FC = () => {
                   onClick={() => {}}
                   style={{ cursor: "pointer" }}
                 >
-                  <FontAwesomeIcon icon={faThumbsUp} className="me-1"  style={{color:`${LikeChoice===1?"green":"gray"}`}} onClick={()=>handleLikeChoice(1)}/>
+                  <FontAwesomeIcon
+                    icon={faThumbsUp}
+                    className="me-1"
+                    style={{ color: `${LikeChoice === 1 ? "green" : "gray"}` }}
+                    onClick={() => handleLikeChoice(1)}
+                  />
                   <span>{MainQuestion.Details?.like.length}</span>
                 </div>
                 {/* Thumbs Down */}
@@ -467,7 +538,12 @@ const ProblemPage: React.FC = () => {
                   onClick={() => {}}
                   style={{ cursor: "pointer" }}
                 >
-                  <FontAwesomeIcon icon={faThumbsDown} className="me-1" style={{color:`${LikeChoice===-1?"red":"gray"}`}}  onClick={()=>handleLikeChoice(-1)} />
+                  <FontAwesomeIcon
+                    icon={faThumbsDown}
+                    className="me-1"
+                    style={{ color: `${LikeChoice === -1 ? "red" : "gray"}` }}
+                    onClick={() => handleLikeChoice(-1)}
+                  />
                   <span>{MainQuestion.Details?.dislike.length}</span>
                 </div>
               </div>
@@ -648,113 +724,3 @@ const styles2 = {
 };
 
 export default ProblemPage;
-
-//   const Question = {
-//     id: "6783b0d81ffece704ef085b3",
-//     problemNo: 1,
-//     problemName: "Add Two Numbers",
-//     description: "This is a simple problem to add two numbers.",
-//     companies: ["Apple", "Google"],
-//     like: 121,
-//     dislike: 44,
-//     constraint: ["return only integer"],
-//     topic: ["ARRAY", "STRING"],
-//     accepted: 324,
-//     submission: 551,
-//     status: "UNSOLVED",
-//     category: "ALGORITHMS",
-//     sampleInputOutput: [
-//       {
-//         input: "45 7",
-//         output: "54",
-//       },
-//       {
-//         input: "559 100",
-//         output: "659",
-//       },
-//     ],
-//     testcases: [
-//       {
-//         input: "23 54",
-//         output: "77",
-//       },
-//       // {
-//       //   input: "99 66 ",
-//       //   output: "165",
-//       // },
-//       // {
-//       //   input: "100 200 ",
-//       //   output: "300",
-//       // },
-//     ],
-//     aboveCodeTemplate: {
-//       go: `package main
-
-// import (
-// 	"fmt"
-// )
-
-// `,
-//       java: `import java.util.Scanner;
-
-// public class Main {
-// `,
-//       cpp: `#include <iostream>
-// using namespace std;
-
-// `,
-//       c: `#include <stdio.h>
-
-// `,
-//     },
-//     middleCode: {
-//       go: `func addTwoNumber(a int, b int) int {
-// 	// Logic
-// }`,
-//       java: `public static int addTwoNumber(int a, int b) {
-//    // Logic
-// }`,
-//       cpp: `int addTwoNumber(int a,int b){
-//    //Logic
-// }`,
-//       c: `int addTwoNumber(int a, int b) {
-//     //Logic
-// }`,
-//     },
-//     belowCodeTemplate: {
-//       go: `
-// func main() {
-// 	var a, b int
-// 	fmt.Scan(&a)
-// 	fmt.Scan(&b)
-// 	fmt.Println(addTwoNumber(a, b))
-// }
-// `,
-//       java: `    
-//     public static void main(String[] args) {
-//         Scanner scanner = new Scanner(System.in);
-//         int a = scanner.nextInt();
-//         int b = scanner.nextInt();
-//         System.out.println(addTwoNumber(a, b));
-//         scanner.close();
-//     }
-// }
-// `,
-//       cpp: `
-//     int main() {
-//    int a,b;
-//    cin>>a;
-//    cin>>b;
-//    cout<<addTwoNumber(a,b);
-//    return 0;
-//   }`,
-//       c: `
-//   int main() {
-//     int a, b;
-//     scanf("%d", &a);
-//     scanf("%d", &b);
-//     printf("%d", addTwoNumber(a, b));
-//     return 0;
-// }`,
-//     },
-//   };
