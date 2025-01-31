@@ -222,6 +222,72 @@ const ProblemPage: React.FC = () => {
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedLanguage(e.target.value as Language);
   };
+  const updateSubmissionStatus = async (status: boolean) => {
+    try {
+      let accepted = MainQuestion.accepted || 0;
+      let submission = MainQuestion.submission || 0;
+  
+      let updatedSolvedProblems = [...userDetail.solvedProblemDetails];
+
+      if (status && updatedSolvedProblems.includes(MainQuestion.id)) {}
+      else if (status && !updatedSolvedProblems.includes(MainQuestion.id)){accepted++;submission++}
+      else if (!status && updatedSolvedProblems.includes(MainQuestion.id)){}
+      else if (!status && !updatedSolvedProblems.includes(MainQuestion.id)){submission++}
+
+      if (status && !updatedSolvedProblems.includes(MainQuestion.id)) {
+        updatedSolvedProblems.push(MainQuestion.id);
+      }
+  
+      
+  
+      const response = await fetch(`${SERVER_URL}/api/user/update/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: userDetail.token,
+          solvedProblemDetails: updatedSolvedProblems,
+        }),
+      });
+      
+  
+      const jsondata = await response.json();
+      console.log("updatedUser------", jsondata);
+  
+      if (jsondata.success) {
+        // Update local state with correct values
+       
+      }
+
+      const response2 = await fetch(`${SERVER_URL}/api/problemset/update/${MainQuestion.problemNo}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          accepted,submission
+        }),
+      });
+      
+  
+      const jsondata2 = await response2.json();
+      console.log("updatedUser------", jsondata2);
+      if(jsondata2.success){
+        setMainQuestion({
+          ...MainQuestion,
+          accepted,
+          submission,
+        });
+      }
+  
+    } catch (error) {
+      console.error("Error updating submission status:", error);
+    }
+  };
+  
+  
+
   const handleRunCode = async () => {
     const testcases = MainQuestion.testcases?MainQuestion.testcases:[];
     const aboveCodeTemplate = MainQuestion.aboveCodeTemplate?MainQuestion.aboveCodeTemplate[SelectedLanguage]:"";
@@ -259,7 +325,14 @@ const ProblemPage: React.FC = () => {
       if (finalMsg === true) {
         setQuestionStatus(true);
         toast.success("Passed");
-      } else toast.error("Failed");
+        updateSubmissionStatus(true)
+        
+      } else {
+        toast.error("Failed");
+        updateSubmissionStatus(false)
+
+
+      }
     } else {
       toast.error("Failed");
       setResultOfTest(
