@@ -76,15 +76,23 @@ router.post("/registeruser", [
                 praticeCourseDetail: {
                     c: {
                         solvedProblemDetails: [],
+                        participated: false,
+                        review: 0
                     },
                     cpp: {
                         solvedProblemDetails: [],
+                        participated: false,
+                        review: 0
                     },
                     java: {
                         solvedProblemDetails: [],
+                        participated: false,
+                        review: 0
                     },
                     go: {
                         solvedProblemDetails: [],
+                        participated: false,
+                        review: 0
                     },
                 }
             },

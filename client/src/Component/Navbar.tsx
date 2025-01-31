@@ -224,7 +224,7 @@ function AppNavbar() {
                   alt=""
                   srcSet=""
                 />{" "}
-                <span style={{ marginLeft: "5px" }}>Nikhil Gehlot</span>
+                <span style={{ marginLeft: "5px" }}>{userDetails.name.length > 7 ? userDetails.name.substring(0, 7) + "..." : userDetails.name}</span>
               </li>
               <hr style={{ margin: "0" }} className="my-2" />
               <li

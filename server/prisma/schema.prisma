@@ -35,31 +35,13 @@ type praticeCourseDetailType{
 }
 type CourseDetail{
   participated Boolean @default(false)
-  review ReviewEnum @default(ZERO)
+  review Int @default(0)
   solvedProblemDetails String[]
 }
 
-enum ReviewEnum {
-  ZERO
-  ONE
-  TWO
-  THREE
-  FOUR
-  FIVE
-}
 
-model PraticeProblem {
-  id                String            @id @default(auto()) @map("_id") @db.ObjectId
-  problemName       String
-  description       String
-  constraint        String[]
-  language          Language
-  sampleInputOutput InputOutputType[]
-  testcases         InputOutputType[]
-  aboveCodeTemplate CodeTemplateType
-  belowCodeTemplate CodeTemplateType
-  middleCode        CodeTemplateType
-}
+
+
 
 model Contest {
   id               String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -161,6 +143,19 @@ model ProblemSet {
   accepted          Int
   submission        Int
   category          categoryEnum
+  aboveCodeTemplate CodeTemplateType
+  belowCodeTemplate CodeTemplateType
+  middleCode        CodeTemplateType
+}
+
+model PraticeProblem {
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+  problemName       String
+  description       String
+  constraint        String[]
+  language          Language
+  sampleInputOutput InputOutputType[]
+  testcases         InputOutputType[]
   aboveCodeTemplate CodeTemplateType
   belowCodeTemplate CodeTemplateType
   middleCode        CodeTemplateType

@@ -4,6 +4,17 @@ type RoleType = {
   User:boolean;
   Admin:boolean;
 }
+interface parcticeDetailType{
+  solvedProblemDetails: string[],
+  participated: boolean,
+  review: number
+}
+interface praticeCourseDetailType {
+  c:parcticeDetailType,
+  cpp:parcticeDetailType,
+  java:parcticeDetailType,
+  go:parcticeDetailType,
+}
 type UserDetailType = {
   id: string;
   name: string;
@@ -24,8 +35,10 @@ type UserDetailType = {
   token: null | string;
   profilePictureUrl: string;
   password: string;
-  activeDays:number[]
+  activeDays:number[];
+  praticeCourseDetail: praticeCourseDetailType
 };
+
 
 
 const initialUserDetail: UserDetailType = {
@@ -51,7 +64,29 @@ const initialUserDetail: UserDetailType = {
   token: null,
   profilePictureUrl: '',
   password: '',
-  activeDays:[]
+  activeDays:[],
+  praticeCourseDetail: {
+    c: {
+      solvedProblemDetails: [],
+      participated:false,
+      review:0
+    },
+    cpp: {
+      solvedProblemDetails: [],
+      participated:false,
+      review:0
+    },
+    java: {
+      solvedProblemDetails: [],
+      participated:false,
+      review:0
+    },
+    go: {
+      solvedProblemDetails: [],
+      participated:false,
+      review:0
+    },
+  }
 };
 
 const UserDetailSlice = createSlice({

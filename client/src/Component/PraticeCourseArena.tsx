@@ -1,13 +1,14 @@
 import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import PraticeProblem from "./PraticeProblem";
-import { useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import { RootStateType } from "../store";
 import { useParams } from "react-router";
 import MainContext from "../context/main";
-
-
+// import { UseDispatch } from "react-redux";
+// import {setUserDetail} from "../store/slice/UserDetailSlice";
 const PraticeCourseArena = () => {
+  // const dispatch = useDispatch()
   const userDetail = useSelector((state:RootStateType)=>state.userDetail)
   const params = useParams()
   const context = useContext(MainContext)
@@ -81,6 +82,29 @@ const PraticeCourseArena = () => {
     console.log(CourseName);
     
   }, [CourseName])
+
+  const [Learners, setLearners] = useState(0)
+  const [CRating, setCRating] = useState(0)
+  const [ReviewStar, setReviewStar] = useState(()=>{
+    console.log("reviewstar----------",userDetail.praticeCourseDetail[params.course as keyof typeof userDetail.praticeCourseDetail].review);
+    return userDetail.praticeCourseDetail[params.course as keyof typeof userDetail.praticeCourseDetail].review || 5
+
+    
+  })
+  useEffect(() => {
+   setLearners(0)
+   setReviewStar(0)
+   setCRating(0)
+  }, [])
+  
+  useEffect(() => {}, [Learners])
+  useEffect(() => {}, [CRating])
+  useEffect(() => {}, [ReviewStar])
+
+  
+  
+  
+
   
   return (
     <Wrapper>
@@ -97,7 +121,7 @@ const PraticeCourseArena = () => {
       </Description>
       <Stats>
         <Stat>
-          <span>4.5 ⭐</span>
+          <span>{CRating} ⭐</span>
           <p>(11036 reviews)</p>
         </Stat>
         <Stat>
@@ -105,7 +129,7 @@ const PraticeCourseArena = () => {
           <p>Problems</p>
         </Stat>
         <Stat>
-          <span>76</span>
+          <span>{Learners}</span>
           <p>Learners</p>
         </Stat>
       </Stats>
