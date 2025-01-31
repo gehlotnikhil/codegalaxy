@@ -3,8 +3,15 @@ import CodeEditor from "./CodeEditor";
 import OutputPanel from "./Panel";
 import MainContext from "../context/main";
 import { toast } from "react-toastify";
+import spinner from '../assets/tube-spinner.svg';
 
 function PlayGround() {
+  const [spinnerStatus, setspinnerStatus] = useState(false)
+  useEffect(() => {
+    console.log(spinnerStatus);
+    
+  }, [spinnerStatus])
+  
   const context = useContext(MainContext);
   const { handleCodeExecution } = context;
   const [CodeValue, setCodeValue] = useState(`#include <stdio.h>
@@ -70,31 +77,40 @@ func main() {
     setEditableContent(event.target.value);
   };
   const handleRunCode = async () => {
-    if (CodeValue === "") {
-      return toast.warning("Code is empty");
+    setspinnerStatus(true);
+    try {
+      if (CodeValue === "") {
+        return toast.warning("Code is empty");
+      }
+      const data = {
+        code: CodeValue,
+        language: EditorLanguage,
+        testcases: [
+          {
+            input: editableContent,
+            output: "",
+          },
+        ],
+      };
+      const result = await handleCodeExecution(data);
+      console.log("execute---", result);
+      console.log(result.executionTime[0]===null,"---", typeof result.executionTime[0]);
+      if (result.success === true) {
+        let output: string = result.output[0];
+        let updatedOutput = output.replace("jdoodle", "file");
+        setDisplayOutput(updatedOutput);    
+      } else {
+        toast.error("Failed");
+      }
+     
+    } catch (error) {
+      console.log(error);   
+      toast.error("Internal Server Error");
+   
     }
-    const data = {
-      code: CodeValue,
-      language: EditorLanguage,
-      testcases: [
-        {
-          input: editableContent,
-          output: "",
-        },
-      ],
-    };
-    const result = await handleCodeExecution(data);
-    console.log("execute---", result);
-    console.log(result.executionTime[0]===null,"---", typeof result.executionTime[0]);
-    if (result.success === true) {
-      let output: string = result.output[0];
-      let updatedOutput = output.replace("jdoodle", "file");
-      setDisplayOutput(updatedOutput);      
-    } else {
-      toast.error("Failed");
-    }
+    setspinnerStatus(false);
   };
-
+  
   return (
     <div
       style={{
@@ -137,7 +153,7 @@ func main() {
               handleRunCode();
             }}
           >
-            Run Code
+            Run Code <img className={`d-${spinnerStatus?"inline":"none"}`} src={spinner} height={"22px"} width={"22px"}/>
           </button>
           <select
             onChange={(value) => setEditorLanguage(value.target.value)}

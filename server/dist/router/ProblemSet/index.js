@@ -57,8 +57,7 @@ router.post("/create", [
                 problemName: problemName,
                 description: description,
                 companies: companies,
-                like: 0,
-                dislike: 0,
+                Details: { like: [], dislike: [] },
                 testcases: testcases,
                 constraint: constraint,
                 topic: topic,
@@ -124,11 +123,10 @@ router.put("/update/:problemno", [
     (0, express_validator_1.body)("problemName", "Please Enter a problem name").exists(),
     (0, express_validator_1.body)("description", "Please Enter a description ").exists(),
     (0, express_validator_1.body)("companies", "Please Enter a companies ").exists(),
-    (0, express_validator_1.body)("like", "Please Enter a like ").exists(),
-    (0, express_validator_1.body)("dislike", "Please Enter a dislike").exists(),
     (0, express_validator_1.body)("testcase", "Please Enter a testcase").exists(),
     (0, express_validator_1.body)("constraint", "Please Enter a constraint").exists(),
     (0, express_validator_1.body)("topic", "Please Enter a topic").exists(),
+    (0, express_validator_1.body)("Details", "Please Enter a Details").exists(),
     (0, express_validator_1.body)("accepted", "Please Enter a accepted").exists(),
     (0, express_validator_1.body)("category", "Please Enter a category").exists(),
     (0, express_validator_1.body)("submission", "Please Enter a submission").exists(),
@@ -154,11 +152,8 @@ router.put("/update/:problemno", [
         if (req.body.companies) {
             query.companies = req.body.companies;
         }
-        if (req.body.like) {
-            query.like = req.body.like;
-        }
-        if (req.body.dislike) {
-            query.dislike = req.body.dislike;
+        if (req.body.Details) {
+            query.Details = req.body.Details;
         }
         if (req.body.testcases) {
             query.testcases = req.body.testcases;

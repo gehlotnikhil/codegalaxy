@@ -209,7 +209,7 @@ function AppNavbar() {
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              NG
+              {userDetails.name.substring(0,1)}
             </button>
             <ul className="dropdown-menu">
               <li>

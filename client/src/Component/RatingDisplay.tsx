@@ -16,28 +16,19 @@ const RatingDisplay: React.FC<RatingProps> = ({ number }) => {
 
     return 0;
   };
-  const [division, setDivision] = useState(() => {
-    const num: number = number;
-    if (num >= 1000 && num <= 1100) {
-      return 3;
-    } else if (num > 1101 && num <= 1200) {
-      return 2;
-    } else if (num >= 1201) {
-      return 1;
-    }
-  });
+  const [division, setDivision] = useState(3);
   useEffect(() => {
-    setDivision(() => {
-      const num: number = number;
+    
+      let num: number = number;
       if (num >= 1000 && num <= 1100) {
-        return 3;
+        num= 3;
       } else if (num > 1101 && num <= 1200) {
-        return 2;
+        num= 2;
       } else if (num >= 1201) {
-        return 1;
+        num= 1;
       }
-    });
-  }, []);
+      setDivision(num)
+  }, [number]);
 
   useEffect(() => {
     console.log("division - ",division);

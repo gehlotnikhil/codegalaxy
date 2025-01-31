@@ -19,9 +19,11 @@ const ProblemPage: React.FC = () => {
     problemName?: string;
     description?: string;
     companies?: string[];
-    like?: number;
-    dislike?: number;
     constraint?: string[];
+    Details?: {
+      like: string[],
+      dislike:string[]
+    }
     topic?:  ("ARRAY" | "STRING" | "BINARYSEARCH" | "DYNAMICPROGRAMMING" | "GRAPH")[];
     accepted?: number;
     submission?: number;
@@ -34,11 +36,30 @@ const ProblemPage: React.FC = () => {
     belowCodeTemplate?: { go: string; java: string; cpp: string; c: string };
   }
   const [MainQuestion, setMainQuestion] = useState<MainQuestionType>({});
+  useEffect(() => {
+    console.log("---",MainQuestion);
+    setLikeChoice(()=>{
+      let result = MainQuestion.Details?.like.includes(userDetail.id)
+      if(result) return 1;
+      else{
+        if(MainQuestion.Details?.dislike.includes(userDetail.id)) return -1;
+        else return 0;
+      }
+    })
+  }, [MainQuestion])
+  
   const context = useContext(MainContext);
   const {SERVER_URL} = context
   const param = useParams<{ problemid: string }>();
   const navigate = useNavigate()
-
+  const [LikeChoice, setLikeChoice] = useState(0)
+  useEffect(() => {
+    console.log("LikeChoice---",LikeChoice);
+    console.log(MainQuestion,"-----",userDetail.id);
+    console.log(MainQuestion.Details?.like.includes(userDetail.id)," ",MainQuestion.Details?.dislike.includes(userDetail.id));
+    
+    
+  }, [LikeChoice])
   const loadMainQuestion = async (id: string) => {
     const response = await fetch(`${SERVER_URL}/api/problemset/getspecificproblem?id=${id}`,{
       method: "POST",
@@ -55,6 +76,7 @@ const ProblemPage: React.FC = () => {
       setMainQuestion(jsondata.result)
       setCode(jsondata.result.middleCode[SelectedLanguage])
       setQuestionStatus(jsondata.result.status === "SOLVED")
+      
     }else{
       navigate("/error")
     }
@@ -64,116 +86,64 @@ const ProblemPage: React.FC = () => {
     loadMainQuestion(param.problemid as string)
   }, [])
   
+
+  const handleLikeChoice = async (value: number) => {
+    if (!MainQuestion || !userDetail) return;
+  
+    let updatedLike = [...(MainQuestion.Details?.like || [])];
+    let updatedDislike = [...(MainQuestion.Details?.dislike || [])];
+  
+    if (LikeChoice === value) {
+      // If already liked/disliked, remove user ID from respective array
+      updatedLike = updatedLike.filter((id) => id !== userDetail.id);
+      updatedDislike = updatedDislike.filter((id) => id !== userDetail.id);
+      setLikeChoice(0);
+    } else if (LikeChoice === -1 && value === 1) {
+      // If disliked and now liking
+      updatedDislike = updatedDislike.filter((id) => id !== userDetail.id);
+      updatedLike.push(userDetail.id);
+      setLikeChoice(1);
+    } else if (LikeChoice === 1 && value === -1) {
+      // If liked and now disliking
+      updatedLike = updatedLike.filter((id) => id !== userDetail.id);
+      updatedDislike.push(userDetail.id);
+      setLikeChoice(-1);
+    } else {
+      // If first time liking/disliking
+      if (value === 1) updatedLike.push(userDetail.id);
+      if (value === -1) updatedDislike.push(userDetail.id);
+      setLikeChoice(value);
+    }
+  
+    // Prepare updated question data
+    const bodyData = {
+      Details: { like: updatedLike, dislike: updatedDislike },
+    };
+  
+    try {
+      const response = await fetch(
+        `${SERVER_URL}/api/problemset/update/${MainQuestion.problemNo}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(bodyData),
+        }
+      );
+      const jsondata = await response.json();
+      console.log(jsondata);
+  
+      if (jsondata.success) {
+        setMainQuestion({
+          ...MainQuestion,
+          Details: { like: updatedLike, dislike: updatedDislike },
+        });
+      }
+    } catch (error) {
+      console.error("Error updating like/dislike:", error);
+    }
+  };
+  
   const { handleCodeExecution } = context;
-//   const Question = {
-//     id: "6783b0d81ffece704ef085b3",
-//     problemNo: 1,
-//     problemName: "Add Two Numbers",
-//     description: "This is a simple problem to add two numbers.",
-//     companies: ["Apple", "Google"],
-//     like: 121,
-//     dislike: 44,
-//     constraint: ["return only integer"],
-//     topic: ["ARRAY", "STRING"],
-//     accepted: 324,
-//     submission: 551,
-//     status: "UNSOLVED",
-//     category: "ALGORITHMS",
-//     sampleInputOutput: [
-//       {
-//         input: "45 7",
-//         output: "54",
-//       },
-//       {
-//         input: "559 100",
-//         output: "659",
-//       },
-//     ],
-//     testcases: [
-//       {
-//         input: "23 54",
-//         output: "77",
-//       },
-//       // {
-//       //   input: "99 66 ",
-//       //   output: "165",
-//       // },
-//       // {
-//       //   input: "100 200 ",
-//       //   output: "300",
-//       // },
-//     ],
-//     aboveCodeTemplate: {
-//       go: `package main
-
-// import (
-// 	"fmt"
-// )
-
-// `,
-//       java: `import java.util.Scanner;
-
-// public class Main {
-// `,
-//       cpp: `#include <iostream>
-// using namespace std;
-
-// `,
-//       c: `#include <stdio.h>
-
-// `,
-//     },
-//     middleCode: {
-//       go: `func addTwoNumber(a int, b int) int {
-// 	// Logic
-// }`,
-//       java: `public static int addTwoNumber(int a, int b) {
-//    // Logic
-// }`,
-//       cpp: `int addTwoNumber(int a,int b){
-//    //Logic
-// }`,
-//       c: `int addTwoNumber(int a, int b) {
-//     //Logic
-// }`,
-//     },
-//     belowCodeTemplate: {
-//       go: `
-// func main() {
-// 	var a, b int
-// 	fmt.Scan(&a)
-// 	fmt.Scan(&b)
-// 	fmt.Println(addTwoNumber(a, b))
-// }
-// `,
-//       java: `    
-//     public static void main(String[] args) {
-//         Scanner scanner = new Scanner(System.in);
-//         int a = scanner.nextInt();
-//         int b = scanner.nextInt();
-//         System.out.println(addTwoNumber(a, b));
-//         scanner.close();
-//     }
-// }
-// `,
-//       cpp: `
-//     int main() {
-//    int a,b;
-//    cin>>a;
-//    cin>>b;
-//    cout<<addTwoNumber(a,b);
-//    return 0;
-//   }`,
-//       c: `
-//   int main() {
-//     int a, b;
-//     scanf("%d", &a);
-//     scanf("%d", &b);
-//     printf("%d", addTwoNumber(a, b));
-//     return 0;
-// }`,
-//     },
-//   };
   type Language = "go" | "java" | "cpp" | "c";
   const [SelectedLanguage, setSelectedLanguage] = useState<Language>("c");
   const topics = MainQuestion.topic;
@@ -415,8 +385,8 @@ const ProblemPage: React.FC = () => {
                   onClick={() => {}}
                   style={{ cursor: "pointer" }}
                 >
-                  <FontAwesomeIcon icon={faThumbsUp} className="me-1" />
-                  <span>{MainQuestion.like}</span>
+                  <FontAwesomeIcon icon={faThumbsUp} className="me-1"  style={{color:`${LikeChoice===1?"green":"gray"}`}} onClick={()=>handleLikeChoice(1)}/>
+                  <span>{MainQuestion.Details?.like.length}</span>
                 </div>
                 {/* Thumbs Down */}
                 <div
@@ -424,8 +394,8 @@ const ProblemPage: React.FC = () => {
                   onClick={() => {}}
                   style={{ cursor: "pointer" }}
                 >
-                  <FontAwesomeIcon icon={faThumbsDown} className="me-1" />
-                  <span>{MainQuestion.dislike}</span>
+                  <FontAwesomeIcon icon={faThumbsDown} className="me-1" style={{color:`${LikeChoice===-1?"red":"gray"}`}}  onClick={()=>handleLikeChoice(-1)} />
+                  <span>{MainQuestion.Details?.dislike.length}</span>
                 </div>
               </div>
             </div>
@@ -605,3 +575,113 @@ const styles2 = {
 };
 
 export default ProblemPage;
+
+//   const Question = {
+//     id: "6783b0d81ffece704ef085b3",
+//     problemNo: 1,
+//     problemName: "Add Two Numbers",
+//     description: "This is a simple problem to add two numbers.",
+//     companies: ["Apple", "Google"],
+//     like: 121,
+//     dislike: 44,
+//     constraint: ["return only integer"],
+//     topic: ["ARRAY", "STRING"],
+//     accepted: 324,
+//     submission: 551,
+//     status: "UNSOLVED",
+//     category: "ALGORITHMS",
+//     sampleInputOutput: [
+//       {
+//         input: "45 7",
+//         output: "54",
+//       },
+//       {
+//         input: "559 100",
+//         output: "659",
+//       },
+//     ],
+//     testcases: [
+//       {
+//         input: "23 54",
+//         output: "77",
+//       },
+//       // {
+//       //   input: "99 66 ",
+//       //   output: "165",
+//       // },
+//       // {
+//       //   input: "100 200 ",
+//       //   output: "300",
+//       // },
+//     ],
+//     aboveCodeTemplate: {
+//       go: `package main
+
+// import (
+// 	"fmt"
+// )
+
+// `,
+//       java: `import java.util.Scanner;
+
+// public class Main {
+// `,
+//       cpp: `#include <iostream>
+// using namespace std;
+
+// `,
+//       c: `#include <stdio.h>
+
+// `,
+//     },
+//     middleCode: {
+//       go: `func addTwoNumber(a int, b int) int {
+// 	// Logic
+// }`,
+//       java: `public static int addTwoNumber(int a, int b) {
+//    // Logic
+// }`,
+//       cpp: `int addTwoNumber(int a,int b){
+//    //Logic
+// }`,
+//       c: `int addTwoNumber(int a, int b) {
+//     //Logic
+// }`,
+//     },
+//     belowCodeTemplate: {
+//       go: `
+// func main() {
+// 	var a, b int
+// 	fmt.Scan(&a)
+// 	fmt.Scan(&b)
+// 	fmt.Println(addTwoNumber(a, b))
+// }
+// `,
+//       java: `    
+//     public static void main(String[] args) {
+//         Scanner scanner = new Scanner(System.in);
+//         int a = scanner.nextInt();
+//         int b = scanner.nextInt();
+//         System.out.println(addTwoNumber(a, b));
+//         scanner.close();
+//     }
+// }
+// `,
+//       cpp: `
+//     int main() {
+//    int a,b;
+//    cin>>a;
+//    cin>>b;
+//    cout<<addTwoNumber(a,b);
+//    return 0;
+//   }`,
+//       c: `
+//   int main() {
+//     int a, b;
+//     scanf("%d", &a);
+//     scanf("%d", &b);
+//     printf("%d", addTwoNumber(a, b));
+//     return 0;
+// }`,
+//     },
+//   };

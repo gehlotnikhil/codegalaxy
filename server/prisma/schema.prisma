@@ -141,14 +141,18 @@ type CodeTemplateType {
   go   String
 }
 
+type ProblemDetails{
+  like String[]
+  dislike String[]
+}
+
 model ProblemSet {
   id                String            @id @default(auto()) @map("_id") @db.ObjectId
   problemNo         Int               @unique
   problemName       String
   description       String
   companies         String[]
-  like              Int
-  dislike           Int
+  Details           ProblemDetails
   sampleInputOutput InputOutputType[]
   testcases         InputOutputType[]
   constraint        String[]

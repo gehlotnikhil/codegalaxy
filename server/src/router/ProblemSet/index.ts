@@ -64,8 +64,7 @@ router.post(
           problemName: problemName,
           description: description,
           companies: companies,
-          like: 0,
-          dislike: 0,
+          Details:{like:[],dislike:[]},
           testcases: testcases,
           constraint: constraint,
           topic: topic,
@@ -79,6 +78,7 @@ router.post(
           
         },
       });
+      
       console.log(result);
 
       success = true;
@@ -158,11 +158,10 @@ router.put(
     body("problemName", "Please Enter a problem name").exists(),
     body("description", "Please Enter a description ").exists(),
     body("companies", "Please Enter a companies ").exists(),
-    body("like", "Please Enter a like ").exists(),
-    body("dislike", "Please Enter a dislike").exists(),
     body("testcase", "Please Enter a testcase").exists(),
     body("constraint", "Please Enter a constraint").exists(),
     body("topic", "Please Enter a topic").exists(),
+    body("Details", "Please Enter a Details").exists(),
     body("accepted", "Please Enter a accepted").exists(),
     body("category", "Please Enter a category").exists(),
     body("submission", "Please Enter a submission").exists(),
@@ -182,19 +181,17 @@ router.put(
       let query: any = {};
       if (req.body.problemName) {
         query.problemName = req.body.problemName
-      }
+      } 
       if (req.body.description) {
         query.description = req.body.description
       }
       if (req.body.companies) {
         query.companies = req.body.companies
       }
-      if (req.body.like) {
-        query.like = req.body.like
+      if (req.body.Details) {
+        query.Details = req.body.Details
       }
-      if (req.body.dislike) {
-        query.dislike = req.body.dislike
-      }
+    
       if (req.body.testcases) {
         query.testcases = req.body.testcases
       }
