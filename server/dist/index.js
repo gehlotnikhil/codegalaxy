@@ -22,25 +22,21 @@ const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const app = (0, express_1.default)();
 const PORT = Number(process.env.PORT) || 8000;
-console.log(process.env.PORT);
+console.log(`Server starting on port: ${PORT}`);
 // Middleware to parse JSON
 app.use(express_1.default.json());
-// Define allowed origins 
-const allowedOrigins = [
-    "http://localhost:5173", // Frontend for local development
-    "https://codegalaxy1.vercel.app", // Deployed production frontend
-];
-// Custom CORS configuration
-const corsOptions = {
-    origin: allowedOrigins, // Directly pass the array of allowed origins
+// Allow all origins in CORS
+app.use((0, cors_1.default)({
+    origin: "*", // Allow all origins
     credentials: true, // Allow cookies and authentication headers
-    optionsSuccessStatus: 200,
-};
-// Use CORS middleware
-app.options("*", (0, cors_1.default)(corsOptions)); // Handle preflight requests globally
-// Add Helmet middleware for security
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE", // Allowed HTTP methods
+}));
+// Handle preflight requests globally
+app.options("*", (0, cors_1.default)());
+// Add Helmet middleware for security (allowing cross-origin resources)
 app.use((0, helmet_1.default)({
-    crossOriginOpenerPolicy: { policy: "unsafe-none" }, // Set COOP to "unsafe-none"
+    crossOriginOpenerPolicy: { policy: "unsafe-none" },
+    crossOriginResourcePolicy: { policy: "cross-origin" },
 }));
 // Root route
 app.get("/", (req, res) => {

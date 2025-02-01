@@ -1,40 +1,36 @@
 import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
-import cors, { CorsOptions } from "cors";
+import cors from "cors";
 import helmet from "helmet";
 import { PrismaClient } from "@prisma/client";
- 
+
 // Initialize environment variables and Prisma client
 const prisma = new PrismaClient();
-
 const app = express();
 const PORT = Number(process.env.PORT) || 8000;
- console.log(process.env.PORT);
- 
+console.log(`Server starting on port: ${PORT}`);
+
 // Middleware to parse JSON
 app.use(express.json());
 
-// Define allowed origins 
-const allowedOrigins = [
-  "http://localhost:5173", // Frontend for local development
-  "https://codegalaxy1.vercel.app", // Deployed production frontend
-];  
+// Allow all origins in CORS
+app.use(
+  cors({
+    origin: "*", // Allow all origins
+    credentials: true, // Allow cookies and authentication headers
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE", // Allowed HTTP methods
+  })
+);
 
-// Custom CORS configuration
-const corsOptions: CorsOptions = {
-  origin: allowedOrigins, // Directly pass the array of allowed origins
-  credentials: true, // Allow cookies and authentication headers
-  optionsSuccessStatus: 200,
-};
- 
-// Use CORS middleware
-app.options("*", cors(corsOptions)); // Handle preflight requests globally
+// Handle preflight requests globally
+app.options("*", cors());
 
-// Add Helmet middleware for security
+// Add Helmet middleware for security (allowing cross-origin resources)
 app.use(
   helmet({
-    crossOriginOpenerPolicy: { policy: "unsafe-none" }, // Set COOP to "unsafe-none"
+    crossOriginOpenerPolicy: { policy: "unsafe-none" },
+    crossOriginResourcePolicy: { policy: "cross-origin" },
   })
 );
 
@@ -54,7 +50,6 @@ app.get("/test", async (req, res) => {
     });
 
     console.log("Test created:", test1);
-
     res.send({ success: true, data: test1 });
   } catch (error) {
     console.error("Error creating test:", error);
