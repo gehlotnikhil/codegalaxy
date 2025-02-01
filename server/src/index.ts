@@ -23,17 +23,13 @@ const allowedOrigins = [
 
 // Custom CORS configuration
 const corsOptions: CorsOptions = {
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true); // Allow the request
-    } else {
-      callback(new Error("Not allowed by CORS")); // Reject the request
-    }
-  },
+  origin: allowedOrigins, // Directly pass the array of allowed origins
+  credentials: true, // Allow cookies and authentication headers
+  optionsSuccessStatus: 200,
 };
  
 // Use CORS middleware
-app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // Handle preflight requests globally
 
 // Add Helmet middleware for security
 app.use(

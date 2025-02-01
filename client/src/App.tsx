@@ -33,7 +33,7 @@ interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 // const SERVER_URL = "http://localhost:8000";
-const SERVER_URL = "https://codegalaxy-server.onrender.com"
+const SERVER_URL = "https://codegalaxy-server.onrender.com";
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();

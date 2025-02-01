@@ -32,17 +32,12 @@ const allowedOrigins = [
 ];
 // Custom CORS configuration
 const corsOptions = {
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true); // Allow the request
-        }
-        else {
-            callback(new Error("Not allowed by CORS")); // Reject the request
-        }
-    },
+    origin: allowedOrigins, // Directly pass the array of allowed origins
+    credentials: true, // Allow cookies and authentication headers
+    optionsSuccessStatus: 200,
 };
 // Use CORS middleware
-app.use((0, cors_1.default)(corsOptions));
+app.options("*", (0, cors_1.default)(corsOptions)); // Handle preflight requests globally
 // Add Helmet middleware for security
 app.use((0, helmet_1.default)({
     crossOriginOpenerPolicy: { policy: "unsafe-none" }, // Set COOP to "unsafe-none"
