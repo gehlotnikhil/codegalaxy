@@ -306,6 +306,7 @@ function App() {
               element={
                 // <ProtectedRoute>
                 <Testing1 />
+                // <Hero />
                 // {/* </ProtectedRoute> */}
               }
             />

@@ -1,188 +1,92 @@
-import  { useState } from "react";
-import styled from "styled-components";
+import React, { useState } from "react";
+import { initializeApp } from "firebase/app";
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from "firebase/auth";
 
-const Testing1 = () => {
-  const [rating, setRating] = useState(0); // To store the user's rating
-  const [hover, setHover] = useState(0);  // To highlight stars on hover
+// Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCB5Iep-Lyw-F6vIX_1rkyxEWs7n9Uauqg",
+  authDomain: "codegalaxy100.firebaseapp.com",
+  projectId: "codegalaxy100",
+  storageBucket: "codegalaxy100.firebasestorage.app",
+  messagingSenderId: "950714739032",
+  appId: "1:950714739032:web:b63fe46ba186fc901e9d2d",
+  measurementId: "G-VY18QER6NY"
+};
 
-  const Wrapper = styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Full height of the viewport */
-    background-color: #0f172a; /* Background color for the application */
-    font-family: "Poppins", sans-serif;
-    color: #ffffff;
-  `;
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-  const Logo = styled.div`
-    width: 80px;
-    height: 80px;
-    background-color: #3b82f6;
-    border-radius: 12px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 36px;
-    font-weight: bold;
-    color: #ffffff;
-    margin-bottom: 20px;
-  `;
+const Testing1: React.FC = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [isVerified, setIsVerified] = useState(false);
 
-  const Title = styled.h1`
-    font-size: 24px;
-    font-weight: bold;
-    margin: 0;
-    margin-bottom: 10px;
-  `;
-
-  const Description = styled.p`
-    font-size: 16px;
-    color: #94a3b8;
-    text-align: center;
-    margin: 0 20px 30px;
-    line-height: 1.6;
-  `;
-
-  const Stats = styled.div`
-    display: flex;
-    justify-content: center;
-    gap: 50px;
-    margin-bottom: 30px;
-  `;
-
-  const Stat = styled.div`
-    text-align: center;
-
-    span {
-      font-size: 20px;
-      font-weight: bold;
-      color: #ffffff;
+  // Register and Send Verification Email
+  const handleRegister = async () => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      await sendEmailVerification(user);
+      setMessage("Verification email sent! Please check your inbox.");
+    } catch (error: any) {
+      setMessage(error.message);
     }
+  };
 
-    p {
-      font-size: 14px;
-      color: #cbd5e1;
+  // Check Email Verification Status
+  const checkVerification = async () => {
+    const user = auth.currentUser;
+    if (user) {
+      await user.reload();
+      if (user.emailVerified) {
+        setIsVerified(true);
+        setMessage("✅ Email Verified! You can now log in.");
+      } else {
+        setMessage("❌ Email not verified. Please check your inbox.");
+      }
     }
-  `;
+  };
 
-  const Button = styled.button`
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-bottom: 20px;
-
-    &:hover {
-      background-color: #2563eb;
+  // Login after verification
+  const handleLogin = async () => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      if (userCredential.user.emailVerified) {
+        setMessage("🎉 Login Successful!");
+      } else {
+        setMessage("⚠️ Please verify your email before logging in.");
+      }
+    } catch (error: any) {
+      setMessage(error.message);
     }
-  `;
-
-  const RatingContainer = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
-  `;
-
-  const Star = styled.span`
-    font-size: 30px;
-    cursor: pointer;
-    transition: color 0.3s;
-
-    &:hover {
-      color: #ffd700; /* Gold on hover */
-    }
-  `;
-
-  const ProgressBarContainer = styled.div`
-    background-color: #334155;
-    border-radius: 6px;
-    height: 10px;
-    width: 80%;
-    position: relative;
-    overflow: hidden;
-    margin-bottom: 10px;
-  `;
-
-  const ProgressBar = styled.div`
-    height: 100%;
-    background-color: #3b82f6;
-    width: 0%; /* Update dynamically based on progress */
-    transition: width 0.3s ease-in-out;
-  `;
-
-  const ProgressLabel = styled.div`
-    display: flex;
-    justify-content: space-between;
-    width: 80%;
-    font-size: 14px;
-    color: #94a3b8;
-  `;
+  };
 
   return (
-    <>
-    <Wrapper>
-      <Logo>C++</Logo>
-      <Title>Practice C++</Title>
-      <Description>
-        Solve C++ Practice problems online with the Practice C++ path on CodeChef. Answer MCQs
-        exercises and write code for over 200 C++ coding challenges.
-      </Description>
-      <Stats>
-        <Stat>
-          <span>4.5 ⭐</span>
-          <p>(11036 reviews)</p>
-        </Stat>
-        <Stat>
-          <span>206</span>
-          <p>Problems</p>
-        </Stat>
-        <Stat>
-          <span>76.4k</span>
-          <p>Learners</p>
-        </Stat>
-      </Stats>
-
-      {/* User Rating */}
-      <RatingContainer>
-        {[...Array(5)].map((_, index) => {
-          const ratingValue = index + 1;
-          return (
-            <Star
-              key={index}
-              style={{
-                color: ratingValue <= (hover || rating) ? "#FFD700" : "#CBD5E1",
-              }}
-              onClick={() => setRating(ratingValue)}
-              onMouseEnter={() => setHover(ratingValue)}
-              onMouseLeave={() => setHover(0)}
-            >
-              ★
-            </Star>
-          );
-        })}
-      </RatingContainer>
-      <p style={{ color: "#94a3b8" }}>
-        {rating > 0 ? `You rated: ${rating} star${rating > 1 ? "s" : ""}` : "Rate this course!"} 
-      </p>
-
-      <Button>Start Practice</Button>
-      <ProgressBarContainer>
-        <ProgressBar style={{ width: "0%" }}  /> 
-      </ProgressBarContainer>
-      <ProgressLabel>
-        <span>Your Progress:</span>
-        <span>0% </span>
-      </ProgressLabel>
-    </Wrapper>
-    
-    </>
+    <div style={{ textAlign: "center", maxWidth: "400px", margin: "auto", padding: "20px", border: "1px solid #ccc", borderRadius: "10px" }}>
+      <h2>Register with Email</h2>
+      <input 
+        type="email" 
+        placeholder="Email" 
+        value={email} 
+        onChange={(e) => setEmail(e.target.value)} 
+        style={{ display: "block", margin: "10px auto", padding: "8px" }}
+      />
+      <input 
+        type="password" 
+        placeholder="Password" 
+        value={password} 
+        onChange={(e) => setPassword(e.target.value)} 
+        style={{ display: "block", margin: "10px auto", padding: "8px" }}
+      />
+      <button onClick={handleRegister} style={{ margin: "10px", padding: "10px", cursor: "pointer" }}>Register</button>
+      <button onClick={checkVerification} style={{ margin: "10px", padding: "10px", cursor: "pointer" }}>Check Verification</button>
+      <button onClick={handleLogin} style={{ margin: "10px", padding: "10px", cursor: "pointer" }}>Login</button>
+      <p>{message}</p>
+      {isVerified && <p style={{ color: "green" }}>✅ Verified! You can now login.</p>}
+    </div>
   );
 };
 
