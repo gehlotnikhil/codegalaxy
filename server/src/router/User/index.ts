@@ -190,6 +190,9 @@ router.put(
       if (req.body.solvedProblemDetails) {
         query.solvedProblemDetails = req.body.solvedProblemDetails;
       }
+      if (req.body.praticeCourseDetail) {
+        query.praticeCourseDetail = req.body.praticeCourseDetail;
+      }
       if (req.body.noOfContestParticipated) {
         query.noOfContestParticipated = req.body.noOfContestParticipated;
       }

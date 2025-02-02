@@ -1,128 +1,233 @@
 import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import PraticeProblem from "./PraticeProblem";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootStateType } from "../store";
 import { useParams } from "react-router";
 import MainContext from "../context/main";
+import { useRef } from "react";
+
 // import { UseDispatch } from "react-redux";
 // import {setUserDetail} from "../store/slice/UserDetailSlice";
 const PraticeCourseArena = () => {
+  const scrollToProblem = useRef<HTMLBRElement | null>(null);
+
   // const dispatch = useDispatch()
-  const userDetail = useSelector((state:RootStateType)=>state.userDetail)
-  const params = useParams()
-  const context = useContext(MainContext)
-  const {SERVER_URL} = context
-  const [rating, setRating] = useState(0);
-  const [hover, setHover] = useState(0);
-  interface PraticeQuestionType{
-    id?:string,
-    problemName?:string,
-    language?: "java"|"c"|"cpp"|"go",
-    status?:"SOLVED"|"UNSOLVED"
-
-  }
-
+  const userDetail = useSelector((state: RootStateType) => state.userDetail);
+  const params = useParams();
+  const context = useContext(MainContext);
+  const { SERVER_URL } = context;
   
-  const loadProblemDetail = async(language:string)=>{
+  interface PraticeQuestionType {
+    id?: string;
+    problemName?: string;
+    language?: "java" | "c" | "cpp" | "go";
+    status?: "SOLVED" | "UNSOLVED";
+  }
+  
+  const [Learners, setLearners] = useState(0);
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [totalNumberOfUserReviewGiven, setTotalNumberOfUserReviewGiven] = useState(0)  
+  const [ReviewRating, setReviewRating] = useState(0);
+ 
+ 
+
+  useEffect(() => {console.log("Learners----",Learners);
+  }, [Learners]);
+  useEffect(() => {console.log("ReviewRating----",ReviewRating);
+  }, [ReviewRating]);
+  useEffect(() => {console.log("ReviewStar----",totalNumberOfUserReviewGiven);
+  }, [totalNumberOfUserReviewGiven]);
+  useEffect(() => {
+    console.log("isRegistered---", isRegistered);
+  }, [isRegistered]);
+  interface praticeCourseDetailType{
+    c : CourseDetail
+    cpp: CourseDetail
+    java: CourseDetail
+    go :CourseDetail
+  }
+  
+  interface CourseDetail{
+    participated :boolean 
+    review : 0|1 | 2 | 3 | 4| 5 
+    solvedProblemDetails :String[]
+  }
+const [PraticeCourseDetailFromSpecificUser, setPraticeCourseDetailFromSpecificUser] = useState<praticeCourseDetailType>(
+  {
+    c: {
+      participated:false,
+      review:0,
+      solvedProblemDetails : []
+    },
+    cpp: {
+      participated:false,
+      review:0,
+      solvedProblemDetails : []
+    },
+    java: {
+      participated:false,
+      review:0,
+      solvedProblemDetails : []
+    },
+    go: {
+      participated:false,
+      review:0,
+      solvedProblemDetails : []
+    },
+  }
+)
+useEffect(() => {
+  console.log("PraticeCourseDetailFromSpecificUser",PraticeCourseDetailFromSpecificUser);
+  
+}, [PraticeCourseDetailFromSpecificUser])
+
+  const loadProblemDetail = async (language: string) => {
     try {
-      const result = await fetch(`${SERVER_URL}/api/problemset/getpraticeproblemdetails`,{
-        method: "POST",
+      const result = await fetch(
+        `${SERVER_URL}/api/problemset/getpraticeproblemdetails`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            token: userDetail.token,
+            language: language,
+          }),
+        }
+      );
+      const jsondata = await result.json();
+      console.log("jsondata--", jsondata);
+      if (jsondata.success) {
+        setPraticeQuestion(jsondata.result);
+        setPraticeCourseDetailFromSpecificUser(jsondata.praticeCourseDetail)
+        setIsRegistered(
+          jsondata.praticeCourseDetail[`${language}`].participated
+        );
+                
+        setLearners(jsondata.learner)
+        setTotalNumberOfUserReviewGiven(jsondata.totalNoOfUserReviewGiven)
+        setReviewRating(jsondata.finalReviewRating)
+        
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleRegisterCourse = async () => {
+    try {
+      const result = await fetch(`${SERVER_URL}/api/user/update/`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          token:userDetail.token,
-          language:language
+          token: userDetail.token,
+          praticeCourseDetail: {
+            update: {
+              [`${params.course}`]: {
+                update: {
+                  participated: true,
+                },
+              },
+            },
+          },
         }),
-      })
-      const jsondata  = await result.json()
-      console.log("jsondata--",jsondata);
-      if(jsondata.success){
-        setPraticeQuestion(jsondata.result)
+      });
+      const jsondata = await result.json();
+
+      console.log(jsondata);
+      if (jsondata.success) {
+        setIsRegistered(true);
+        scrollToProblem.current?.scrollIntoView({ behavior: "smooth" });
+        let l = Learners;
+        l++;
+        setLearners(l)
+        
       }
-      
     } catch (error) {
       console.log(error);
-      
     }
-  }
+  };
   useEffect(() => {
-    console.log("language-",params.course);
-    loadProblemDetail(params.course || "")
-    setCourseName(()=>{
-      const course = params.course
-      if(course === "c") return "C"
-      else if(course === "cpp") return "C++"
-      else if(course === "java") return "Java"
-      else if(course === "go") return "Go"
-      
-      return ""
-    })
-  }, [])
-  const [ProgressPercent, setProgressPercent] = useState<number>(0)
+    console.log("language-", params.course);
+    loadProblemDetail(params.course || "");
+    setCourseName(() => {
+      const course = params.course;
+      if (course === "c") return "C";
+      else if (course === "cpp") return "C++";
+      else if (course === "java") return "Java";
+      else if (course === "go") return "Go";
+
+      return "";
+    });
+  }, []);
+  const [ProgressPercent, setProgressPercent] = useState<number>(0);
   useEffect(() => {
     console.log(ProgressPercent);
-     }, [ProgressPercent])
-  const [PraticeQuestion, setPraticeQuestion] = useState<PraticeQuestionType[]>([])
+  }, [ProgressPercent]);
+  const [PraticeQuestion, setPraticeQuestion] = useState<PraticeQuestionType[]>(
+    []
+  );
   useEffect(() => {
     console.log(PraticeQuestion);
-    let Count =0;
-    PraticeQuestion.map((v)=>{
-      if(v.status === "SOLVED")
-        Count++;
-      return v
-    })
-    setProgressPercent(()=>Number(((Count/PraticeQuestion.length)*100).toFixed(0)) )
- 
-  }, [PraticeQuestion])
-  
-  const [CourseName, setCourseName] = useState("")
+    let Count = 0;
+    PraticeQuestion.map((v) => {
+      if (v.status === "SOLVED") Count++;
+      return v;
+    });
+    setProgressPercent(() =>
+      Number(((Count / PraticeQuestion.length) * 100).toFixed(0))
+    );
+  }, [PraticeQuestion]);
+
+  const [CourseName, setCourseName] = useState("");
   useEffect(() => {
     console.log(CourseName);
-    
-  }, [CourseName])
+  }, [CourseName]);
 
-  const [Learners, setLearners] = useState(0)
-  const [CRating, setCRating] = useState(0)
-  const [ReviewStar, setReviewStar] = useState(()=>{
-    console.log("reviewstar----------",userDetail.praticeCourseDetail[params.course as keyof typeof userDetail.praticeCourseDetail].review);
-    return userDetail.praticeCourseDetail[params.course as keyof typeof userDetail.praticeCourseDetail].review || 5
 
-    
-  })
-  useEffect(() => {
-   setLearners(0)
-   setReviewStar(0)
-   setCRating(0)
-  }, [])
-  
-  useEffect(() => {}, [Learners])
-  useEffect(() => {}, [CRating])
-  useEffect(() => {}, [ReviewStar])
+  const updateValueOfPraticeCourse = async(e:any)=>{
+    try {
+      const result = await fetch(`${SERVER_URL}/api/user/update/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: userDetail.token,
+          ...e
+        }),
+      });
+      const jsondata = await result.json();
 
-  
-  
-  
+      console.log(jsondata);
+      if (jsondata.success) {
+        setPraticeCourseDetailFromSpecificUser(jsondata.result.praticeCourseDetail)
 
-  
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
     <Wrapper>
       <br />
       <br />
       <br />
-      
+
       <Logo>{CourseName}</Logo>
       <Title>Practice {CourseName}</Title>
       <Description>
-        Solve {CourseName} Practice problems online with the Practice {CourseName} path on
-        CodeGalaxy. Answer MCQs exercises and write code for over {PraticeQuestion.length} {CourseName} coding
-        challenges.
+        Solve {CourseName} Practice problems online with the Practice{" "}
+        {CourseName} path on CodeGalaxy. Answer MCQs exercises and write code
+        for over {PraticeQuestion.length} {CourseName} coding challenges.
       </Description>
       <Stats>
         <Stat>
-          <span>{CRating} ⭐</span>
-          <p>(11036 reviews)</p>
+          <span>{ReviewRating} ⭐</span>
+          <p>({totalNumberOfUserReviewGiven} reviews)</p>
         </Stat>
         <Stat>
           <span>{PraticeQuestion.length}</span>
@@ -137,29 +242,43 @@ const PraticeCourseArena = () => {
       {/* User Rating */}
       <RatingContainer>
         {[...Array(5)].map((_, index) => {
-          const ratingValue = index + 1;
-          return (
-            <Star
-              key={index}
-              style={{
-                color: ratingValue <= (hover || rating) ? "#FFD700" : "#CBD5E1",
-              }}
-              onClick={() => setRating(ratingValue)}
-              onMouseEnter={() => setHover(ratingValue)}
-              onMouseLeave={() => setHover(0)}
-            >
-              ★
-            </Star>
-          );
+            return  <span
+            key={index}
+            onClick={() =>{
+                          
+              updateValueOfPraticeCourse({
+                praticeCourseDetail: {
+                  update: {
+                    [`${params.course}`]: {
+                      update: {
+                        review: index + 1,
+                      },
+                  },
+                },
+              }
+            })}} style={{
+              cursor:"pointer",
+              fontSize: "25px",
+              color: `${
+                PraticeCourseDetailFromSpecificUser?.[params.course as keyof praticeCourseDetailType]?.review >= index + 1
+                  ? "yellow"
+                  : "gray"
+              }`,
+            }}>★</span> 
         })}
       </RatingContainer>
       <p style={{ color: "#94a3b8" }}>
-        {rating > 0
-          ? `You rated: ${rating} star${rating > 1 ? "s" : ""}`
+        { PraticeCourseDetailFromSpecificUser?.[params.course as keyof praticeCourseDetailType]?.review> 0
+          ? `You rated: ${PraticeCourseDetailFromSpecificUser?.[params.course as keyof praticeCourseDetailType]?.review} star${PraticeCourseDetailFromSpecificUser?.[params.course as keyof praticeCourseDetailType]?.review > 1 ? "s" : ""}`
           : "Rate this course!"}
       </p>
 
-      <Button>Start Practice</Button>
+      <Button
+        className={`d-${isRegistered ? "none" : "inline"}`}
+        onClick={() => handleRegisterCourse()}
+      >
+        Start Practice
+      </Button>
       <ProgressBarContainer>
         <ProgressBar style={{ width: `${ProgressPercent || 0}%` }} />
       </ProgressBarContainer>
@@ -168,8 +287,8 @@ const PraticeCourseArena = () => {
         <span>{ProgressPercent || 0}%</span>
       </ProgressLabel>
       <br />
-      <br />
-      <PraticeProblem  Question={PraticeQuestion}/>
+      <br ref={scrollToProblem} />
+        <PraticeProblem Question={PraticeQuestion} />
     </Wrapper>
   );
 };
@@ -260,17 +379,6 @@ const RatingContainer = styled.div`
   align-items: center;
   margin-bottom: 20px;
 `;
-
-const Star = styled.span`
-  font-size: 30px;
-  cursor: pointer;
-  transition: color 0.3s;
-
-  &:hover {
-    color: #ffd700;
-  }
-`;
-
 const ProgressBarContainer = styled.div`
   background-color: #334155;
   border-radius: 6px;

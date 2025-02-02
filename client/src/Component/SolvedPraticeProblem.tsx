@@ -1,16 +1,19 @@
 import React, { useContext, useEffect, useState } from "react";
 import CodeEditor from "./CodeEditor";
 import TestStatus from "./TestBox";
-
-
+import spinner from '../assets/tube-spinner.svg';
 import MainContext from "../context/main";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../store";
+import { useDispatch } from "react-redux";
+import { setUserDetail } from "../store/slice/UserDetailSlice";
 
 
 const SolvedPraticeProblem: React.FC = () => {
+    const dispatch = useDispatch();
+  
     const locationHook = useLocation()
   interface MainQuestionType {
     id?: string;
@@ -31,7 +34,18 @@ const SolvedPraticeProblem: React.FC = () => {
   const { SERVER_URL } = context;
   const param = useParams<{ problemid: string }>();
   const navigate = useNavigate();
-
+  interface praticeCourseDetailType{
+    c : CourseDetail
+    cpp: CourseDetail
+    java: CourseDetail
+    go :CourseDetail
+  }
+    
+  interface CourseDetail{
+    participated :boolean 
+    review : 0|1 | 2 | 3 | 4| 5 
+    solvedProblemDetails :String[]
+  }
   const loadMainQuestion =  async(id: string) => {
     
     const response = await fetch(
@@ -70,6 +84,10 @@ const SolvedPraticeProblem: React.FC = () => {
   setSelectedLanguage(MainQuestion.language || "c")
   
   }, [MainQuestion])
+      const [spinnerStatus, setspinnerStatus] = useState<boolean>(false)
+      useEffect(() => {
+        console.log(spinnerStatus);
+      }, [spinnerStatus])
   
   
 
@@ -113,7 +131,63 @@ const SolvedPraticeProblem: React.FC = () => {
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedLanguage(e.target.value as Language);
   };
+
+ const updateSubmissionStatus = async (status: boolean) => {
+    try {
+      
+      let praticeCourseDetail:{
+        c:{participated:boolean,review:number,solvedProblemDetails:string[]},
+        java:{participated:boolean,review:number,solvedProblemDetails:string[]},
+        cpp:{participated:boolean,review:number,solvedProblemDetails:string[]},
+        go:{participated:boolean,review:number,solvedProblemDetails:string[]},
+      } =  JSON.parse(JSON.stringify(userDetail.praticeCourseDetail))
+      console.log("-q-q--q",praticeCourseDetail);
+      
+      console.log("-q-q--q",praticeCourseDetail);
+      
+      console.log("asqw------",praticeCourseDetail[MainQuestion.language as keyof praticeCourseDetailType].solvedProblemDetails,"--",typeof praticeCourseDetail[MainQuestion.language as keyof praticeCourseDetailType].solvedProblemDetails);
+      console.log(praticeCourseDetail[MainQuestion.language as keyof praticeCourseDetailType].solvedProblemDetails.includes(MainQuestion.id as string));
+      
+      if (status && !praticeCourseDetail[MainQuestion.language as keyof praticeCourseDetailType].solvedProblemDetails.includes(MainQuestion.id as string)) {
+        praticeCourseDetail[MainQuestion.language as keyof praticeCourseDetailType].solvedProblemDetails = [...praticeCourseDetail[MainQuestion.language as keyof praticeCourseDetailType].solvedProblemDetails,(MainQuestion?.id as string )]
+      }
+      console.log("aqswdefkkkkk------",praticeCourseDetail[MainQuestion.language as keyof praticeCourseDetailType].solvedProblemDetails,"--",typeof praticeCourseDetail[MainQuestion.language as keyof praticeCourseDetailType].solvedProblemDetails);
+      const response = await fetch(`${SERVER_URL}/api/user/update/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: userDetail.token,
+          praticeCourseDetail,
+        }),
+      });
+
+      const jsondata = await response.json();
+      console.log("updatedUser------", jsondata);
+
+      if (jsondata.success) {
+        // Update local state with correct values
+        dispatch(setUserDetail({praticeCourseDetail}))
+        console.log("get out - - - - - - - -");
+      }
+      console.log("get out - - - - - - - - bye");
+      
+    } catch (error) {
+      console.error("Error updating submission status:", error);
+    }
+  };
+
+  function getDayOfYear() {
+    const date = new Date();
+    const start = new Date(date.getFullYear(), 0, 0);
+    const diff = (date as any) - (start as any);
+    const oneDay = 1000 * 60 * 60 * 24;
+    return Math.floor(diff / oneDay);
+  }
+
   const handleRunCode = async () => {
+    setspinnerStatus(true)
     const testcases = MainQuestion.testcases ? MainQuestion.testcases : [];
     const aboveCodeTemplate = MainQuestion.aboveCodeTemplate
       ? MainQuestion.aboveCodeTemplate[SelectedLanguage]
@@ -136,6 +210,35 @@ const SolvedPraticeProblem: React.FC = () => {
       console.log("data send--", data);
       let jsondata = await handleCodeExecution(data);
       console.log(jsondata);
+
+
+      
+            if (!userDetail.activeDays.includes(getDayOfYear())) {
+              const updateresult = await fetch(`${SERVER_URL}/api/user/update/`, {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  token: userDetail.token,
+                  activeDays: [...userDetail.activeDays, getDayOfYear()],
+                }),
+              });
+              const jsondata2 = await updateresult.json();
+              console.log("ppppppp-----", jsondata2);
+      
+              if (jsondata2.success) {
+                dispatch(
+                  setUserDetail({
+                    activeDays: [...userDetail.activeDays, getDayOfYear()],
+                  })
+                );
+              }
+            }
+      
+
+
+
       let finalMsg = false;
       if (jsondata.success) {
         finalMsg = true;
@@ -151,7 +254,11 @@ const SolvedPraticeProblem: React.FC = () => {
         if (finalMsg === true) {
           setQuestionStatus(true);
           toast.success("Passed");
-        } else toast.error("Failed");
+          updateSubmissionStatus(true);
+        } else{ toast.error("Failed");
+          updateSubmissionStatus(false);
+
+        }
       } else {
         toast.error("Failed");
         setResultOfTest(
@@ -168,6 +275,8 @@ const SolvedPraticeProblem: React.FC = () => {
         })
       );
     }
+    setspinnerStatus(false)
+
   };
 
 
@@ -258,8 +367,8 @@ const SolvedPraticeProblem: React.FC = () => {
             style={styles.codeEditor}
           />
           <div style={styles.actionButtons}>
-            <button onClick={() => handleRunCode()} style={styles.submitButton}>
-              Submit
+          <button  disabled={spinnerStatus}   onClick={() => handleRunCode()} style={styles.submitButton}>
+              Submit <img className={`d-${spinnerStatus?"inline":"none"}`} src={spinner} height={"22px"} width={"22px"}/>
             </button>
           </div>
           <TestStatus tests={ResultOfTest} />

@@ -144,6 +144,8 @@ useEffect(() => {
                     console.log(jsondata.result);
                     if(jsondata.success){
                       dispatch(setUserDetail(jsondata.result))
+                      localStorage.setItem("token",jsondata.result.token)
+
                       navigate("/");
                       toast.success("Logged in")
 

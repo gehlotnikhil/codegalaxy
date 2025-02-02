@@ -462,6 +462,8 @@ router.post("/getpraticeproblemdetails", async (req: Request, res: Response): Pr
     if (!data.success) {
       return res.status(401).json({ success: false, msg: "Invalid token" });
     }
+    console.log("-------",data.result);
+    
 
     const allProblems = await prisma.praticeProblem.findMany({ select: { language: true } });
     const entireCount = allProblems.reduce((acc, { language }) => {
@@ -480,7 +482,28 @@ router.post("/getpraticeproblemdetails", async (req: Request, res: Response): Pr
       status: solvedProblems.has(problem.id) ? "SOLVED" : "UNSOLVED",
     }));
 
-    res.json({ success: true, result: formattedProblems, totalCount: formattedProblems.length, entireCount });
+    const response = await axios.get(`${ServerUrl}/api/user/getalluser`)
+    console.log("d--",response.data.result);
+    let c = 0
+    let totalNoOfUserReviewGiven=0;
+    let AccumulatedReview=0
+    response.data.result.map((user:any)=>{
+      if(user.praticeCourseDetail?.[language].review >0){
+        AccumulatedReview+= user.praticeCourseDetail?.[language].review
+        totalNoOfUserReviewGiven++;
+      }
+      if(user.praticeCourseDetail?.[language].participated) c++;
+
+    })
+
+
+
+      let finalReviewRating = (AccumulatedReview/totalNoOfUserReviewGiven).toFixed(1)
+
+
+    
+    res.json({ success: true, result: formattedProblems, totalCount: formattedProblems.length, entireCount ,praticeCourseDetail:data.result.praticeCourseDetail,learner:c,finalReviewRating,totalNoOfUserReviewGiven});
+    // res.json({ test:finalReviewRating});
   } catch (error) {
     console.error("Error fetching practice problem details:", error);
     res.status(500).json({ success: false, error: (error as Error).message || "Internal Server Error" });

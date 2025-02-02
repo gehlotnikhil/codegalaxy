@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import CodeEditor from "./CodeEditor";
 import TestStatus from "./TestBox";
+import spinner from '../assets/tube-spinner.svg';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThumbsUp, faThumbsDown } from "@fortawesome/free-solid-svg-icons";
 import { faTag, faBuilding } from "@fortawesome/free-solid-svg-icons";
@@ -217,6 +218,10 @@ const ProblemPage: React.FC = () => {
       ),
     },
   ];
+    const [spinnerStatus, setspinnerStatus] = useState<boolean>(false)
+    useEffect(() => {
+      console.log(spinnerStatus);
+    }, [spinnerStatus])
 
   useEffect(() => {
     console.log("day - ", getDayOfYear());
@@ -314,6 +319,7 @@ const ProblemPage: React.FC = () => {
   };
 
   const handleRunCode = async () => {
+    setspinnerStatus(true)
     const testcases = MainQuestion.testcases ? MainQuestion.testcases : [];
     const aboveCodeTemplate = MainQuestion.aboveCodeTemplate
       ? MainQuestion.aboveCodeTemplate[SelectedLanguage]
@@ -397,7 +403,9 @@ const ProblemPage: React.FC = () => {
         })
       );
     }
+    setspinnerStatus(false)
   };
+
   const toggleQuestionInfo = (
     QuestionInfoKey: keyof typeof showQuestionInfos
   ) => {
@@ -576,8 +584,8 @@ const ProblemPage: React.FC = () => {
             style={styles.codeEditor}
           />
           <div style={styles.actionButtons}>
-            <button onClick={() => handleRunCode()} style={styles.submitButton}>
-              Submit
+            <button  disabled={spinnerStatus}   onClick={() => handleRunCode()} style={styles.submitButton}>
+              Submit <img className={`d-${spinnerStatus?"inline":"none"}`} src={spinner} height={"22px"} width={"22px"}/>
             </button>
           </div>
           <TestStatus tests={ResultOfTest} />

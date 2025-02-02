@@ -165,6 +165,7 @@ const SignUp: React.FC = () => {
             if(jsondata.success){
               dispatch(setUserDetail(jsondata.result))
               localStorage.setItem("token",jsondata.result.token)
+              
               navigate("/");
               toast.success("Signed Up")
               }

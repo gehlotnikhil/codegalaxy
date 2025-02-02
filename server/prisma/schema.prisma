@@ -26,7 +26,6 @@ model User {
   praticeCourseDetail praticeCourseDetailType
   activeDays Int[]
 }
-
 type praticeCourseDetailType{
   c  CourseDetail
   cpp CourseDetail

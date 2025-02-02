@@ -392,6 +392,7 @@ router.post("/getpraticeproblemdetails", (req, res) => __awaiter(void 0, void 0,
         if (!data.success) {
             return res.status(401).json({ success: false, msg: "Invalid token" });
         }
+        console.log("-------", data.result);
         const allProblems = yield prisma.praticeProblem.findMany({ select: { language: true } });
         const entireCount = allProblems.reduce((acc, { language }) => {
             acc[language] = (acc[language] || 0) + 1;
@@ -403,7 +404,23 @@ router.post("/getpraticeproblemdetails", (req, res) => __awaiter(void 0, void 0,
         });
         const solvedProblems = new Set(((_a = data.result.praticeCourseDetail[language]) === null || _a === void 0 ? void 0 : _a.solvedProblemDetails) || []);
         const formattedProblems = problems.map((problem) => (Object.assign(Object.assign({}, problem), { status: solvedProblems.has(problem.id) ? "SOLVED" : "UNSOLVED" })));
-        res.json({ success: true, result: formattedProblems, totalCount: formattedProblems.length, entireCount });
+        const response = yield axios_1.default.get(`${ServerUrl}/api/user/getalluser`);
+        console.log("d--", response.data.result);
+        let c = 0;
+        let totalNoOfUserReviewGiven = 0;
+        let AccumulatedReview = 0;
+        response.data.result.map((user) => {
+            var _a, _b, _c;
+            if (((_a = user.praticeCourseDetail) === null || _a === void 0 ? void 0 : _a[language].review) > 0) {
+                AccumulatedReview += (_b = user.praticeCourseDetail) === null || _b === void 0 ? void 0 : _b[language].review;
+                totalNoOfUserReviewGiven++;
+            }
+            if ((_c = user.praticeCourseDetail) === null || _c === void 0 ? void 0 : _c[language].participated)
+                c++;
+        });
+        let finalReviewRating = (AccumulatedReview / totalNoOfUserReviewGiven).toFixed(1);
+        res.json({ success: true, result: formattedProblems, totalCount: formattedProblems.length, entireCount, praticeCourseDetail: data.result.praticeCourseDetail, learner: c, finalReviewRating, totalNoOfUserReviewGiven });
+        // res.json({ test:finalReviewRating});
     }
     catch (error) {
         console.error("Error fetching practice problem details:", error);
