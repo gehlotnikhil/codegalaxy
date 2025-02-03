@@ -1,9 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-type RoleType = {
-  User:boolean;
-  Admin:boolean;
-}
+
 interface parcticeDetailType{
   solvedProblemDetails: string[],
   participated: boolean,
@@ -28,7 +25,7 @@ type UserDetailType = {
   googleLoginAccess: boolean;
   noOfContestParticipated: number;
   noOfProblemSolved: number;
-  role: RoleType;
+  isAdmin: boolean;
   solvedProblemDetails: any[];
   state: string;
   totalRank: number;
@@ -54,10 +51,7 @@ const initialUserDetail: UserDetailType = {
   googleLoginAccess: false,
   noOfContestParticipated: 0,
   noOfProblemSolved: 0,
-  role: {
-    User:true,
-    Admin:false
-  },
+  isAdmin:false,
   solvedProblemDetails: [],
   state: '',
   totalRank: 0,

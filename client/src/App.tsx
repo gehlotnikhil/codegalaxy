@@ -92,10 +92,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
       return <Login />;
     }
 
-    if (userDetail.role?.Admin && location.pathname !== "/admin") {
+    if (userDetail.isAdmin && location.pathname !== "/admin") {
       navigate("/admin");
       return <Admin />;
-    } else if (!userDetail.role?.Admin && location.pathname === "/admin") {
+    } else if (!userDetail.isAdmin && location.pathname === "/admin") {
       navigate("/");
       return <Home />;
     }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import CodeEditor from "./CodeEditor";
+import CodeEditor from "./CodeEditor2";
 import MainContext from "../context/main";
 import { useContext, useEffect } from "react";
 import { toast } from "react-toastify";
@@ -476,7 +476,7 @@ function Admin() {
       const response = await fetch(
         `${SERVER_URL}/api/problemset/getallproblem`,
         {
-          method: "GET",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
@@ -535,7 +535,7 @@ function Admin() {
       const response = await fetch(
         `${SERVER_URL}/api/contest/getspecificcontest?no=${contestNo}`,
         {
-          method: "POST",
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
@@ -551,8 +551,8 @@ function Admin() {
   return (
     <>
       <div
-        style={{}}
-        className="modal fade text-dark"
+        style={{maxHeight:"45vh",}}
+        className=" bg-dark modal fade text-dark"
         id="exampleModal"
         tabIndex={-1}
         aria-labelledby="exampleModalLabel"
@@ -1062,14 +1062,14 @@ function Admin() {
             </button>
           </div>
           <div
-            className="codeeditor mt-4"
-            style={{ maxHeight: "50vh", boxSizing: "border-box" }}
+            className="codeeditor mt-4 bg-dark"
+            style={{ maxHeight: "60vh", boxSizing: "border-box" }}
           >
             <CodeEditor
               renderValidationDecorations={"off"}
               handleEditorChange={handleEditorChange}
               CodeOfEditor={CodeValue}
-              height={"60%"}
+              height={"100vh"}
               defaultLanguage={"typescript"}
               readOnly={true}
               fontSize={16}
