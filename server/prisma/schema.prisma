@@ -8,13 +8,13 @@ generator client {
 }
 
 model User {
-  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
+  id                   String                  @id @default(auto()) @map("_id") @db.ObjectId
   name                 String?
   age                  Int?
-  email                String   @unique
+  email                String                  @unique
   password             String?
-  userName             String   @unique
-  totalRank            Int      @default(1000)
+  userName             String                  @unique
+  totalRank            Int                     @default(1000)
   solvedProblemDetails String[]
   gender               String?
   collegeName          String?
@@ -23,24 +23,22 @@ model User {
   isAdmin              Boolean
   googleLoginAccess    Boolean
   profilePictureUrl    String
-  praticeCourseDetail praticeCourseDetailType
-  activeDays Int[]
+  praticeCourseDetail  praticeCourseDetailType
+  activeDays           Int[]
 }
-type praticeCourseDetailType{
-  c  CourseDetail
-  cpp CourseDetail
+
+type praticeCourseDetailType {
+  c    CourseDetail
+  cpp  CourseDetail
   java CourseDetail
-  go CourseDetail
+  go   CourseDetail
 }
-type CourseDetail{
-  participated Boolean @default(false)
-  review Int @default(0)
+
+type CourseDetail {
+  participated         Boolean  @default(false)
+  review               Int      @default(0)
   solvedProblemDetails String[]
 }
-
-
-
-
 
 model Contest {
   id               String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -123,8 +121,8 @@ type CodeTemplateType {
   go   String
 }
 
-type ProblemDetails{
-  like String[]
+type ProblemDetails {
+  like    String[]
   dislike String[]
 }
 
@@ -158,4 +156,13 @@ model PraticeProblem {
   aboveCodeTemplate CodeTemplateType
   belowCodeTemplate CodeTemplateType
   middleCode        CodeTemplateType
+}
+
+model EmailOtpService {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  email String
+  password String
+  userName String
+  code  Int
+  createdAt DateTime @default(now())
 }

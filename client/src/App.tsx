@@ -29,6 +29,7 @@ import ProblemPage from "./Component/ProblemSetArea";
 import LoadingComponent from "./Component/Loading";
 import PraticeCourseArena from "./Component/PraticeCourseArena";
 import SolvedPraticeProblem from "./Component/SolvedPraticeProblem";
+import OTPVerification from "./Component/OTPVerification";
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
@@ -50,7 +51,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }, []);
   const loadDataTokenToUserDetail = async (
     token: string | null
-  ): Promise<boolean> => {
+  ): Promise<boolean> => { 
     try {
       const response = await fetch(`${SERVER_URL}/api/user/tokentodata`, {
         method: "POST",
@@ -227,17 +228,17 @@ function App() {
             <Route
               path="/login"
               element={
-                <ProtectedRoute>
+                // <ProtectedRoute>
                   <Login />
-                </ProtectedRoute>
+                // </ProtectedRoute>
               }
             />
             <Route
               path="/signup"
               element={
-                <ProtectedRoute>
+                // <ProtectedRoute>
                   <SignUp />
-                </ProtectedRoute>
+                // </ProtectedRoute>
               }
             />
 
@@ -306,6 +307,15 @@ function App() {
               element={
                 // <ProtectedRoute>
                 <Testing1 />
+                // <Hero />
+                // {/* </ProtectedRoute> */}
+              }
+            />
+            <Route
+              path="/verify"
+              element={
+                // <ProtectedRoute>
+                <OTPVerification />
                 // <Hero />
                 // {/* </ProtectedRoute> */}
               }

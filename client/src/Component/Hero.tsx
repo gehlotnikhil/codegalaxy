@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 export default function Hero() {
+
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   const handleMouseMove = (event: MouseEvent) => {
@@ -11,6 +12,7 @@ export default function Hero() {
   };
 
   useEffect(() => {
+    
     window.addEventListener("mousemove", handleMouseMove);
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
@@ -20,7 +22,7 @@ export default function Hero() {
   const floatingVariant = {
     initial: { y: 0, opacity: 0 },
     animate: {
-      y: [0, -15, 0],
+      y: [0, -20, 0],
       opacity: 1,
       transition: {
         y: {

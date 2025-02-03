@@ -87,7 +87,16 @@ function AppNavbar() {
       updatedStatus.prfileLink = true;
       updatedStatus.playgroundLink = true;
       updatedStatus.profilename = true;
-    } 
+    } else if (locationHook.pathname === "/verify") {
+      updatedStatus.homeLink = false;
+      updatedStatus.aboutLink = false;
+      updatedStatus.loginLink = false;
+      updatedStatus.signupLink = false;
+      updatedStatus.profileIcon = false;
+      updatedStatus.prfileLink = false;
+      updatedStatus.playgroundLink = false;
+      updatedStatus.profilename = false;
+    }
     else {
       updatedStatus.profilename = false;
       updatedStatus.loginLink = false;
@@ -105,8 +114,8 @@ function AppNavbar() {
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg bg-body-tertiary bg-nav" style={{position:"sticky",top:"0" ,zIndex:"1"}}>
-        <div className="container-fluid">
+<nav className="navbar navbar-expand-lg navbar-dark bg-dark" style={{ position: "sticky", top: "0", zIndex: "1" }}>
+<div className="container-fluid">
           <img
             className="nav-item me-3"
             src={logo}
