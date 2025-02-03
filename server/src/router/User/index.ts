@@ -55,7 +55,7 @@ router.post(
       // Check for validation errors
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return res.status(400).send({ success, error: errors.array(),msg:"Parameter missing" });
+        return res.status(400).send({ success, error: errors.array(), msg: "Parameter missing" });
       }
       // check User Exist or not
       let check1 = await UserFunctions.isUserExist(email);
@@ -159,16 +159,72 @@ router.post(
           console.log("OTP Sended:", result);
 
           success = true;
-          res.send({ success, result: { ...result },msg:"OTP Sended" }); // Sending the user object as response
+          res.send({ success, result: { ...result }, msg: "OTP Sended" }); // Sending the user object as response
         }
       });
 
     } catch (error) {
       console.error("Error during otp operation:", error);
-      res.status(500).send({ success, error,msg:"Internal Server Error-" });
+      res.status(500).send({ success, error, msg: "Internal Server Error-" });
+    }
+  } 
+);
+
+
+
+
+router.post(
+  "/resendotpcode",
+  [ 
+    body("verifyemail", "Please Enter Your email").exists(),
+  ],
+  async (req: Request, res: Response): Promise<any> => {
+    let success = false;
+
+    try {
+      const { email } = req.body;
+
+      const result1 = await prisma.emailOtpService.findFirst({ where: { email } })
+      if (!result1) {
+        return res.send({ success, msg: "Register Again..." })
+      }
+      await prisma.emailOtpService.deleteMany({ where: { email } })
+
+      const response = await axios.post(
+        `${ServerUrl}/api/user/registeruser`,
+        {
+          email: email,
+          password: result1.password,
+          userName: result1.userName
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if(!response.data.success){
+        return res.send({success,msg:"Internal Server Error in Creating OTP"})
+      }
+      const data = response.data.result;
+
+      console.log(data);
+
+      success = true;
+      return res.send({ success, msg: "Resend Code", result: data }); // Sending the user object as response
+
+    } catch (error) {
+      console.error("Error during user creation:", error);
+      return res.status(500).send({ success, error, msg: "Internal Server Error" });
     }
   }
 );
+
+
+
+
+
+
 router.post(
   "/verify",
   [
@@ -184,7 +240,7 @@ router.post(
       // Check for validation errors
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return res.status(400).send({ success, error: errors.array(),msg:"Missing Parameter" });
+        return res.status(400).send({ success, error: errors.array(), msg: "Missing Parameter" });
       }
 
       let name: string = generateRandomName();
@@ -193,8 +249,8 @@ router.post(
       console.log("hh----", r)
       // if code not found
       if (!r) {
-       return res.send({ success, msg: "Incorrect OTP" })
-      } 
+        return res.send({ success, msg: "Incorrect OTP" })
+      }
       console.log(r?.createdAt);
 
       console.log(Math.abs(Date.now() - new Date(r?.createdAt || "2025-02-03T16:30:00").getTime()) / 1000);

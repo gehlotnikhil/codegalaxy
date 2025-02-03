@@ -150,6 +150,39 @@ router.post("/registeruser", [
         res.status(500).send({ success, error, msg: "Internal Server Error-" });
     }
 }));
+router.post("/resendotpcode", [
+    (0, express_validator_1.body)("verifyemail", "Please Enter Your email").exists(),
+], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let success = false;
+    try {
+        const { email } = req.body;
+        const result1 = yield prisma.emailOtpService.findFirst({ where: { email } });
+        if (!result1) {
+            return res.send({ success, msg: "Register Again..." });
+        }
+        yield prisma.emailOtpService.deleteMany({ where: { email } });
+        const response = yield axios.post(`${ServerUrl}/api/user/registeruser`, {
+            email: email,
+            password: result1.password,
+            userName: result1.userName
+        }, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        if (!response.data.success) {
+            return res.send({ success, msg: "Internal Server Error in Creating OTP" });
+        }
+        const data = response.data.result;
+        console.log(data);
+        success = true;
+        return res.send({ success, msg: "Resend Code", result: data }); // Sending the user object as response
+    }
+    catch (error) {
+        console.error("Error during user creation:", error);
+        return res.status(500).send({ success, error, msg: "Internal Server Error" });
+    }
+}));
 router.post("/verify", [
     (0, express_validator_1.body)("code", "Please Enter Your OTP Code").exists(),
     (0, express_validator_1.body)("verifyemail", "Please Enter Your email").exists(),
