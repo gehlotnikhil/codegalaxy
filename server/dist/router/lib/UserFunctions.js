@@ -18,5 +18,12 @@ const isUserExist = (email) => __awaiter(void 0, void 0, void 0, function* () {
     }
     return true;
 });
-const UserFunctions = { isUserExist };
+const isUserNameExist = (userName) => __awaiter(void 0, void 0, void 0, function* () {
+    let check1 = yield prisma.user.findFirst({ where: { userName } });
+    if (check1 === null) {
+        return false;
+    }
+    return true;
+});
+const UserFunctions = { isUserExist, isUserNameExist };
 exports.default = UserFunctions;

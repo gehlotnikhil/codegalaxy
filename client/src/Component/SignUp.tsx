@@ -90,6 +90,35 @@ const SignUp: React.FC = () => {
     }
     setspinnerStatus(false)
   }
+  // const handleCreateAccount = async(data:SignUpFormValues)=>{
+  //   setspinnerStatus(true)
+  //   try {
+  //     let result = await fetch(
+  //       `${SERVER_URL}/api/user/registeruser`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body:JSON.stringify({"userName":data.username,"email":data.email,"password":data.password})
+  //       }
+  //     );
+  //     const jsondata = await result.json();
+  //     console.log("Account Created - ",jsondata);
+  //     console.log(jsondata.result);
+  //     if(jsondata.success){
+  //        dispatch(setUserDetail(jsondata.result))
+  //        navigate("/");
+  //        toast.success("Account Created")
+  //        }else{
+  //         toast.error("Failed to Create Account")
+  //        }
+  //   } catch (error) {
+  //     toast.error("Internal Server Error")
+  //     console.log(error);    
+  //   }
+  //   setspinnerStatus(false)
+  // }
 
   return (
     <div className="main">

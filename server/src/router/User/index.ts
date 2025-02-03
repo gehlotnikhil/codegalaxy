@@ -6,6 +6,10 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const router = Router();
 const axios = require("axios");
+import sendEmail from "./sendEmail";
+
+
+
 const ServerUrl = process.env.ServerUrl || "http://localhost:8000"
 console.log(ServerUrl);
 
@@ -24,6 +28,14 @@ router.get("/", (req: Request, res: Response) => {
 });
 let JWT_Secret = "Nikhil123";
 
+
+import { google } from "googleapis";
+import nodemailer from "nodemailer";
+
+function generateOTP(length: number = 6): string {
+  return Math.floor(100000 + Math.random() * 900000).toString(); // Generates a 6-digit OTP
+}
+
 // User Registration route
 router.post(
   "/registeruser",
@@ -35,6 +47,8 @@ router.post(
   ],
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
+    const otp = generateOTP(); // Generate OTP
+    console.log(`Generated OTP: ${otp}`);
     try {
       const { email, password, userName } = req.body;
 
@@ -48,68 +62,291 @@ router.post(
       if (check1) {
         return res.send({ success, msg: "User Already Exist" });
       }
+      let check2 = await UserFunctions.isUserNameExist(userName);
+      if (check2) {
+        return res.send({ success, msg: "UserName Already Exist" });
+      }
       //Main Logic
       //encrypt the password
       let salt = await bcrypt.genSalt(10);
       let hashPassword = await bcrypt.hash(password, salt);
-      let name: string = generateRandomName();
 
-      // Create the user in the database
-      const result = await prisma.user.create({
-        data: {
-          name: name,
-          email: email,
-          password: hashPassword,
-          userName: userName,
-          totalRank: 1000,
-          solvedProblemDetails: [],
-          activeDays:[],
 
-          googleLoginAccess: false,
-          isAdmin: false,
-          profilePictureUrl:
-            "https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk",
-          praticeCourseDetail: {
-            c: {
-              solvedProblemDetails: [],
-              participated:false,
-              review:0
-            },
-            cpp: {
-              solvedProblemDetails: [],
-              participated:false,
-              review:0
-            },
-            java: {
-              solvedProblemDetails: [],
-              participated:false,
-              review:0
-            },
-            go: {
-              solvedProblemDetails: [],
-              participated:false,
-              review:0
-            },
-          }
+
+
+      console.log(process.env.CLIENT_ID);
+      console.log(process.env.CLIENT_SECRET);
+      console.log(process.env.REFRESH_TOKEN);
+      console.log("1");
+
+      const OAuth2 = google.auth.OAuth2;
+      console.log("2");
+
+      const oauth2Client = new OAuth2(
+        process.env.CLIENT_ID,
+        process.env.CLIENT_SECRET,
+        "https://developers.google.com/oauthplayground"
+      );
+      console.log("3");
+
+      oauth2Client.setCredentials({
+        refresh_token: process.env.REFRESH_TOKEN,
+      });
+      console.log("4");
+      const accessToken = await oauth2Client.getAccessToken();
+      console.log("5");
+      console.log("access token - ", accessToken.token as string);
+      console.log("6");
+
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          type: "OAuth2",
+          user: process.env.EMAIL,
+          clientId: process.env.CLIENT_ID,
+          clientSecret: process.env.CLIENT_SECRET,
+          refreshToken: process.env.REFRESH_TOKEN,
+          accessToken: accessToken.token as string,
         },
       });
-      //create access token
-      let data = {
-        id: result.id,
+
+      console.log("7");
+      const mailOptions = {
+        from: process.env.EMAIL,
+        to: email,
+        subject: "CodeGalaxy Account OTP Code",
+        html: `
+                 <div style="font-family: Arial, sans-serif; padding: 20px;">
+                <h2 style="color: #000;">CodeGalaxy account</h2>
+                <h1 style="color: #0078D4;">OTP code</h1>
+                <p>Please use the following OTP code for your CodeGalaxy account:</p>
+                <h2 style="background-color: #f3f3f3; padding: 10px; display: inline-block; border-radius: 5px;">
+                  ${otp}
+                </h2>
+                <p>If you don’t recognize this request, you can ignore this email.</p>
+                <p>Thanks, <br> The CodeGalaxy account team</p>
+              </div>
+                `,
       };
-      let token = jwt.sign(data, JWT_Secret);
+      transporter.sendMail(mailOptions, async (err, info) => {
+        if (err) {
+          console.error("Error:", err);
+          res.send({ success, msg: "Internal server Error" })
+        }
+        else {
+          console.log("Email sent-:", info.response);
+          // Delete Previous OTP Data if exist
+          const r = await prisma.emailOtpService.deleteMany({ where: { email } })
 
-      console.log("User created:", result);
 
-      success = true;
+          const result = await prisma.emailOtpService.create({
+            data: {
+              email: email,
+              password: hashPassword,
+              userName: userName,
+              code: Number(otp)
+            },
+          });
+          const date = new Date(result.createdAt);
 
-      res.send({ success, result: { ...result, token: token } }); // Sending the user object as response
+          const seconds = date.getUTCHours() * 3600 + date.getUTCMinutes() * 60 + date.getUTCSeconds() + date.getUTCMilliseconds() / 1000;
+
+          console.log(result.createdAt);
+          console.log((Date.now() - new Date(result.createdAt).getTime()) / (1000));
+          console.log((Date.now(), " ", new Date(result.createdAt).getTime()));
+          console.log(Math.floor((Date.now(), " ", new Date(result.createdAt).getTime())) / (1000 * 60));
+
+          console.log("OTP Sended:", result);
+
+          success = true;
+          res.send({ success, result: { ...result } }); // Sending the user object as response
+        }
+      });
+
     } catch (error) {
       console.error("Error during user creation:", error);
       res.status(500).send({ success, error });
     }
   }
 );
+router.post(
+  "/verify",
+  [
+    body("code", "Please Enter Your OTP Code").exists(),
+    body("verifyemail", "Please Enter Your email").exists(),
+  ],
+  async (req: Request, res: Response): Promise<any> => {
+    let success = false;
+
+    try {
+      const { code, verifyemail } = req.body;
+
+      // Check for validation errors
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).send({ success, error: errors.array() });
+      }
+
+      let name: string = generateRandomName();
+
+      const r = await prisma.emailOtpService.findFirst({ where: { code: code, email: verifyemail } })
+      console.log("hh----", r)
+      // if code not found
+      if (!r) {
+        res.send({ success, msg: "Incorrect OTP" })
+      }
+      console.log(r?.createdAt);
+
+      console.log(Math.abs(Date.now() - new Date(r?.createdAt || "2025-02-03T16:30:00").getTime()) / 1000);
+      // delete otp 
+      const k = await prisma.emailOtpService.deleteMany({ where: { code, email: verifyemail } })
+
+      if ((Math.abs(Date.now() - new Date(r?.createdAt || "2025-02-03T16:30:00").getTime()) / 1000) > 60) {
+        return res.send({ success, msg: "OTP is Expired" })
+      }
+      else if (r && r.email && r.password && r.userName) {
+        // creating user
+        const result = await prisma.user.create({
+          data: {
+            name: name,
+            email: r.email,
+            password: r.password,
+            userName: r.userName,
+            totalRank: 1000,
+            solvedProblemDetails: [],
+            activeDays: [],
+
+            googleLoginAccess: false,
+            isAdmin: false,
+            profilePictureUrl:
+              "https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk",
+            praticeCourseDetail: {
+              c: {
+                solvedProblemDetails: [],
+                participated: false,
+                review: 0
+              },
+              cpp: {
+                solvedProblemDetails: [],
+                participated: false,
+                review: 0
+              },
+              java: {
+                solvedProblemDetails: [],
+                participated: false,
+                review: 0
+              },
+              go: {
+                solvedProblemDetails: [],
+                participated: false,
+                review: 0
+              },
+            }
+          },
+        });
+        //create access token
+        let data = {
+          id: result.id,
+        };
+        let token = jwt.sign(data, JWT_Secret);
+        console.log("User created:", result);
+        success = true;
+        res.send({ success, result: { ...result, token: token } }); // Sending the user object as response
+      }
+    } catch (error) {
+      console.error("Error during user creation:", error);
+      res.status(500).send({ success, error });
+    }
+  }
+);
+// router.post(
+//   "/registeruser",
+//   [
+//     body("email", "Please Enter Your Email").exists(),
+//     body("email", "Enter Valid Email Format").isEmail(),
+//     body("password", "Please Enter Your Password").exists(),
+//     body("userName", "Please Enter Your Username").exists(),
+//   ],
+//   async (req: Request, res: Response): Promise<any> => {
+//     let success = false;
+//     try {
+//       const { email, password, userName } = req.body;
+
+//       // Check for validation errors
+//       const errors = validationResult(req);
+//       if (!errors.isEmpty()) {
+//         return res.status(400).send({ success, error: errors.array() });
+//       }
+//       // check User Exist or not
+//       let check1 = await UserFunctions.isUserExist(email);
+//       if (check1) {
+//         return res.send({ success, msg: "User Already Exist" });
+//       }
+//       //Main Logic
+//       //encrypt the password
+//       let salt = await bcrypt.genSalt(10);
+//       let hashPassword = await bcrypt.hash(password, salt);
+//       let name: string = generateRandomName();
+
+//       // Create the user in the database
+
+
+
+//       const result = await prisma.user.create({
+//         data: {
+//           name: name,
+//           email: email,
+//           password: hashPassword,
+//           userName: userName,
+//           totalRank: 1000,
+//           solvedProblemDetails: [],
+//           activeDays:[],
+
+//           googleLoginAccess: false,
+//           isAdmin: false,
+//           profilePictureUrl:
+//             "https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk",
+//           praticeCourseDetail: {
+//             c: {
+//               solvedProblemDetails: [],
+//               participated:false,
+//               review:0
+//             },
+//             cpp: {
+//               solvedProblemDetails: [],
+//               participated:false,
+//               review:0
+//             },
+//             java: {
+//               solvedProblemDetails: [],
+//               participated:false,
+//               review:0
+//             },
+//             go: {
+//               solvedProblemDetails: [],
+//               participated:false,
+//               review:0
+//             },
+//           }
+//         },
+//       });
+//       //create access token
+//       let data = {
+//         id: result.id,
+//       };
+//       let token = jwt.sign(data, JWT_Secret);
+
+//       console.log("User created:", result);
+
+//       success = true;
+
+//       res.send({ success, result: { ...result, token: token } }); // Sending the user object as response
+//     } catch (error) {
+//       console.error("Error during user creation:", error);
+//       res.status(500).send({ success, error });
+//     }
+//   }
+// );
 
 router.put(
   "/update/",
@@ -405,6 +642,7 @@ router.post(
 
 
 
+router.post("/sendemail", sendEmail.sendEmail);
 router.post("/googlelogin", GoogleLogin.googleLogin);
 
 module.exports = router;

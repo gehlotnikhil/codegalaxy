@@ -133,6 +133,7 @@ const EditProfile: React.FC = () => {
         justifyContent: "center",
         alignItems: "center",
         color: "black",
+        backgroundColor:"#1b1919"
       }}
     >
       <div

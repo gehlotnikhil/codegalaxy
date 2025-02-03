@@ -43,7 +43,7 @@ function About() {
   };
 
   return (
-    <div style={styles.container}>
+    <div style={{...styles.container,backgroundColor:"#1b1919"}} >
       <div style={styles.sectionContainer}>
         <h1 style={styles.heading}>About Us</h1>
         <h3 style={styles.subHeading}>About CodeGalaxy:</h3>
