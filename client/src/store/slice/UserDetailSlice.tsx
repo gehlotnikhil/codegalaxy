@@ -20,6 +20,7 @@ type UserDetailType = {
   userName: string;
   email: string;
   collegeName: string;
+  linkedin_url: string;
   contestDetails: any[];
   country: string;
   googleLoginAccess: boolean;
@@ -45,6 +46,7 @@ const initialUserDetail: UserDetailType = {
   gender: '',
   userName: '',
   email: '',
+  linkedin_url: '',
   collegeName: '',
   contestDetails: [],
   country: '',

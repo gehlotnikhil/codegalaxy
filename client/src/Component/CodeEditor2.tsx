@@ -25,7 +25,7 @@ function CodeEditor(prop: propType) {
   }, [prop]); // Log whenever props change
 
   return (
-    <div style={{ height: "60vh", ...prop.style }}>
+    <div style={{ height:"40vh", ...prop.style }} className="bg-dark">
       <Editor
         height={prop.height}
         defaultLanguage={prop.defaultLanguage}

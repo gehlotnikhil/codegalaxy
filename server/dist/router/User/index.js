@@ -210,7 +210,7 @@ router.post("/verify", [
         }
         console.log(r === null || r === void 0 ? void 0 : r.createdAt);
         console.log(Math.abs(Date.now() - new Date((r === null || r === void 0 ? void 0 : r.createdAt) || "2025-02-03T16:30:00").getTime()) / 1000);
-        // delete otp  
+        // delete otp   
         if ((Math.abs(Date.now() - new Date((r === null || r === void 0 ? void 0 : r.createdAt) || "2025-02-03T16:30:00").getTime()) / 1000) > 60) {
             return res.send({ success, msg: "OTP is Expired" });
         }
@@ -226,6 +226,7 @@ router.post("/verify", [
                     password: r.password,
                     userName: r.userName,
                     totalRank: 1000,
+                    linkedin_url: null,
                     solvedProblemDetails: [],
                     activeDays: [],
                     googleLoginAccess: false,
@@ -355,6 +356,7 @@ router.put("/update/", [
     (0, express_validator_1.body)("age", "Please fill age field").exists(),
     (0, express_validator_1.body)("email", "Please fill email field").exists(),
     (0, express_validator_1.body)("password", "Please fill password field").exists(),
+    (0, express_validator_1.body)("linkedin_url", "Please fill linkedin_url field").exists(),
     (0, express_validator_1.body)("userName", "Please fill userName field").exists(),
     (0, express_validator_1.body)("totalRank", "Please fill totalRank field").exists(),
     (0, express_validator_1.body)("noOfProblemSolved", "Please fill noOfProblemSolved field").exists(),
@@ -425,6 +427,9 @@ router.put("/update/", [
         }
         if (req.body.gender) {
             query.gender = req.body.gender;
+        }
+        if (req.body.linkedin_url) {
+            query.linkedin_url = req.body.linkedin_url;
         }
         if (req.body.collegeName) {
             query.collegeName = req.body.collegeName;

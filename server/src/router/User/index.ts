@@ -264,7 +264,7 @@ router.post(
       console.log(r?.createdAt);
 
       console.log(Math.abs(Date.now() - new Date(r?.createdAt || "2025-02-03T16:30:00").getTime()) / 1000);
-      // delete otp  
+      // delete otp   
       
       if ((Math.abs(Date.now() - new Date(r?.createdAt || "2025-02-03T16:30:00").getTime()) / 1000) > 60) {
         return res.send({ success, msg: "OTP is Expired" })
@@ -281,6 +281,7 @@ router.post(
             password: r.password,
             userName: r.userName,  
             totalRank: 1000,
+            linkedin_url:null,
             solvedProblemDetails: [],
             activeDays: [],
 
@@ -424,6 +425,7 @@ router.put(
     body("age", "Please fill age field").exists(),
     body("email", "Please fill email field").exists(),
     body("password", "Please fill password field").exists(),
+    body("linkedin_url", "Please fill linkedin_url field").exists(),
     body("userName", "Please fill userName field").exists(),
     body("totalRank", "Please fill totalRank field").exists(),
     body("noOfProblemSolved", "Please fill noOfProblemSolved field").exists(),
@@ -506,6 +508,9 @@ router.put(
       }
       if (req.body.gender) {
         query.gender = req.body.gender;
+      }
+      if (req.body.linkedin_url) {
+        query.linkedin_url = req.body.linkedin_url;
       }
       if (req.body.collegeName) {
         query.collegeName = req.body.collegeName;

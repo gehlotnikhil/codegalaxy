@@ -24,67 +24,72 @@ function Admin() {
     output: string;
   }
 
+  interface CodeTemplate{
+    c:string;
+    cpp:string;
+    java:string;
+    go:string;
+  }
   interface ProblemSet {
-    problemNo?: string;
+    problemNo?:number;
     problemName?: string;
     description?: string;
     companies?: String[];
-    like?: Number;
-    dislike?: Number;
-    testcases?: InOutTestCase[];
     constraint?: String[];
     topic?: String[];
-    accepted?: Number;
-    submission?: Number;
-    status?: "UNSOLVED" | "SOLVED";
     category?: "ALGORITHMS" | "AI" | "CONCURRANCY";
+    testcases?: InOutTestCase[];
     sampleInputOutput?: InOutTestCase[];
+    aboveCodeTemplate:CodeTemplate;
+    belowCodeTemplate:CodeTemplate;
+    middleCode:CodeTemplate;
+    
   }
 
   const initialModelFieldData = {
+
+    problemNo: null,
     contestNo: null,
     contestName: null,
     duration: null,
     startTime: null,
     problems: null,
     status: null,
-    problemNo: null,
     problemName: null,
     description: null,
     companies: null,
-    like: null,
-    dislike: null,
-    testcases: null,
     constraint: null,
     topic: null,
-    accepted: null,
     category: null,
-    submission: null,
+    testcases: null,
     sampleInputOutput: null,
+    aboveCodeTemplate:null,
+    belowCodeTemplate:null,
+    middleCode:null
+
   };
   const [ModalFieldData, setModalFieldData] = useState(initialModelFieldData);
 
   const [ModelHeading, setModelHeading] = useState("");
   const initialDisplayValue = {
+    problemNo:false,
     contestNo: false,
     contestName: false,
     duration: false,
     startTime: false,
     problems: false,
     status: false,
-    problemNo: false,
     problemName: false,
     description: false,
     companies: false,
-    like: false,
-    dislike: false,
-    testcases: false,
     constraint: false,
     topic: false,
-    accepted: false,
     category: false,
-    submission: false,
+    testcases: false,
     sampleInputOutput: false,
+    aboveCodeTemplate:false,
+    belowCodeTemplate:false,
+    middleCode:false
   };
   const [DisplayField, setDisplayField] = useState(initialDisplayValue);
   const handleChangeModelHeading = (e: string): any => {
@@ -120,38 +125,36 @@ function Admin() {
       setModelHeading("Create Problem");
       setDisplayField({
         ...initialDisplayValue,
+        problemNo: true,
         problemName: true,
         description: true,
         companies: true,
-        like: true,
-        dislike: true,
-        testcases: true,
         constraint: true,
         topic: true,
-        accepted: true,
         category: true,
-        submission: true,
-        status: true,
+        testcases: true,
         sampleInputOutput: true,
+        aboveCodeTemplate:true,
+        belowCodeTemplate:true,
+        middleCode:true
+
       });
     } else if (e === "btn5") {
       setModelHeading("Update Problem");
       setDisplayField({
         ...initialDisplayValue,
-        problemNo: true,
+        problemNo:true,
         problemName: true,
         description: true,
         companies: true,
-        like: true,
-        dislike: true,
-        testcases: true,
         constraint: true,
         topic: true,
-        accepted: true,
         category: true,
-        submission: true,
-        status: true,
+        testcases: true,
         sampleInputOutput: true,
+        aboveCodeTemplate:true,
+        belowCodeTemplate:true,
+        middleCode:true
       });
     } else if (e === "btn6") {
       setModelHeading("Delete Problem");
@@ -198,20 +201,21 @@ function Admin() {
 
   const handleCreateContest = async (): Promise<any> => {
     try {
-    let { contestName, duration, startTime, problems, status } = ModalFieldData;
-    if (
-      contestName === null ||
-      duration === null ||
-      startTime === null ||
-      problems === null ||
-      status === null
-    ) {
-      return toast.error("Failed to create constest");
-    }
-    const problemsData = (problems as string).split(",");
-    problemsData.map((value) => {
-      return Number(value);
-    });
+      let { contestName, duration, startTime, problems, status } =
+        ModalFieldData;
+      if (
+        contestName === null ||
+        duration === null ||
+        startTime === null ||
+        problems === null ||
+        status === null
+      ) {
+        return toast.error("Failed to create constest");
+      }
+      const problemsData = (problems as string).split(",");
+      problemsData.map((value) => {
+        return Number(value);
+      });
       const response = await fetch(`${SERVER_URL}/api/contest/create`, {
         method: "POST",
         headers: {
@@ -302,55 +306,50 @@ function Admin() {
   };
   const handleCreateProblem = async (): Promise<any> => {
     try {
-    let {
-      problemName,
-      description,
-      companies,
-      like,
-      dislike,
-      testcases,
-      constraint,
-      topic,
-      accepted,
-      submission,
-      category,
-      status,
-      sampleInputOutput,
-    } = ModalFieldData;
-    if (
-      accepted === null ||
-      category === null ||
-      companies === null ||
-      problemName === null ||
-      description === null ||
-      like === null ||
-      dislike === null ||
-      testcases === null ||
-      constraint === null ||
-      topic === null ||
-      submission === null ||
-      status === null ||
-      sampleInputOutput === null
-    ) {
-      return toast.error("Failed to create problem");
-    }
-    const bodyData: ProblemSet = {
-      problemName,
-      description,
-      companies: (companies as string).split(","),
-      like: Number(like),
-      dislike: Number(dislike),
-      testcases: JSON.parse(testcases),
-      constraint: (constraint as string).split(","),
-      topic: (topic as string).split(","),
-      accepted: Number(accepted),
-      category,
-      submission: Number(submission),
-      status,
-      sampleInputOutput: JSON.parse(sampleInputOutput),
-    };
+      let {
+        problemNo,
+        problemName,
+        description,
+        companies,
+        constraint,
+        topic,
+        category,
+        testcases,
+        sampleInputOutput,
+        middleCode,
+        aboveCodeTemplate,
+        belowCodeTemplate
+      } = ModalFieldData;
+      if (
+        category === null ||
+        companies === null ||
+        problemName === null ||
+        description === null ||
+        testcases === null ||
+        constraint === null ||
+        topic === null ||
+        sampleInputOutput === null||
+        middleCode===null ||
+        aboveCodeTemplate===null ||
+        belowCodeTemplate===null 
+      ) {
+        return toast.error("Failed to create problem");
+      }
+      const bodyData: ProblemSet = {
+        problemName,
+        description,
+        companies: (companies as string).split(","),
+        constraint: (constraint as string).split(","),
+        topic: (topic as string).split(","),
+        category,
+        testcases: JSON.parse(testcases),
+        sampleInputOutput: JSON.parse(sampleInputOutput),
+        middleCode:JSON.parse(middleCode),
+        belowCodeTemplate:JSON.parse(belowCodeTemplate),
+        aboveCodeTemplate:JSON.parse(aboveCodeTemplate)
+      };
+console.log(bodyData);
 
-  
       const response = await fetch(`${SERVER_URL}/api/problemset/create`, {
         method: "POST",
         headers: {
@@ -358,10 +357,11 @@ function Admin() {
         },
         body: JSON.stringify(bodyData),
       });
+
       const jsondata = await response.json();
-      if(jsondata.success){
+      if (jsondata.success) {
         toast.success("Problem created successfully");
-      }else{
+      } else {
         toast.error("Failed to create problem");
       }
       console.log(jsondata);
@@ -376,21 +376,21 @@ function Admin() {
       problemName,
       description,
       companies,
-      like,
-      dislike,
-      testcases,
       constraint,
       topic,
-      accepted,
       category,
-      submission,
-      status,
+      testcases,
       sampleInputOutput,
+      aboveCodeTemplate,
+      belowCodeTemplate,
+      middleCode
     } = ModalFieldData;
     if (problemNo === null) {
       return toast.error("Failed to update problem");
     }
-    let bodyData: ProblemSet = {};
+    let bodyData: any = {
+      
+    };
     // let problemsData = problems
     //   ? (problems as string).split(",").map((value) => Number(value))
     //   : [];
@@ -398,18 +398,17 @@ function Admin() {
     if (description !== null) bodyData.description = description;
     if (companies !== null)
       bodyData.companies = (companies as string).split(",");
-    if (like !== null) bodyData.like = Number(like);
-    if (dislike !== null) bodyData.dislike = Number(dislike);
-    if (testcases !== null) bodyData.testcases = JSON.parse(testcases);
     if (constraint !== null)
       bodyData.constraint = (constraint as string).split(",");
     if (topic !== null) bodyData.topic = (topic as string).split(",");
-    if (accepted !== null) bodyData.accepted = Number(accepted);
-    if (submission !== null) bodyData.submission = Number(submission);
+    if (category !== null) bodyData.category = category;
+    if (testcases !== null) bodyData.testcases = JSON.parse(testcases);
     if (sampleInputOutput !== null)
       bodyData.sampleInputOutput = JSON.parse(sampleInputOutput);
-    if (status !== null) bodyData.status = status;
-    if (category !== null) bodyData.category = category;
+    if (middleCode !== null) bodyData.middleCode = JSON.parse(middleCode);
+    if (aboveCodeTemplate !== null) bodyData.aboveCodeTemplate = JSON.parse(aboveCodeTemplate);
+    if (belowCodeTemplate !== null) bodyData.belowCodeTemplate = JSON.parse(belowCodeTemplate);
+
     console.log(bodyData);
     try {
       const response = await fetch(
@@ -550,530 +549,501 @@ function Admin() {
   };
   return (
     <>
-      <div
-        style={{maxHeight:"45vh",}}
-        className=" bg-dark modal fade text-dark"
-        id="exampleModal"
-        tabIndex={-1}
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h1 className="modal-title fs-5" id="exampleModalLabel">
-                {ModelHeading}
-              </h1>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div className="modal-body">
-              <form>
-                <div className="contest">
-                  <div
-                    className={`mb-3 ${
-                      DisplayField.contestNo ? "d-block" : "d-none"
-                    }`}
-                  >
-                    <label htmlFor="name" className="col-form-label">
-                      Contest No:
-                    </label>
-                    <input
-                      type="text"
-                      value={ModalFieldData.contestNo || ""}
-                      name="contestNo"
-                      onChange={handleFieldValueChange}
-                      className="form-control"
-                      id=""
-                    />
+      <div>
+        <div
+          style={{ maxHeight: "100vh" }}
+          className=" bg-dark modal fade text-dark"
+          id="exampleModal"
+          tabIndex={-1}
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h1 className="modal-title fs-5" id="exampleModalLabel">
+                  {ModelHeading}
+                </h1>
+                <button
+                  type="button"
+                  className="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div className="modal-body">
+                <form>
+                  <div className="contest">
+                    <div
+                      className={`mb-3 ${
+                        DisplayField.contestNo ? "d-block" : "d-none"
+                      }`}
+                    >
+                      <label htmlFor="name" className="col-form-label">
+                        Contest No:
+                      </label>
+                      <input
+                        type="text"
+                        value={ModalFieldData.contestNo || ""}
+                        name="contestNo"
+                        onChange={handleFieldValueChange}
+                        className="form-control"
+                        id=""
+                      />
+                    </div>
+                    <div
+                      className={`mb-3 ${
+                        DisplayField.contestName ? "d-block" : "d-none"
+                      }`}
+                    >
+                      <label htmlFor="name" className="col-form-label">
+                        Contest Name:
+                      </label>
+                      <input
+                        type="text"
+                        value={ModalFieldData.contestName || ""}
+                        name="contestName"
+                        onChange={handleFieldValueChange}
+                        className="form-control"
+                        id=""
+                      />
+                    </div>
+                    <div
+                      className={`mb-3 ${
+                        DisplayField.duration ? "d-block" : "d-none"
+                      }`}
+                    >
+                      <label htmlFor="name" className="col-form-label">
+                        Duration:
+                      </label>
+                      <input
+                        type="text"
+                        name="duration"
+                        value={ModalFieldData.duration || ""}
+                        onChange={handleFieldValueChange}
+                        className="form-control"
+                        id=""
+                      />
+                    </div>
+                    <div
+                      className={`mb-3 ${
+                        DisplayField.startTime ? "d-block" : "d-none"
+                      }`}
+                    >
+                      <label htmlFor="name" className="col-form-label">
+                        Start Time:
+                      </label>
+                      <input
+                        type="text"
+                        value={ModalFieldData.startTime || ""}
+                        name="startTime"
+                        onChange={handleFieldValueChange}
+                        className="form-control"
+                        id=""
+                      />
+                    </div>
+                    <div
+                      className={`mb-3 ${
+                        DisplayField.problems ? "d-block" : "d-none"
+                      }`}
+                    >
+                      <label htmlFor="name" className="col-form-label">
+                        Problems:
+                      </label>
+                      <input
+                        type="text"
+                        value={ModalFieldData.problems || ""}
+                        name="problems"
+                        onChange={handleFieldValueChange}
+                        className="form-control"
+                        id=""
+                      />
+                    </div>
                   </div>
-                  <div
-                    className={`mb-3 ${
-                      DisplayField.contestName ? "d-block" : "d-none"
-                    }`}
-                  >
-                    <label htmlFor="name" className="col-form-label">
-                      Contest Name:
-                    </label>
-                    <input
-                      type="text"
-                      value={ModalFieldData.contestName || ""}
-                      name="contestName"
-                      onChange={handleFieldValueChange}
-                      className="form-control"
-                      id=""
-                    />
+                  <div className="problem">
+                    <div
+                      className={`mb-3 ${
+                        DisplayField.problemNo ? "d-block" : "d-none"
+                      }`}
+                    >
+                      <label htmlFor="name" className="col-form-label">
+                        Problem No:
+                      </label>
+                      <input
+                        type="text"
+                        value={ModalFieldData.problemNo || ""}
+                        name="problemNo"
+                        onChange={handleFieldValueChange}
+                        className="form-control"
+                        id=""
+                      />
+                    </div>
+                    <div
+                      className={`mb-3 ${
+                        DisplayField.problemName ? "d-block" : "d-none"
+                      }`}
+                    >
+                      <label htmlFor="name" className="col-form-label">
+                        Problem Name:
+                      </label>
+                      <input
+                        type="text"
+                        value={ModalFieldData.problemName || ""}
+                        name="problemName"
+                        onChange={handleFieldValueChange}
+                        className="form-control"
+                        id=""
+                      />
+                    </div>
+                    <div
+                      className={`mb-3 ${
+                        DisplayField.description ? "d-block" : "d-none"
+                      }`}
+                    >
+                      <label htmlFor="name" className="col-form-label">
+                        Describtion:
+                      </label>
+                      <input
+                        type="text"
+                        value={ModalFieldData.description || ""}
+                        name="description"
+                        onChange={handleFieldValueChange}
+                        className="form-control"
+                        id=""
+                      />
+                    </div>
+                    
+                    
+                    <div
+                      className={`mb-3 ${
+                        DisplayField.constraint ? "d-block" : "d-none"
+                      }`}
+                    >
+                      <label htmlFor="name" className="col-form-label">
+                        Constraints:
+                      </label>
+                      <input
+                        type="text"
+                        value={ModalFieldData.constraint || ""}
+                        name="constraint"
+                        onChange={handleFieldValueChange}
+                        className="form-control"
+                        id=""
+                      />
+                    </div>
+                    <div
+                      className={`mb-3 ${
+                        DisplayField.topic ? "d-block" : "d-none"
+                      }`}
+                    >
+                      <label htmlFor="name" className="col-form-label">
+                        Topic:
+                      </label>
+                      <input
+                        type="text"
+                        value={ModalFieldData.topic || ""}
+                        name="topic"
+                        onChange={handleFieldValueChange}
+                        className="form-control"
+                        id=""
+                      />
+                    </div>
+                    
+                    <div
+                      className={`mb-3 ${
+                        DisplayField.category ? "d-block" : "d-none"
+                      }`}
+                    >
+                      <label htmlFor="name" className="col-form-label">
+                        Category:
+                      </label>
+                      <input
+                        type="text"
+                        value={ModalFieldData.category || ""}
+                        name="category"
+                        onChange={handleFieldValueChange}
+                        className="form-control"
+                        id=""
+                      />
+                    </div>
+                    <div
+                      className={`mb-3 ${
+                        DisplayField.companies ? "d-block" : "d-none"
+                      }`}
+                    >
+                      <label htmlFor="name" className="col-form-label">
+                        Company:
+                      </label>
+                      <input
+                        type="text"
+                        value={ModalFieldData.companies || ""}
+                        name="companies"
+                        onChange={handleFieldValueChange}
+                        className="form-control"
+                        id=""
+                      />
+                    </div>
+                    <div
+                      className={`mb-3 ${
+                        DisplayField.testcases ? "d-block" : "d-none"
+                      }`}
+                    >
+                      <label htmlFor="name" className="col-form-label">
+                        TestCases:
+                      </label>
+                      <input
+                        type="text"
+                        value={ModalFieldData.testcases || ""}
+                        name="testcases"
+                        onChange={handleFieldValueChange}
+                        className="form-control"
+                        id=""
+                      />
+                    </div>
+                    <div
+                      className={`mb-3 ${
+                        DisplayField.sampleInputOutput ? "d-block" : "d-none"
+                      }`}
+                    >
+                      <label htmlFor="name" className="col-form-label">
+                        Sample Input Output:
+                      </label>
+                      <input
+                        type="text"
+                        value={ModalFieldData.sampleInputOutput || ""}
+                        name="sampleInputOutput"
+                        onChange={handleFieldValueChange}
+                        className="form-control"
+                        id=""
+                      />
+                    </div>
+                    <div
+                      className={`mb-3 ${
+                        DisplayField.aboveCodeTemplate ? "d-block" : "d-none"
+                      }`}
+                    >
+                      <label htmlFor="name" className="col-form-label">
+                      Above Code Template:
+                      </label>
+                      <input
+                        type="text"
+                        value={ModalFieldData.aboveCodeTemplate || ""}
+                        name="aboveCodeTemplate"
+                        onChange={handleFieldValueChange}
+                        className="form-control"
+                        id=""
+                      />
+                    </div>
+                    <div
+                      className={`mb-3 ${
+                        DisplayField.belowCodeTemplate ? "d-block" : "d-none"
+                      }`}
+                    >
+                      <label htmlFor="name" className="col-form-label">
+                      Below Code Template:
+                      </label>
+                      <input
+                        type="text"
+                        value={ModalFieldData.belowCodeTemplate || ""}
+                        name="belowCodeTemplate"
+                        onChange={handleFieldValueChange}
+                        className="form-control"
+                        id=""
+                      />
+                    </div>
+                    <div
+                      className={`mb-3 ${
+                        DisplayField.middleCode ? "d-block" : "d-none"
+                      }`}
+                    >
+                      <label htmlFor="name" className="col-form-label">
+                        Middle Code:
+                      </label>
+                      <input
+                        type="text"
+                        value={ModalFieldData.middleCode || ""}
+                        name="middleCode"
+                        onChange={handleFieldValueChange}
+                        className="form-control"
+                        id=""
+                      />
+                    </div>
                   </div>
-                  <div
-                    className={`mb-3 ${
-                      DisplayField.duration ? "d-block" : "d-none"
-                    }`}
-                  >
-                    <label htmlFor="name" className="col-form-label">
-                      Duration:
-                    </label>
-                    <input
-                      type="text"
-                      name="duration"
-                      value={ModalFieldData.duration || ""}
-                      onChange={handleFieldValueChange}
-                      className="form-control"
-                      id=""
-                    />
-                  </div>
-                  <div
-                    className={`mb-3 ${
-                      DisplayField.startTime ? "d-block" : "d-none"
-                    }`}
-                  >
-                    <label htmlFor="name" className="col-form-label">
-                      Start Time:
-                    </label>
-                    <input
-                      type="text"
-                      value={ModalFieldData.startTime || ""}
-                      name="startTime"
-                      onChange={handleFieldValueChange}
-                      className="form-control"
-                      id=""
-                    />
-                  </div>
-                  <div
-                    className={`mb-3 ${
-                      DisplayField.problems ? "d-block" : "d-none"
-                    }`}
-                  >
-                    <label htmlFor="name" className="col-form-label">
-                      Problems:
-                    </label>
-                    <input
-                      type="text"
-                      value={ModalFieldData.problems || ""}
-                      name="problems"
-                      onChange={handleFieldValueChange}
-                      className="form-control"
-                      id=""
-                    />
-                  </div>
-                </div>
-                <div className="problem">
-                  <div
-                    className={`mb-3 ${
-                      DisplayField.problemNo ? "d-block" : "d-none"
-                    }`}
-                  >
-                    <label htmlFor="name" className="col-form-label">
-                      Problem No:
-                    </label>
-                    <input
-                      type="text"
-                      value={ModalFieldData.problemNo || ""}
-                      name="problemNo"
-                      onChange={handleFieldValueChange}
-                      className="form-control"
-                      id=""
-                    />
-                  </div>
-                  <div
-                    className={`mb-3 ${
-                      DisplayField.problemName ? "d-block" : "d-none"
-                    }`}
-                  >
-                    <label htmlFor="name" className="col-form-label">
-                      Problem Name:
-                    </label>
-                    <input
-                      type="text"
-                      value={ModalFieldData.problemName || ""}
-                      name="problemName"
-                      onChange={handleFieldValueChange}
-                      className="form-control"
-                      id=""
-                    />
-                  </div>
-                  <div
-                    className={`mb-3 ${
-                      DisplayField.description ? "d-block" : "d-none"
-                    }`}
-                  >
-                    <label htmlFor="name" className="col-form-label">
-                      Describtion:
-                    </label>
-                    <input
-                      type="text"
-                      value={ModalFieldData.description || ""}
-                      name="description"
-                      onChange={handleFieldValueChange}
-                      className="form-control"
-                      id=""
-                    />
-                  </div>
-                  <div
-                    className={`mb-3 ${
-                      DisplayField.like ? "d-block" : "d-none"
-                    }`}
-                  >
-                    <label htmlFor="name" className="col-form-label">
-                      Like:
-                    </label>
-                    <input
-                      type="text"
-                      value={ModalFieldData.like || ""}
-                      name="like"
-                      onChange={handleFieldValueChange}
-                      className="form-control"
-                      id=""
-                    />
-                  </div>
-                  <div
-                    className={`mb-3 ${
-                      DisplayField.dislike ? "d-block" : "d-none"
-                    }`}
-                  >
-                    <label htmlFor="name" className="col-form-label">
-                      DisLike:
-                    </label>
-                    <input
-                      type="text"
-                      value={ModalFieldData.dislike || ""}
-                      name="dislike"
-                      onChange={handleFieldValueChange}
-                      className="form-control"
-                      id=""
-                    />
-                  </div>
-                  <div
-                    className={`mb-3 ${
-                      DisplayField.constraint ? "d-block" : "d-none"
-                    }`}
-                  >
-                    <label htmlFor="name" className="col-form-label">
-                      Constraints:
-                    </label>
-                    <input
-                      type="text"
-                      value={ModalFieldData.constraint || ""}
-                      name="constraint"
-                      onChange={handleFieldValueChange}
-                      className="form-control"
-                      id=""
-                    />
-                  </div>
-                  <div
-                    className={`mb-3 ${
-                      DisplayField.topic ? "d-block" : "d-none"
-                    }`}
-                  >
-                    <label htmlFor="name" className="col-form-label">
-                      Topic:
-                    </label>
-                    <input
-                      type="text"
-                      value={ModalFieldData.topic || ""}
-                      name="topic"
-                      onChange={handleFieldValueChange}
-                      className="form-control"
-                      id=""
-                    />
-                  </div>
-                  <div
-                    className={`mb-3 ${
-                      DisplayField.accepted ? "d-block" : "d-none"
-                    }`}
-                  >
-                    <label htmlFor="name" className="col-form-label">
-                      Accepted:
-                    </label>
-                    <input
-                      type="text"
-                      value={ModalFieldData.accepted || ""}
-                      name="accepted"
-                      onChange={handleFieldValueChange}
-                      className="form-control"
-                      id=""
-                    />
-                  </div>
-                  <div
-                    className={`mb-3 ${
-                      DisplayField.submission ? "d-block" : "d-none"
-                    }`}
-                  >
-                    <label htmlFor="name" className="col-form-label">
-                      Submission:
-                    </label>
-                    <input
-                      type="text"
-                      value={ModalFieldData.submission || ""}
-                      name="submission"
-                      onChange={handleFieldValueChange}
-                      className="form-control"
-                      id=""
-                    />
-                  </div>
-                  <div
-                    className={`mb-3 ${
-                      DisplayField.status ? "d-block" : "d-none"
-                    }`}
-                  >
-                    <label htmlFor="name" className="col-form-label">
-                      Status:
-                    </label>
-                    <input
-                      type="text"
-                      value={ModalFieldData.status || ""}
-                      name="status"
-                      onChange={handleFieldValueChange}
-                      className="form-control"
-                      id=""
-                    />
-                  </div>
-                  <div
-                    className={`mb-3 ${
-                      DisplayField.category ? "d-block" : "d-none"
-                    }`}
-                  >
-                    <label htmlFor="name" className="col-form-label">
-                      Category:
-                    </label>
-                    <input
-                      type="text"
-                      value={ModalFieldData.category || ""}
-                      name="category"
-                      onChange={handleFieldValueChange}
-                      className="form-control"
-                      id=""
-                    />
-                  </div>
-                  <div
-                    className={`mb-3 ${
-                      DisplayField.companies ? "d-block" : "d-none"
-                    }`}
-                  >
-                    <label htmlFor="name" className="col-form-label">
-                      Company:
-                    </label>
-                    <input
-                      type="text"
-                      value={ModalFieldData.companies || ""}
-                      name="companies"
-                      onChange={handleFieldValueChange}
-                      className="form-control"
-                      id=""
-                    />
-                  </div>
-                  <div
-                    className={`mb-3 ${
-                      DisplayField.testcases ? "d-block" : "d-none"
-                    }`}
-                  >
-                    <label htmlFor="name" className="col-form-label">
-                      TestCases:
-                    </label>
-                    <input
-                      type="text"
-                      value={ModalFieldData.testcases || ""}
-                      name="testcases"
-                      onChange={handleFieldValueChange}
-                      className="form-control"
-                      id=""
-                    />
-                  </div>
-                  <div
-                    className={`mb-3 ${
-                      DisplayField.sampleInputOutput ? "d-block" : "d-none"
-                    }`}
-                  >
-                    <label htmlFor="name" className="col-form-label">
-                      Sample Input Output:
-                    </label>
-                    <input
-                      type="text"
-                      value={ModalFieldData.sampleInputOutput || ""}
-                      name="sampleInputOutput"
-                      onChange={handleFieldValueChange}
-                      className="form-control"
-                      id=""
-                    />
-                  </div>
-                </div>
-              </form>
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                data-bs-dismiss="modal"
-                data-bs-toggle="modal"
-                data-bs-target="#exampleModal"
-                data-bs-whatever="@getbootstrap"
-              >
-                Close
-              </button>
-              <button
-                type="button"
-                onClick={handleSendQuery}
-                className="btn btn-primary"
-              >
-                Submit
-              </button>
+                </form>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                  data-bs-toggle="modal"
+                  data-bs-target="#exampleModal"
+                  data-bs-whatever="@getbootstrap"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSendQuery}
+                  className="btn btn-primary"
+                >
+                  Submit
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div className=" color-1  ">
-        <div className="container pt-4">
-          <div>
-            <h2>Contest:</h2>
-            <button
-              type="button"
-              onClick={() => {
-                handleChangeModelHeading("btn1");
-              }}
-              data-bs-toggle="modal"
-              data-bs-target="#exampleModal"
-              data-bs-whatever="@getbootstrap"
-              className="m-2 btn btn-warning"
-            >
-              Create Contest
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                handleChangeModelHeading("btn2");
-              }}
-              data-bs-toggle="modal"
-              data-bs-target="#exampleModal"
-              data-bs-whatever="@getbootstrap"
-              className="m-2 btn btn-primary"
-            >
-              Update Contest
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                handleChangeModelHeading("btn3");
-              }}
-              data-bs-toggle="modal"
-              data-bs-target="#exampleModal"
-              data-bs-whatever="@getbootstrap"
-              className="m-2 btn btn-danger"
-            >
-              Delete Contest
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                handleChangeModelHeading("get1");
-              }}
-              className="m-2 btn btn-success"
-            >
-              Get All Contest
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                handleChangeModelHeading("get2");
-              }}
-              data-bs-toggle="modal"
-              data-bs-target="#exampleModal"
-              data-bs-whatever="@getbootstrap"
-              className="m-2 btn btn-success"
-            >
-              Get Specific Contest
-            </button>
-          </div>
-          <div className="pt-4">
-            <h2>Problem:</h2>
-            <button
-              type="button"
-              onClick={() => {
-                handleChangeModelHeading("btn4");
-              }}
-              data-bs-toggle="modal"
-              data-bs-target="#exampleModal"
-              data-bs-whatever="@getbootstrap"
-              className="m-2 btn btn-warning"
-            >
-              Create Problem
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                handleChangeModelHeading("btn5");
-              }}
-              data-bs-toggle="modal"
-              data-bs-target="#exampleModal"
-              data-bs-whatever="@getbootstrap"
-              className="m-2 btn btn-primary"
-            >
-              Update Problem
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                handleChangeModelHeading("btn6");
-              }}
-              data-bs-toggle="modal"
-              data-bs-target="#exampleModal"
-              data-bs-whatever="@getbootstrap"
-              className="m-2 btn btn-danger"
-            >
-              Delete Problem
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                handleChangeModelHeading("get3");
-                if (setDemo) {
-                  console.log("--------------");
+        <div className=" color-1  ">
+          <div className="container pt-4">
+            <div>
+              <h2>Contest:</h2>
+              <button
+                type="button"
+                onClick={() => {
+                  handleChangeModelHeading("btn1");
+                }}
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModal"
+                data-bs-whatever="@getbootstrap"
+                className="m-2 btn btn-warning"
+              >
+                Create Contest
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleChangeModelHeading("btn2");
+                }}
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModal"
+                data-bs-whatever="@getbootstrap"
+                className="m-2 btn btn-primary"
+              >
+                Update Contest
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleChangeModelHeading("btn3");
+                }}
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModal"
+                data-bs-whatever="@getbootstrap"
+                className="m-2 btn btn-danger"
+              >
+                Delete Contest
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleChangeModelHeading("get1");
+                }}
+                className="m-2 btn btn-success"
+              >
+                Get All Contest
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleChangeModelHeading("get2");
+                }}
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModal"
+                data-bs-whatever="@getbootstrap"
+                className="m-2 btn btn-success"
+              >
+                Get Specific Contest
+              </button>
+            </div>
+            <div className="pt-4">
+              <h2>Problem:</h2>
+              <button
+                type="button"
+                onClick={() => {
+                  handleChangeModelHeading("btn4");
+                }}
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModal"
+                data-bs-whatever="@getbootstrap"
+                className="m-2 btn btn-warning"
+              >
+                Create Problem
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleChangeModelHeading("btn5");
+                }}
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModal"
+                data-bs-whatever="@getbootstrap"
+                className="m-2 btn btn-primary"
+              >
+                Update Problem
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleChangeModelHeading("btn6");
+                }}
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModal"
+                data-bs-whatever="@getbootstrap"
+                className="m-2 btn btn-danger"
+              >
+                Delete Problem
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleChangeModelHeading("get3");
+                  if (setDemo) {
+                    console.log("--------------");
 
-                  setDemo("bye");
-                }
-              }}
-              className="m-2 btn btn-success"
+                    setDemo("bye");
+                  }
+                }}
+                className="m-2 btn btn-success"
+              >
+                Get All Problem
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleChangeModelHeading("get4");
+                }}
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModal"
+                data-bs-whatever="@getbootstrap"
+                className="m-2 btn btn-success"
+              >
+                Get Specific Problem
+              </button>
+            </div>
+            <div className="">
+              <button
+                className="m-2 btn btn-light"
+                onClick={() => {
+                  setCodeValue("");
+                }}
+              >
+                Clear All
+              </button>
+            </div>
+            <div
+              className="codeeditor mt-4 bg-dark"
+              style={{ maxHeight: "40vh", overflowY: "scroll" }}
             >
-              Get All Problem
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                handleChangeModelHeading("get4");
-              }}
-              data-bs-toggle="modal"
-              data-bs-target="#exampleModal"
-              data-bs-whatever="@getbootstrap"
-              className="m-2 btn btn-success"
-            >
-              Get Specific Problem
-            </button>
-          </div>
-          <div className="">
-            <button
-              className="m-2 btn btn-light"
-              onClick={() => {
-                setCodeValue("");
-              }}
-            >
-              Clear All
-            </button>
-          </div>
-          <div
-            className="codeeditor mt-4 bg-dark"
-            style={{ maxHeight: "60vh", boxSizing: "border-box" }}
-          >
-            <CodeEditor
-              renderValidationDecorations={"off"}
-              handleEditorChange={handleEditorChange}
-              CodeOfEditor={CodeValue}
-              height={"100vh"}
-              defaultLanguage={"typescript"}
-              readOnly={true}
-              fontSize={16}
-            />
+              <CodeEditor
+                renderValidationDecorations={"off"}
+                handleEditorChange={handleEditorChange}
+                CodeOfEditor={CodeValue}
+                height={"40vh"}
+                defaultLanguage={"typescript"}
+                readOnly={true}
+                fontSize={16}
+              />
+            </div>
           </div>
         </div>
       </div>

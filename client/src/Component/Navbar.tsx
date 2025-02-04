@@ -41,6 +41,11 @@ function AppNavbar() {
   });
 
   useEffect(() => {
+
+    if(locationHook.pathname ==="/" && userDetails.isAdmin){
+      navigate("/admin")
+    }
+
     const updatedStatus = {
       loginLink: true,
       signupLink: true,
@@ -78,6 +83,7 @@ function AppNavbar() {
       updatedStatus.prfileLink = false;
       updatedStatus.playgroundLink = false;
       updatedStatus.profilename = false;
+      
     }else if (locationHook.pathname.startsWith("/u/")) {
       updatedStatus.homeLink = true;
       updatedStatus.aboutLink = true;

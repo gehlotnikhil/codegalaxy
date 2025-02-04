@@ -18,6 +18,7 @@ interface ProfileFieldValueType {
   userName: string;
   state:string;
   country:string;
+  linkedin_url:string;
   // gender?: string;
   collegeName: string;
   // state?: string;
@@ -51,6 +52,7 @@ const EditProfile: React.FC = () => {
       email: userDetail.email || "",
       state:userDetail.state || "",
       country:userDetail.country || "",
+      linkedin_url:userDetail.linkedin_url || "",
       collegeName:userDetail.collegeName || ""
     },
   });
@@ -242,6 +244,15 @@ const EditProfile: React.FC = () => {
               <input type="text" {...register("country")} />
             </label>
             <p className="error-message">{errors.country?.message}</p>
+          </div>
+
+          {/* linkedin_url */}
+          <div style={{ marginBottom: "15px" }}>
+            <label>
+              Set Linkedin_url: <span style={{ color: "red" }}>*</span>
+              <input type="text" {...register("linkedin_url")} />
+            </label>
+            <p className="error-message">{errors.linkedin_url?.message}</p>
           </div>
 
           {/* Submit Button */}
