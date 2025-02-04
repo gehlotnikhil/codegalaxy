@@ -60,6 +60,7 @@ const OTPVerification: React.FC = () => {
       const jsonData = await response.json();
       if (jsonData.success) {
         dispatch(setUserDetail(jsonData.result));
+        localStorage.setItem("token",jsonData.result.token)
         toast.success("Account Created");
         setStatus(true);
       } else {

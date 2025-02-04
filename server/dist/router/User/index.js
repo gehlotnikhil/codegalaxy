@@ -43,6 +43,9 @@ function generateOTP(length = 6) {
 }
 // User Registration route
 router.post("/registeruser", [
+    (0, express_validator_1.body)("name", "Please Enter Your name").exists(),
+    (0, express_validator_1.body)("age", "Please Enter Your age").exists(),
+    (0, express_validator_1.body)("collegeName", "Please Enter Your collegeName").exists(),
     (0, express_validator_1.body)("email", "Please Enter Your Email").exists(),
     (0, express_validator_1.body)("email", "Enter Valid Email Format").isEmail(),
     (0, express_validator_1.body)("password", "Please Enter Your Password").exists(),
@@ -52,7 +55,7 @@ router.post("/registeruser", [
     const otp = generateOTP(); // Generate OTP
     console.log(`Generated OTP: ${otp}`);
     try {
-        const { email, password, userName } = req.body;
+        const { email, password, userName, name, age, collegeName } = req.body;
         // Check for validation errors
         const errors = (0, express_validator_1.validationResult)(req);
         if (!errors.isEmpty()) {
@@ -127,6 +130,9 @@ router.post("/registeruser", [
                 const r = yield prisma.emailOtpService.deleteMany({ where: { email } });
                 const result = yield prisma.emailOtpService.create({
                     data: {
+                        name: name,
+                        age: age,
+                        collegeName: collegeName,
                         email: email,
                         password: hashPassword,
                         userName: userName,
@@ -204,16 +210,18 @@ router.post("/verify", [
         }
         console.log(r === null || r === void 0 ? void 0 : r.createdAt);
         console.log(Math.abs(Date.now() - new Date((r === null || r === void 0 ? void 0 : r.createdAt) || "2025-02-03T16:30:00").getTime()) / 1000);
-        // delete otp 
-        const k = yield prisma.emailOtpService.deleteMany({ where: { code, email: verifyemail } });
+        // delete otp  
         if ((Math.abs(Date.now() - new Date((r === null || r === void 0 ? void 0 : r.createdAt) || "2025-02-03T16:30:00").getTime()) / 1000) > 60) {
             return res.send({ success, msg: "OTP is Expired" });
         }
         else if (r && r.email && r.password && r.userName) {
+            const k = yield prisma.emailOtpService.deleteMany({ where: { code, email: verifyemail } });
             // creating user
             const result = yield prisma.user.create({
                 data: {
-                    name: name,
+                    name: r.name,
+                    age: r.age,
+                    collegeName: r.collegeName,
                     email: r.email,
                     password: r.password,
                     userName: r.userName,

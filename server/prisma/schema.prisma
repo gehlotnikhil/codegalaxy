@@ -160,6 +160,9 @@ model PraticeProblem {
 
 model EmailOtpService {
   id    String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  age Int
+  collegeName String
   email String
   password String
   userName String

@@ -40,6 +40,9 @@ function generateOTP(length: number = 6): string {
 router.post(
   "/registeruser",
   [
+    body("name", "Please Enter Your name").exists(),
+    body("age", "Please Enter Your age").exists(),
+    body("collegeName", "Please Enter Your collegeName").exists(),
     body("email", "Please Enter Your Email").exists(),
     body("email", "Enter Valid Email Format").isEmail(),
     body("password", "Please Enter Your Password").exists(),
@@ -50,7 +53,7 @@ router.post(
     const otp = generateOTP(); // Generate OTP
     console.log(`Generated OTP: ${otp}`);
     try {
-      const { email, password, userName } = req.body;
+      const { email, password, userName,name,age,collegeName } = req.body;
 
       // Check for validation errors
       const errors = validationResult(req);
@@ -66,6 +69,10 @@ router.post(
       if (check2) {
         return res.send({ success, msg: "UserName Already Exist" });
       }
+
+
+
+  
       //Main Logic
       //encrypt the password
       let salt = await bcrypt.genSalt(10);
@@ -141,6 +148,9 @@ router.post(
 
           const result = await prisma.emailOtpService.create({
             data: {
+              name:name,
+              age:age,
+              collegeName:collegeName,
               email: email,
               password: hashPassword,
               userName: userName,
@@ -254,20 +264,22 @@ router.post(
       console.log(r?.createdAt);
 
       console.log(Math.abs(Date.now() - new Date(r?.createdAt || "2025-02-03T16:30:00").getTime()) / 1000);
-      // delete otp 
-      const k = await prisma.emailOtpService.deleteMany({ where: { code, email: verifyemail } })
-
+      // delete otp  
+      
       if ((Math.abs(Date.now() - new Date(r?.createdAt || "2025-02-03T16:30:00").getTime()) / 1000) > 60) {
         return res.send({ success, msg: "OTP is Expired" })
       }
       else if (r && r.email && r.password && r.userName) {
+        const k = await prisma.emailOtpService.deleteMany({ where: { code, email: verifyemail } })
         // creating user
         const result = await prisma.user.create({
           data: {
-            name: name,
+            name: r.name,
+            age:r.age,
+            collegeName:r.collegeName,
             email: r.email,
             password: r.password,
-            userName: r.userName,
+            userName: r.userName,  
             totalRank: 1000,
             solvedProblemDetails: [],
             activeDays: [],
