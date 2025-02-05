@@ -70,7 +70,8 @@ const Problem: React.FC = () => {
   });
 
   useEffect(() => {
-    setSearchParams({ page: page.toString() });
+    if(!userDetail.isAdmin)
+      setSearchParams({ page: page.toString() });
   }, []);
 
   useEffect(() => {

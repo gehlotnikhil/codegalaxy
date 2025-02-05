@@ -4,8 +4,10 @@ import MainContext from "../context/main";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../store";
 import logo from "../assets/logo.png";
+import { useClerk } from "@clerk/clerk-react";
 
 function AppNavbar() {
+  const { signOut } = useClerk();
   const locationHook = useLocation();
   const [ProfileName, setProfileName] = useState("");
   useEffect(() => {
@@ -41,6 +43,11 @@ function AppNavbar() {
   });
 
   useEffect(() => {
+
+    if(locationHook.pathname ==="/" && userDetails.isAdmin){
+      navigate("/admin")
+    }
+
     const updatedStatus = {
       loginLink: true,
       signupLink: true,
@@ -78,6 +85,7 @@ function AppNavbar() {
       updatedStatus.prfileLink = false;
       updatedStatus.playgroundLink = false;
       updatedStatus.profilename = false;
+      
     }else if (locationHook.pathname.startsWith("/u/")) {
       updatedStatus.homeLink = true;
       updatedStatus.aboutLink = true;
@@ -259,9 +267,13 @@ function AppNavbar() {
                 </Link>
               </li>
               <li>
+                
                 <Link
                   className="dropdown-item"
-                  onClick={handleClickSignOut}
+                  onClick={()=>{
+                  handleClickSignOut();
+                  signOut();
+                  }}
                   to="/login"
                 >
                   Sign out

@@ -1,3 +1,5 @@
 node_modules
 .env
 prisma/.env
+.env.local
+*.env

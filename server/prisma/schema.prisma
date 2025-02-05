@@ -13,6 +13,7 @@ model User {
   age                  Int?
   email                String                  @unique
   password             String?
+  linkedin_url         String?
   userName             String                  @unique
   totalRank            Int                     @default(1000)
   solvedProblemDetails String[]
@@ -21,7 +22,7 @@ model User {
   state                String?
   country              String?
   isAdmin              Boolean
-  googleLoginAccess    Boolean
+  ThirdPartyLoginAccess    Boolean @default(false)
   profilePictureUrl    String
   praticeCourseDetail  praticeCourseDetailType
   activeDays           Int[]
@@ -159,10 +160,13 @@ model PraticeProblem {
 }
 
 model EmailOtpService {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  email String
-  password String
-  userName String
-  code  Int
-  createdAt DateTime @default(now())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  age         Int
+  collegeName String
+  email       String
+  password    String
+  userName    String
+  code        Int
+  createdAt   DateTime @default(now())
 }

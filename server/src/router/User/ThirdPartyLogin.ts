@@ -49,7 +49,7 @@ const googleLogin = async (req: Request, res: Response): Promise<any> => {
           solvedProblemDetails: [],
           noOfContestParticipated: 0,
           contestDetails: [],
-          googleLoginAccess: true,
+          ThirdPartyLoginAccess: true,
           role: { User: true, Admin: false },
           profilePictureUrl:"https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk"
         },

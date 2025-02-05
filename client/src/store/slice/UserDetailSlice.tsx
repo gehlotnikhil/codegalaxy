@@ -20,9 +20,10 @@ type UserDetailType = {
   userName: string;
   email: string;
   collegeName: string;
+  linkedin_url: string;
   contestDetails: any[];
   country: string;
-  googleLoginAccess: boolean;
+  ThirdPartyLoginAccess: boolean;
   noOfContestParticipated: number;
   noOfProblemSolved: number;
   isAdmin: boolean;
@@ -45,10 +46,11 @@ const initialUserDetail: UserDetailType = {
   gender: '',
   userName: '',
   email: '',
+  linkedin_url: '',
   collegeName: '',
   contestDetails: [],
   country: '',
-  googleLoginAccess: false,
+  ThirdPartyLoginAccess: false,
   noOfContestParticipated: 0,
   noOfProblemSolved: 0,
   isAdmin:false,

@@ -23,7 +23,7 @@ const axios = require("axios");
 const sendEmail_1 = __importDefault(require("./sendEmail"));
 const ServerUrl = process.env.ServerUrl || "http://localhost:8000";
 console.log(ServerUrl);
-const GoogleLogin_1 = __importDefault(require("./GoogleLogin"));
+const ThirdPartyLogin_1 = __importDefault(require("./ThirdPartyLogin"));
 const prisma = new client_1.PrismaClient();
 const faker_1 = require("@faker-js/faker");
 function generateRandomName() {
@@ -43,6 +43,9 @@ function generateOTP(length = 6) {
 }
 // User Registration route
 router.post("/registeruser", [
+    (0, express_validator_1.body)("name", "Please Enter Your name").exists(),
+    (0, express_validator_1.body)("age", "Please Enter Your age").exists(),
+    (0, express_validator_1.body)("collegeName", "Please Enter Your collegeName").exists(),
     (0, express_validator_1.body)("email", "Please Enter Your Email").exists(),
     (0, express_validator_1.body)("email", "Enter Valid Email Format").isEmail(),
     (0, express_validator_1.body)("password", "Please Enter Your Password").exists(),
@@ -52,7 +55,7 @@ router.post("/registeruser", [
     const otp = generateOTP(); // Generate OTP
     console.log(`Generated OTP: ${otp}`);
     try {
-        const { email, password, userName } = req.body;
+        const { email, password, userName, name, age, collegeName } = req.body;
         // Check for validation errors
         const errors = (0, express_validator_1.validationResult)(req);
         if (!errors.isEmpty()) {
@@ -127,6 +130,9 @@ router.post("/registeruser", [
                 const r = yield prisma.emailOtpService.deleteMany({ where: { email } });
                 const result = yield prisma.emailOtpService.create({
                     data: {
+                        name: name,
+                        age: age,
+                        collegeName: collegeName,
                         email: email,
                         password: hashPassword,
                         userName: userName,
@@ -204,23 +210,26 @@ router.post("/verify", [
         }
         console.log(r === null || r === void 0 ? void 0 : r.createdAt);
         console.log(Math.abs(Date.now() - new Date((r === null || r === void 0 ? void 0 : r.createdAt) || "2025-02-03T16:30:00").getTime()) / 1000);
-        // delete otp 
-        const k = yield prisma.emailOtpService.deleteMany({ where: { code, email: verifyemail } });
+        // delete otp   
         if ((Math.abs(Date.now() - new Date((r === null || r === void 0 ? void 0 : r.createdAt) || "2025-02-03T16:30:00").getTime()) / 1000) > 60) {
             return res.send({ success, msg: "OTP is Expired" });
         }
         else if (r && r.email && r.password && r.userName) {
+            const k = yield prisma.emailOtpService.deleteMany({ where: { code, email: verifyemail } });
             // creating user
             const result = yield prisma.user.create({
                 data: {
-                    name: name,
+                    name: r.name,
+                    age: r.age,
+                    collegeName: r.collegeName,
                     email: r.email,
                     password: r.password,
                     userName: r.userName,
                     totalRank: 1000,
+                    linkedin_url: null,
                     solvedProblemDetails: [],
                     activeDays: [],
-                    googleLoginAccess: false,
+                    ThirdPartyLoginAccess: false,
                     isAdmin: false,
                     profilePictureUrl: "https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk",
                     praticeCourseDetail: {
@@ -299,7 +308,7 @@ router.post("/verify", [
 //           totalRank: 1000,
 //           solvedProblemDetails: [],
 //           activeDays:[],
-//           googleLoginAccess: false,
+//           ThirdPartyLoginAccess: false,
 //           isAdmin: false,
 //           profilePictureUrl:
 //             "https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk",
@@ -347,6 +356,7 @@ router.put("/update/", [
     (0, express_validator_1.body)("age", "Please fill age field").exists(),
     (0, express_validator_1.body)("email", "Please fill email field").exists(),
     (0, express_validator_1.body)("password", "Please fill password field").exists(),
+    (0, express_validator_1.body)("linkedin_url", "Please fill linkedin_url field").exists(),
     (0, express_validator_1.body)("userName", "Please fill userName field").exists(),
     (0, express_validator_1.body)("totalRank", "Please fill totalRank field").exists(),
     (0, express_validator_1.body)("noOfProblemSolved", "Please fill noOfProblemSolved field").exists(),
@@ -358,7 +368,7 @@ router.put("/update/", [
     (0, express_validator_1.body)("state", "Please fill state field").exists(),
     (0, express_validator_1.body)("country", "Please fill country field").exists(),
     (0, express_validator_1.body)("role", "Please fill role field").exists(),
-    (0, express_validator_1.body)("googleLoginAccess", "Please fill googleLoginAccess field").exists(),
+    (0, express_validator_1.body)("ThirdPartyLoginAccess", "Please fill ThirdPartyLoginAccess field").exists(),
     (0, express_validator_1.body)("profilePictureUrl", "Please fill profilePictureUrl field").exists(),
     (0, express_validator_1.body)("activeDays", "Please fill activeDays field").exists(),
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -418,6 +428,9 @@ router.put("/update/", [
         if (req.body.gender) {
             query.gender = req.body.gender;
         }
+        if (req.body.linkedin_url) {
+            query.linkedin_url = req.body.linkedin_url;
+        }
         if (req.body.collegeName) {
             query.collegeName = req.body.collegeName;
         }
@@ -430,8 +443,8 @@ router.put("/update/", [
         if (req.body.isAdmin) {
             query.isAdmin = req.body.isAdmin;
         }
-        if (req.body.googleLoginAccess) {
-            query.googleLoginAccess = req.body.googleLoginAccess;
+        if (req.body.ThirdPartyLoginAccess) {
+            query.ThirdPartyLoginAccess = req.body.ThirdPartyLoginAccess;
         }
         if (req.body.password) {
             let salt = yield bcrypt.genSalt(10);
@@ -587,5 +600,5 @@ router.post("/usernametodata", [(0, express_validator_1.body)("userName", "Pleas
     }
 }));
 router.post("/sendemail", sendEmail_1.default.sendEmail);
-router.post("/googlelogin", GoogleLogin_1.default.googleLogin);
+router.post("/thirdpartylogin", ThirdPartyLogin_1.default.googleLogin);
 module.exports = router;

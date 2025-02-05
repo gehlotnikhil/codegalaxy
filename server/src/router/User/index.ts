@@ -13,7 +13,7 @@ import sendEmail from "./sendEmail";
 const ServerUrl = process.env.ServerUrl || "http://localhost:8000"
 console.log(ServerUrl);
 
-import GoogleLogin from "./GoogleLogin";
+import ThirdPartyLogin from "./ThirdPartyLogin";
 const prisma = new PrismaClient();
 import { faker } from "@faker-js/faker";
 function generateRandomName() {
@@ -40,6 +40,9 @@ function generateOTP(length: number = 6): string {
 router.post(
   "/registeruser",
   [
+    body("name", "Please Enter Your name").exists(),
+    body("age", "Please Enter Your age").exists(),
+    body("collegeName", "Please Enter Your collegeName").exists(),
     body("email", "Please Enter Your Email").exists(),
     body("email", "Enter Valid Email Format").isEmail(),
     body("password", "Please Enter Your Password").exists(),
@@ -50,7 +53,7 @@ router.post(
     const otp = generateOTP(); // Generate OTP
     console.log(`Generated OTP: ${otp}`);
     try {
-      const { email, password, userName } = req.body;
+      const { email, password, userName,name,age,collegeName } = req.body;
 
       // Check for validation errors
       const errors = validationResult(req);
@@ -66,6 +69,10 @@ router.post(
       if (check2) {
         return res.send({ success, msg: "UserName Already Exist" });
       }
+
+
+
+  
       //Main Logic
       //encrypt the password
       let salt = await bcrypt.genSalt(10);
@@ -141,6 +148,9 @@ router.post(
 
           const result = await prisma.emailOtpService.create({
             data: {
+              name:name,
+              age:age,
+              collegeName:collegeName,
               email: email,
               password: hashPassword,
               userName: userName,
@@ -254,25 +264,28 @@ router.post(
       console.log(r?.createdAt);
 
       console.log(Math.abs(Date.now() - new Date(r?.createdAt || "2025-02-03T16:30:00").getTime()) / 1000);
-      // delete otp 
-      const k = await prisma.emailOtpService.deleteMany({ where: { code, email: verifyemail } })
-
+      // delete otp   
+      
       if ((Math.abs(Date.now() - new Date(r?.createdAt || "2025-02-03T16:30:00").getTime()) / 1000) > 60) {
         return res.send({ success, msg: "OTP is Expired" })
       }
       else if (r && r.email && r.password && r.userName) {
+        const k = await prisma.emailOtpService.deleteMany({ where: { code, email: verifyemail } })
         // creating user
         const result = await prisma.user.create({
           data: {
-            name: name,
+            name: r.name,
+            age:r.age,
+            collegeName:r.collegeName,
             email: r.email,
             password: r.password,
-            userName: r.userName,
+            userName: r.userName,  
             totalRank: 1000,
+            linkedin_url:null,
             solvedProblemDetails: [],
             activeDays: [],
 
-            googleLoginAccess: false,
+            ThirdPartyLoginAccess: false,
             isAdmin: false,
             profilePictureUrl:
               "https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk",
@@ -358,7 +371,7 @@ router.post(
 //           solvedProblemDetails: [],
 //           activeDays:[],
 
-//           googleLoginAccess: false,
+//           ThirdPartyLoginAccess: false,
 //           isAdmin: false,
 //           profilePictureUrl:
 //             "https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk",
@@ -412,6 +425,7 @@ router.put(
     body("age", "Please fill age field").exists(),
     body("email", "Please fill email field").exists(),
     body("password", "Please fill password field").exists(),
+    body("linkedin_url", "Please fill linkedin_url field").exists(),
     body("userName", "Please fill userName field").exists(),
     body("totalRank", "Please fill totalRank field").exists(),
     body("noOfProblemSolved", "Please fill noOfProblemSolved field").exists(),
@@ -429,7 +443,7 @@ router.put(
     body("state", "Please fill state field").exists(),
     body("country", "Please fill country field").exists(),
     body("role", "Please fill role field").exists(),
-    body("googleLoginAccess", "Please fill googleLoginAccess field").exists(),
+    body("ThirdPartyLoginAccess", "Please fill ThirdPartyLoginAccess field").exists(),
     body("profilePictureUrl", "Please fill profilePictureUrl field").exists(),
     body("activeDays", "Please fill activeDays field").exists(),
   ],
@@ -495,6 +509,9 @@ router.put(
       if (req.body.gender) {
         query.gender = req.body.gender;
       }
+      if (req.body.linkedin_url) {
+        query.linkedin_url = req.body.linkedin_url;
+      }
       if (req.body.collegeName) {
         query.collegeName = req.body.collegeName;
       }
@@ -503,12 +520,12 @@ router.put(
       }
       if (req.body.state) {
         query.state = req.body.state;
-      }
+      } 
       if (req.body.isAdmin) {
         query.isAdmin = req.body.isAdmin;
       }
-      if (req.body.googleLoginAccess) {
-        query.googleLoginAccess = req.body.googleLoginAccess;
+      if (req.body.ThirdPartyLoginAccess) {
+        query.ThirdPartyLoginAccess = req.body.ThirdPartyLoginAccess;
       }
       if (req.body.password) {
         let salt = await bcrypt.genSalt(10);
@@ -699,6 +716,6 @@ router.post(
 
 
 router.post("/sendemail", sendEmail.sendEmail);
-router.post("/googlelogin", GoogleLogin.googleLogin);
+router.post("/thirdpartylogin", ThirdPartyLogin.googleLogin);
 
 module.exports = router;

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import CodeEditor from "./CodeEditor";
 import TestStatus from "./TestBox";
-import spinner from '../assets/tube-spinner.svg';
+import spinner from "../assets/tube-spinner.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThumbsUp, faThumbsDown } from "@fortawesome/free-solid-svg-icons";
 import { faTag, faBuilding } from "@fortawesome/free-solid-svg-icons";
@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import { RootStateType } from "../store";
 import { useDispatch } from "react-redux";
 import { setUserDetail } from "../store/slice/UserDetailSlice";
+import CustomTestCase from "./CustomTestCase";
 const ProblemPage: React.FC = () => {
   const dispatch = useDispatch();
   const userDetail = useSelector((state: RootStateType) => state.userDetail);
@@ -218,10 +219,10 @@ const ProblemPage: React.FC = () => {
       ),
     },
   ];
-    const [spinnerStatus, setspinnerStatus] = useState<boolean>(false)
-    useEffect(() => {
-      console.log(spinnerStatus);
-    }, [spinnerStatus])
+  const [spinnerStatus, setspinnerStatus] = useState<boolean>(false);
+  useEffect(() => {
+    console.log(spinnerStatus);
+  }, [spinnerStatus]);
 
   useEffect(() => {
     console.log("day - ", getDayOfYear());
@@ -309,9 +310,10 @@ const ProblemPage: React.FC = () => {
           ...MainQuestion,
           accepted,
           submission,
-
         });
-        dispatch(setUserDetail({solvedProblemDetails:updatedSolvedProblems}))
+        dispatch(
+          setUserDetail({ solvedProblemDetails: updatedSolvedProblems })
+        );
       }
     } catch (error) {
       console.error("Error updating submission status:", error);
@@ -319,7 +321,7 @@ const ProblemPage: React.FC = () => {
   };
 
   const handleRunCode = async () => {
-    setspinnerStatus(true)
+    setspinnerStatus(true);
     const testcases = MainQuestion.testcases ? MainQuestion.testcases : [];
     const aboveCodeTemplate = MainQuestion.aboveCodeTemplate
       ? MainQuestion.aboveCodeTemplate[SelectedLanguage]
@@ -403,7 +405,7 @@ const ProblemPage: React.FC = () => {
         })
       );
     }
-    setspinnerStatus(false)
+    setspinnerStatus(false);
   };
 
   const toggleQuestionInfo = (
@@ -414,6 +416,13 @@ const ProblemPage: React.FC = () => {
       [QuestionInfoKey]: !prevState[QuestionInfoKey],
     }));
   };
+
+  const [ShowResultTestCase, setShowResultTestCase] = useState(false);
+  useEffect(() => {
+    console.log(ShowResultTestCase);
+  }, [ShowResultTestCase]);
+
+  const handleCustomTestCode = () => {};
 
   return (
     <>
@@ -577,18 +586,148 @@ const ProblemPage: React.FC = () => {
             renderValidationDecorations={"on"}
             handleEditorChange={handleCodeChange}
             CodeOfEditor={code}
-            height={"100%"}
+            height={"40vh"}
             defaultLanguage={SelectedLanguage}
             readOnly={false}
             fontSize={16}
             style={styles.codeEditor}
           />
           <div style={styles.actionButtons}>
-            <button  disabled={spinnerStatus}   onClick={() => handleRunCode()} style={styles.submitButton}>
-              Submit <img className={`d-${spinnerStatus?"inline":"none"}`} src={spinner} height={"22px"} width={"22px"}/>
+            <button
+              onClick={() => handleCustomTestCode()}
+              style={{...styles.submitButton}}
+              className="runbtn"
+            >
+              <svg
+                aria-hidden="true"
+                focusable="false"
+                data-prefix="fas"
+                data-icon="play"
+                className="svg-inline--fa fa-play absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                role="img"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 384 512"
+              >
+                <path
+                  fill="currentColor"
+                  d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"
+                ></path>
+              </svg>{" "} Run
+              <img
+                className={`d-${spinnerStatus ? "inline" : "none"}`}
+                src={spinner}
+                height={"22px"}
+                width={"22px"}
+              />
+            </button>
+            <button
+              disabled={spinnerStatus}
+              onClick={() => handleRunCode()}
+              style={{...styles.submitButton}}
+              className="runbtn"
+            >
+              <svg
+                aria-hidden="true"
+                focusable="false"
+                data-prefix="far"
+                data-icon="cloud-arrow-up"
+                className="svg-inline--fa fa-cloud-arrow-up absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                role="img"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 640 512"
+                style={{fontSize:"1.1rem"}}
+              >
+                <path
+                  fill="currentColor"
+                  d="M354.9 121.7c13.8 16 36.5 21.1 55.9 12.5c8.9-3.9 18.7-6.2 29.2-6.2c39.8 0 72 32.2 72 72c0 4-.3 7.9-.9 11.7c-3.5 21.6 8.1 42.9 28.1 51.7C570.4 276.9 592 308 592 344c0 46.8-36.6 85.2-82.8 87.8c-.6 0-1.3 .1-1.9 .2H504 144c-53 0-96-43-96-96c0-41.7 26.6-77.3 64-90.5c19.2-6.8 32-24.9 32-45.3l0-.2v0 0c0-66.3 53.7-120 120-120c36.3 0 68.8 16.1 90.9 41.7zM512 480v-.2c71.4-4.1 128-63.3 128-135.8c0-55.7-33.5-103.7-81.5-124.7c1-6.3 1.5-12.8 1.5-19.3c0-66.3-53.7-120-120-120c-17.4 0-33.8 3.7-48.7 10.3C360.4 54.6 314.9 32 264 32C171.2 32 96 107.2 96 200l0 .2C40.1 220 0 273.3 0 336c0 79.5 64.5 144 144 144H464h40 8zM223 255c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V384c0 13.3 10.7 24 24 24s24-10.7 24-24V249.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z"
+                ></path>
+              </svg>
+              {" "} Submit
+              <img
+                className={`d-${spinnerStatus ? "inline" : "none"}`}
+                src={spinner}
+                height={"22px"}
+                width={"22px"}
+              />
             </button>
           </div>
           <TestStatus tests={ResultOfTest} />
+          <div className="container mt-3">
+            <div className="card">
+              <div className="card-header bg-dark text-light d-flex justify-content-between">
+                <span>Result</span>
+                <span className="">
+                  <svg
+                    className={`d-${ShowResultTestCase ? "inline" : "none"}`}
+                    width="25"
+                    height="25"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    onClick={() => setShowResultTestCase(false)}
+                  >
+                    <rect width="24" height="24" rx="4" fill="#333" />
+                    <path
+                      d="M6 15l6-6 6 6"
+                      stroke="gray"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <svg
+                    className={`d-${!ShowResultTestCase ? "inline" : "none"}`}
+                    width="25"
+                    height="25"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    onClick={() => setShowResultTestCase(true)}
+                  >
+                    <rect width="24" height="24" rx="4" fill="#333" />
+                    <path
+                      d="M6 9l6 6 6-6"
+                      stroke="gray"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </span>
+              </div>
+              <div
+                className={`card-body d-${
+                  ShowResultTestCase ? "block" : "none"
+                }`}
+              >
+                <div className="mt-3">
+                  <label className="form-label">Input</label>
+                  <textarea
+                    className="form-control"
+                    rows={1}
+                    disabled
+                  ></textarea>
+                </div>
+                <div className="mt-3">
+                  <label className="form-label">Output</label>
+                  <textarea
+                    className="form-control"
+                    rows={1}
+                    disabled
+                  ></textarea>
+                </div>
+                <div className="mt-3">
+                  <label className="form-label">Expected Output</label>
+                  <textarea
+                    className="form-control"
+                    rows={1}
+                    disabled
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+          <CustomTestCase />
         </div>
       </div>
     </>
@@ -687,7 +826,7 @@ const styles = {
   },
   submitButton: {
     padding: "10px 20px",
-    backgroundColor: "#007bff",
+    backgroundColor: "rgb(14 114 221)",
     color: "#ffffff",
     border: "none",
     borderRadius: "4px",
