@@ -50,9 +50,11 @@ function Admin() {
     belowCodeTemplate:CodeTemplate;
     middleCode:CodeTemplate;
     
+
   }
 
   const initialModelFieldData = {
+
 
     problemNo: null,
     contestNo: null,
@@ -72,6 +74,8 @@ function Admin() {
     aboveCodeTemplate:null,
     belowCodeTemplate:null,
     middleCode:null
+
+   
 
   };
   const [ModalFieldData, setModalFieldData] = useState(initialModelFieldData);
@@ -96,6 +100,7 @@ function Admin() {
     aboveCodeTemplate:false,
     belowCodeTemplate:false,
     middleCode:false
+  
   };
   const [DisplayField, setDisplayField] = useState(initialDisplayValue);
   const handleChangeModelHeading = (e: string): any => {
