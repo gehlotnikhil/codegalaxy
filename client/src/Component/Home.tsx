@@ -1,7 +1,7 @@
 import Hero from "./Hero";
 import PraticeCourse from "./PraticeCourse";
 import Problem from "./Problem";
-import img from "../assets/img6.jpg"
+import img from "../assets/img6.webp"
 
 function Home() {
   return (

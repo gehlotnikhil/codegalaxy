@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import img from "../assets/img7.jpg";
+import img from "../assets/img7.jfif";
 import { useNavigate } from "react-router";
 import MainContext from "../context/main";
 import { toast } from "react-toastify";

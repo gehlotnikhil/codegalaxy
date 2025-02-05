@@ -13,7 +13,6 @@ import { useSelector } from "react-redux";
 import { RootStateType } from "../store";
 import { useDispatch } from "react-redux";
 import { setUserDetail } from "../store/slice/UserDetailSlice";
-import CustomTestCase from "./CustomTestCase";
 const ProblemPage: React.FC = () => {
   const dispatch = useDispatch();
   const userDetail = useSelector((state: RootStateType) => state.userDetail);
@@ -61,6 +60,14 @@ const ProblemPage: React.FC = () => {
   const context = useContext(MainContext);
   const { SERVER_URL } = context;
   const param = useParams<{ problemid: string }>();
+  const [showCustomTestCase, setshowCustomTestCase] = useState(false)
+  useEffect(() => {
+    
+  console.log(showCustomTestCase);
+  
+
+  }, [showCustomTestCase])
+  
   const navigate = useNavigate();
   const [LikeChoice, setLikeChoice] = useState(0);
   useEffect(() => {
@@ -173,6 +180,15 @@ const ProblemPage: React.FC = () => {
   interface TestResult {
     isSuccess?: "pass" | "failed" | "pending";
   }
+  const [DisplaySubmitCodeResult, setDisplaySubmitCodeResult] = useState({
+    input:"",
+    output:"",
+    expected:""
+  })
+  useEffect(() => {
+    console.log("DisplaySubmitCodeResult-",DisplaySubmitCodeResult);
+  }, [DisplaySubmitCodeResult])
+  
   const [ResultOfTest, setResultOfTest] = useState<TestResult[]>([]);
   const [QuestionStatus, setQuestionStatus] = useState(false);
   const constraints = MainQuestion.constraint;
@@ -334,18 +350,32 @@ const ProblemPage: React.FC = () => {
         return { isSuccess: "pending" };
       })
     );
-
+    let output = ""
+    console.log("codetesting----", code, "-----", MainQuestion.middleCode, "----", MainQuestion.middleCode && code === MainQuestion.middleCode[SelectedLanguage]);
+if(MainQuestion.middleCode && code === MainQuestion.middleCode[SelectedLanguage]){
+  toast.error("Empty Code Not Accepted")
+  setshowCustomTestCase(false)
+  setShowResultTestCase(true)
+  setspinnerStatus(false);
+  return
+}    
     const data = {
       code: aboveCodeTemplate + code + belowCodeTemplate,
       language: SelectedLanguage,
       testcases: MainQuestion.testcases,
     };
+    setDisplaySubmitCodeResult({
+      input:"",
+      output:"",
+      expected:""
+    })
+    
     try {
       console.log("data send--", data);
       let jsondata = await handleCodeExecution(data);
-
+      let updateresult:any=""
       if (!userDetail.activeDays.includes(getDayOfYear())) {
-        const updateresult = await fetch(`${SERVER_URL}/api/user/update/`, {
+        updateresult = await fetch(`${SERVER_URL}/api/user/update/`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -355,9 +385,7 @@ const ProblemPage: React.FC = () => {
             activeDays: [...userDetail.activeDays, getDayOfYear()],
           }),
         });
-        const jsondata2 = await updateresult.json();
-        console.log("ppppppp-----", jsondata2);
-
+        const jsondata2 = await updateresult.json();   
         if (jsondata2.success) {
           dispatch(
             setUserDetail({
@@ -366,8 +394,13 @@ const ProblemPage: React.FC = () => {
           );
         }
       }
-
+      
       console.log(jsondata);
+      console.log("qwqwqqwq---",jsondata);
+      console.log("qwqwqqwq---",jsondata.output);
+      console.log("qwqwqqwq---",typeof jsondata.output);
+      output=String(jsondata.output)
+      
       let finalMsg = false;
       if (jsondata.success) {
         finalMsg = true;
@@ -405,6 +438,12 @@ const ProblemPage: React.FC = () => {
         })
       );
     }
+    MainQuestion.testcases?.map((value)=>{
+      console.log(value," - - ",value.input," - - ",typeof value ," - ",typeof value.input);
+      setDisplaySubmitCodeResult({...DisplaySubmitCodeResult,input:String(value.input),output:String(output),expected:String(value.output)})
+    })
+    setshowCustomTestCase(false)
+    setShowResultTestCase(true)
     setspinnerStatus(false);
   };
 
@@ -704,15 +743,17 @@ const ProblemPage: React.FC = () => {
                   <label className="form-label">Input</label>
                   <textarea
                     className="form-control"
-                    rows={1}
+                    rows={2}
                     disabled
+                    value={DisplaySubmitCodeResult.input}
                   ></textarea>
                 </div>
                 <div className="mt-3">
                   <label className="form-label">Output</label>
                   <textarea
                     className="form-control"
-                    rows={1}
+                    rows={2}
+                    value={DisplaySubmitCodeResult.output}
                     disabled
                   ></textarea>
                 </div>
@@ -720,15 +761,82 @@ const ProblemPage: React.FC = () => {
                   <label className="form-label">Expected Output</label>
                   <textarea
                     className="form-control"
-                    rows={1}
+                    rows={2}
                     disabled
+                    value={DisplaySubmitCodeResult.expected}
                   ></textarea>
                 </div>
               </div>
             </div>
           </div>
-          <CustomTestCase />
-        </div>
+          <div className="container mt-3">
+            <div className="card">
+              <div className="card-header bg-dark text-light d-flex justify-content-between">
+                <span>Custom Testcase</span>
+                <span className="" >
+                  <svg
+                  className={`d-${showCustomTestCase?"inline":"none"}`}
+                    width="25"
+                    height="25"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    onClick={()=>setshowCustomTestCase(false)}>
+                    <rect width="24" height="24" rx="4" fill="#333" />
+                    <path
+                      d="M6 15l6-6 6 6"
+                      stroke="gray"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <svg
+                    className={`d-${!showCustomTestCase?"inline":"none"}`}
+                    width="25"
+                    height="25"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    onClick={()=>setshowCustomTestCase(true)}>
+                    <rect width="24" height="24" rx="4" fill="#333" />
+                    <path
+                      d="M6 9l6 6 6-6"
+                      stroke="gray"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </span>
+              </div>
+              <div className={`card-body d-${showCustomTestCase?"block":"none"}`} >
+                <div className="mt-3">
+                  <label className="form-label">Input</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                  />
+                </div>
+                <div className="mt-3">
+                  <label className="form-label">Output</label>
+                  <textarea
+                    className="form-control"
+                    disabled
+                  ></textarea>
+                </div>
+                <div className="mt-3">
+                  <label className="form-label">Expected Output</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    disabled
+                  />
+                </div>
+              </div>
+              </div>
+              </div>
+            </div>
       </div>
     </>
   );
