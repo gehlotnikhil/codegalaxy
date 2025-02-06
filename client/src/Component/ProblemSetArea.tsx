@@ -590,7 +590,7 @@ const ProblemPage: React.FC = () => {
       let finalMsg = false;
       if (jsondata_user.success ) {
         finalMsg = true;
-        if (finalMsg === true && (jsondata_user.output).trim()===(jsondata.output).trim()) {
+        if (finalMsg === true && (jsondata_user.output)===(jsondata.output)) {
           toast.success("Passed");
         } else {
           toast.error("Failed");

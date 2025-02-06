@@ -186,26 +186,30 @@ router.post(
 router.post(
   "/resendotpcode",
   [ 
-    body("verifyemail", "Please Enter Your email").exists(),
+    body("email", "Please Enter Your email").exists(),
   ],
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
 
     try {
       const { email } = req.body;
-
+      console.log("resend code -- -  ",email);
+      
       const result1 = await prisma.emailOtpService.findFirst({ where: { email } })
       if (!result1) {
         return res.send({ success, msg: "Register Again..." })
       }
       await prisma.emailOtpService.deleteMany({ where: { email } })
-
+      
       const response = await axios.post(
         `${ServerUrl}/api/user/registeruser`,
         {
           email: email,
           password: result1.password,
-          userName: result1.userName
+          userName: result1.userName,
+          name:result1.name,
+          collegeName:result1.collegeName,
+          age:result1.age
         },
         {
           headers: {
@@ -217,12 +221,12 @@ router.post(
         return res.send({success,msg:"Internal Server Error in Creating OTP"})
       }
       const data = response.data.result;
-
+      
       console.log(data);
-
+      
       success = true;
       return res.send({ success, msg: "Resend Code", result: data }); // Sending the user object as response
-
+         
     } catch (error) {
       console.error("Error during user creation:", error);
       return res.status(500).send({ success, error, msg: "Internal Server Error" });
@@ -248,6 +252,7 @@ router.post(
       const { code, verifyemail } = req.body;
 
       // Check for validation errors
+            
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).send({ success, error: errors.array(), msg: "Missing Parameter" });

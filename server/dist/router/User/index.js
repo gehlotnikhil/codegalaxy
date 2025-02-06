@@ -157,11 +157,12 @@ router.post("/registeruser", [
     }
 }));
 router.post("/resendotpcode", [
-    (0, express_validator_1.body)("verifyemail", "Please Enter Your email").exists(),
+    (0, express_validator_1.body)("email", "Please Enter Your email").exists(),
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
         const { email } = req.body;
+        console.log("resend code -- -  ", email);
         const result1 = yield prisma.emailOtpService.findFirst({ where: { email } });
         if (!result1) {
             return res.send({ success, msg: "Register Again..." });
@@ -170,7 +171,10 @@ router.post("/resendotpcode", [
         const response = yield axios.post(`${ServerUrl}/api/user/registeruser`, {
             email: email,
             password: result1.password,
-            userName: result1.userName
+            userName: result1.userName,
+            name: result1.name,
+            collegeName: result1.collegeName,
+            age: result1.age
         }, {
             headers: {
                 "Content-Type": "application/json",
