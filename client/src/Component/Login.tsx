@@ -138,6 +138,7 @@ function Login() {
               />
               <p className="error-message">{errors.email?.message}</p>
             </div>
+           
             <div className="form-group">
               <input
                 type="password"
@@ -146,6 +147,9 @@ function Login() {
                 className={errors.password ? "error" : ""}
               />
               <p className="error-message">{errors.password?.message}</p>
+            </div>
+            <div style={{display:"flex",flexDirection:"row",justifyContent:"right"}}>
+              <p style={{color:"blue",fontSize:"0.7rem",cursor:"pointer"}} onClick={()=>{navigate("/forget-password")}}>Forget Password ?</p>
             </div>
 
             <button

@@ -16,8 +16,7 @@ const OTPVerification: React.FC = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [verifyemail, setVerifyEmail] = useState("");
   const [status, setStatus] = useState(false);
-  const [timeLimit, setTimeLimit] = useState(0);
-
+  
   useEffect(() => {
     const email = localStorage.getItem("verifyemail") || "";
     setVerifyEmail(email);
@@ -29,7 +28,8 @@ const OTPVerification: React.FC = () => {
   useEffect(() => {
     if (status) navigate("/");
   }, [status]);
-
+  
+  const [timeLimit, setTimeLimit] = useState(0);
   useEffect(() => {
     if (timeLimit > 0) {
       const timer = setInterval(() => {
@@ -49,7 +49,9 @@ const OTPVerification: React.FC = () => {
 
   const handleVerifyOtp = async (e: any) => {
     e.preventDefault();
-    try {
+
+     try {
+
       const code = Number(otp.join(""));
       const response = await fetch(`${SERVER_URL}/api/user/verify`, {
         method: "POST",

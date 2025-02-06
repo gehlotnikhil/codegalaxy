@@ -171,3 +171,9 @@ model EmailOtpService {
   code        Int
   createdAt   DateTime @default(now())
 }
+model NormalOtpService {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  email String
+  code        Int
+  createdAt   DateTime @default(now())
+}

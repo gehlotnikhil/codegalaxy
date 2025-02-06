@@ -30,6 +30,7 @@ import LoadingComponent from "./Component/Loading";
 import PraticeCourseArena from "./Component/PraticeCourseArena";
 import SolvedPraticeProblem from "./Component/SolvedPraticeProblem";
 import OTPVerification from "./Component/OTPVerification";
+import ForgetPassword from "./Component/ForgetPassword";
 interface ProtectedRouteProps {
   children: React.ReactNode;
 } 
@@ -230,6 +231,14 @@ function App() {
               element={
                 // <ProtectedRoute>
                   <Login />
+                // </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/forget-password"
+              element={
+                // <ProtectedRoute>
+                  <ForgetPassword />
                 // </ProtectedRoute>
               }
             />
