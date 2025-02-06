@@ -19,7 +19,6 @@ const UserFunctions_1 = __importDefault(require("../lib/UserFunctions"));
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const router = (0, express_1.Router)();
-const axios = require("axios");
 const sendEmail_1 = __importDefault(require("./sendEmail"));
 const ServerUrl = process.env.ServerUrl || "http://localhost:8000";
 console.log(ServerUrl);
@@ -168,22 +167,25 @@ router.post("/resendotpcode", [
             return res.send({ success, msg: "Register Again..." });
         }
         yield prisma.emailOtpService.deleteMany({ where: { email } });
-        const response = yield axios.post(`${ServerUrl}/api/user/registeruser`, {
-            email: email,
-            password: result1.password,
-            userName: result1.userName,
-            name: result1.name,
-            collegeName: result1.collegeName,
-            age: result1.age
-        }, {
+        const response = yield fetch(`${ServerUrl}/api/user/registeruser`, {
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
+            body: JSON.stringify({
+                email: email,
+                password: result1.password,
+                userName: result1.userName,
+                name: result1.name,
+                collegeName: result1.collegeName,
+                age: result1.age
+            })
         });
-        if (!response.data.success) {
+        const getresult = yield response.json();
+        if (!getresult.success) {
             return res.send({ success, msg: "Internal Server Error in Creating OTP" });
         }
-        const data = response.data.result;
+        const data = getresult.result;
         console.log(data);
         success = true;
         return res.send({ success, msg: "Resend Code", result: data }); // Sending the user object as response
@@ -378,12 +380,14 @@ router.put("/update/", [
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
-        const response = yield axios.post(`${ServerUrl}/api/user/tokentodata`, { token: req.body.token }, {
+        const response = yield fetch(`${ServerUrl}/api/user/tokentodata`, {
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
+            body: JSON.stringify({ token: req.body.token })
         });
-        const userDetails = response.data;
+        const userDetails = yield response.json();
         if (userDetails.success === false) {
             return res.send({
                 success,
@@ -477,7 +481,7 @@ router.put("/update/", [
     }
 }));
 router.post("/login", [
-    (0, express_validator_1.body)("email", "Please neter your email").exists(),
+    (0, express_validator_1.body)("email", "Please enter your email").exists(),
     (0, express_validator_1.body)("password", "Please enter your password"),
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;

@@ -59,15 +59,18 @@ const execute = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 versionIndex,
             };
             console.log("io---", payload);
-            let e = yield axios.post(url, payload, {
+            let e = yield fetch(url, {
+                method: "POST",
                 headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
             });
-            console.log("Output:", e.data.output);
-            console.log("Execution Time:", e.data.cpuTime, "seconds");
-            console.log("Error:", e.data.error);
-            output.push(e.data.output);
-            cpuTime.push(e.data.cpuTime);
-            err.push(e.data.error);
+            const res = yield e.json();
+            console.log("Output:", res.output);
+            console.log("Execution Time:", res.cpuTime, "seconds");
+            console.log("Error:", res.error);
+            output.push(res.output);
+            cpuTime.push(res.cpuTime);
+            err.push(res.error);
             if (testcases.length === 1 && testcases[0].output === "") {
                 success = true;
                 return res.send({
@@ -78,7 +81,7 @@ const execute = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     executionTime: cpuTime,
                 });
             }
-            if (e.data.output === testcases[i].output) {
+            if (res.output === testcases[i].output) {
                 result.push(true);
             }
             else {

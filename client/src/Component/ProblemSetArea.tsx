@@ -863,9 +863,9 @@ const ProblemPage: React.FC = () => {
                     <path
                       d="M6 15l6-6 6 6"
                       stroke="gray"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
                   </svg>
                   <svg
@@ -881,9 +881,9 @@ const ProblemPage: React.FC = () => {
                     <path
                       d="M6 9l6 6 6-6"
                       stroke="gray"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
                   </svg>
                 </span>
@@ -941,9 +941,9 @@ const ProblemPage: React.FC = () => {
                     <path
                       d="M6 15l6-6 6 6"
                       stroke="gray"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
                   </svg>
                   <svg
@@ -959,9 +959,9 @@ const ProblemPage: React.FC = () => {
                     <path
                       d="M6 9l6 6 6-6"
                       stroke="gray"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
                   </svg>
                 </span>

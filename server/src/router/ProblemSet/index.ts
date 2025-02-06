@@ -2,7 +2,6 @@ import { Request, Response, Router } from "express";
 import { body, validationResult } from "express-validator";
 import executeproblem from "./ExecuteProblem";
 import { PrismaClient } from "@prisma/client";
-import axios from "axios";
 const prisma = new PrismaClient();
 const ServerUrl = process.env.ServerUrl || "http://localhost:8000"
 console.log(ServerUrl);
@@ -407,11 +406,13 @@ router.post("/getproblemdetails/:pageno?", async (req: Request, res: Response): 
       return res.status(400).send({ success, msg: "Token is required" });
     }
 
-    const response = await axios.post(`${ServerUrl}/api/user/tokentodata`, { token: (token || "") }, {
+    const response = await fetch(`${ServerUrl}/api/user/tokentodata`, {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
+      body:JSON.stringify( { token: (token || "") })
     });
 
-    const data = response.data;
+    const data = await response.json();
     console.log(data.success);
     console.log(data.result);
     if (!data.success) {
@@ -466,14 +467,17 @@ router.post("/getpraticeproblemdetails", async (req: Request, res: Response): Pr
       return res.status(400).json({ success: false, msg: "Token is required" });
     }
 
-    const { data } = await axios.post(`${ServerUrl}/api/user/tokentodata`, { token }, {
+    const res1 = await fetch(`${ServerUrl}/api/user/tokentodata`, {
+      method:"POST",
       headers: { "Content-Type": "application/json" },
+      body:JSON.stringify({ token })
     });
+    const getresult = await res1.json()
 
-    if (!data.success) {
+    if (!getresult.success) {
       return res.status(401).json({ success: false, msg: "Invalid token" });
     }
-    console.log("-------",data.result);
+    console.log("-------",getresult.result);
     
 
     const allProblems = await prisma.praticeProblem.findMany({ select: { language: true } });
@@ -487,18 +491,23 @@ router.post("/getpraticeproblemdetails", async (req: Request, res: Response): Pr
       select: { id: true, problemName: true, language: true },
     });
 
-    const solvedProblems = new Set(data.result.praticeCourseDetail[language]?.solvedProblemDetails || []);
+    const solvedProblems = new Set(getresult.result.praticeCourseDetail[language]?.solvedProblemDetails || []);
     const formattedProblems = problems.map((problem) => ({
       ...problem,
       status: solvedProblems.has(problem.id) ? "SOLVED" : "UNSOLVED",
     }));
 
-    const response = await axios.get(`${ServerUrl}/api/user/getalluser`)
-    console.log("d--",response.data.result);
+    const response = await fetch(`${ServerUrl}/api/user/getalluser`,{
+      method:"GET",
+      headers: { "Content-Type": "application/json" },
+
+    })
+    const getresult1 = await response.json()
+    console.log("d--",getresult1.result);
     let c = 0
     let totalNoOfUserReviewGiven=0;
     let AccumulatedReview=0
-    response.data.result.map((user:any)=>{
+    getresult1.result.map((user:any)=>{
       if(user.praticeCourseDetail?.[language].review >0){
         AccumulatedReview+= user.praticeCourseDetail?.[language].review
         totalNoOfUserReviewGiven++;
@@ -506,14 +515,11 @@ router.post("/getpraticeproblemdetails", async (req: Request, res: Response): Pr
       if(user.praticeCourseDetail?.[language].participated) c++;
 
     })
-
-
-
       let finalReviewRating = (AccumulatedReview/totalNoOfUserReviewGiven).toFixed(1)
 
 
     
-    res.json({ success: true, result: formattedProblems, totalCount: formattedProblems.length, entireCount ,praticeCourseDetail:data.result.praticeCourseDetail,learner:c,finalReviewRating,totalNoOfUserReviewGiven});
+    res.json({ success: true, result: formattedProblems, totalCount: formattedProblems.length, entireCount ,praticeCourseDetail:getresult1.result.praticeCourseDetail,learner:c,finalReviewRating,totalNoOfUserReviewGiven});
     // res.json({ test:finalReviewRating});
   } catch (error) {
     console.error("Error fetching practice problem details:", error);
@@ -545,14 +551,16 @@ router.post(
           return res.status(400).send({ success: false, msg: "Token is required" });
         }
 
-        const response = await axios.post(`${ServerUrl}/api/user/tokentodata`, { token: (token || "") }, {
+        const response = await fetch(`${ServerUrl}/api/user/tokentodata`, {
+          method:"POST",
           headers: { "Content-Type": "application/json" },
+          body:JSON.stringify({ token: (token || "") })
         });
-
-        if (!response.data.success) {
+        const getresult2 = await response.json()
+        if (!getresult2.success) {
           return res.status(401).send({ success, msg: "Invalid token" });
         }
-        const data = response.data;
+        const data = getresult2;
         console.log("data-success:", data);
         console.log(data.result);
 
@@ -609,14 +617,16 @@ router.post(
       if (result === null) {
         return res.send({ success, result });
       }
-      const response = await axios.post(`${ServerUrl}/api/user/tokentodata`, { token: (token || "") }, {
+      const response = await fetch(`${ServerUrl}/api/user/tokentodata`, {
+        method:"POST",
         headers: { "Content-Type": "application/json" },
+        body:JSON.stringify({ token: (token || "") })
       });
-
-      if (!response.data.success) {
+      const getresult3 = await response.json()
+      if (!getresult3.success) {
         return res.status(401).send({ success, msg: "Invalid token" });
       }
-      const data = response.data;
+      const data = getresult3;
       console.log("data-success:", data);
       console.log(data.result);
 

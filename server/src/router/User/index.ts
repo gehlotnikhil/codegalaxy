@@ -5,7 +5,6 @@ import UserFunctions from "../lib/UserFunctions";
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const router = Router();
-const axios = require("axios");
 import sendEmail from "./sendEmail";
 
 
@@ -53,7 +52,7 @@ router.post(
     const otp = generateOTP(); // Generate OTP
     console.log(`Generated OTP: ${otp}`);
     try {
-      const { email, password, userName,name,age,collegeName } = req.body;
+      const { email, password, userName, name, age, collegeName } = req.body;
 
       // Check for validation errors
       const errors = validationResult(req);
@@ -72,7 +71,7 @@ router.post(
 
 
 
-  
+
       //Main Logic
       //encrypt the password
       let salt = await bcrypt.genSalt(10);
@@ -148,9 +147,9 @@ router.post(
 
           const result = await prisma.emailOtpService.create({
             data: {
-              name:name,
-              age:age,
-              collegeName:collegeName,
+              name: name,
+              age: age,
+              collegeName: collegeName,
               email: email,
               password: hashPassword,
               userName: userName,
@@ -177,7 +176,7 @@ router.post(
       console.error("Error during otp operation:", error);
       res.status(500).send({ success, error, msg: "Internal Server Error-" });
     }
-  } 
+  }
 );
 
 
@@ -185,7 +184,7 @@ router.post(
 
 router.post(
   "/resendotpcode",
-  [ 
+  [
     body("email", "Please Enter Your email").exists(),
   ],
   async (req: Request, res: Response): Promise<any> => {
@@ -193,40 +192,43 @@ router.post(
 
     try {
       const { email } = req.body;
-      console.log("resend code -- -  ",email);
-      
+      console.log("resend code -- -  ", email);
+
       const result1 = await prisma.emailOtpService.findFirst({ where: { email } })
       if (!result1) {
         return res.send({ success, msg: "Register Again..." })
       }
       await prisma.emailOtpService.deleteMany({ where: { email } })
-      
-      const response = await axios.post(
+
+      const response = await fetch(
         `${ServerUrl}/api/user/registeruser`,
+        
         {
-          email: email,
-          password: result1.password,
-          userName: result1.userName,
-          name:result1.name,
-          collegeName:result1.collegeName,
-          age:result1.age
-        },
-        {
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
+          body:JSON.stringify({
+            email: email,
+            password: result1.password,
+            userName: result1.userName,
+            name: result1.name,
+            collegeName: result1.collegeName,
+            age: result1.age
+          })
         }
       );
-      if(!response.data.success){
-        return res.send({success,msg:"Internal Server Error in Creating OTP"})
+      const getresult = await response.json()
+      if (!getresult.success) {
+        return res.send({ success, msg: "Internal Server Error in Creating OTP" })
       }
-      const data = response.data.result;
-      
+      const data = getresult.result;
+
       console.log(data);
-      
+
       success = true;
       return res.send({ success, msg: "Resend Code", result: data }); // Sending the user object as response
-         
+
     } catch (error) {
       console.error("Error during user creation:", error);
       return res.status(500).send({ success, error, msg: "Internal Server Error" });
@@ -252,7 +254,7 @@ router.post(
       const { code, verifyemail } = req.body;
 
       // Check for validation errors
-            
+
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).send({ success, error: errors.array(), msg: "Missing Parameter" });
@@ -270,7 +272,7 @@ router.post(
 
       console.log(Math.abs(Date.now() - new Date(r?.createdAt || "2025-02-03T16:30:00").getTime()) / 1000);
       // delete otp   
-      
+
       if ((Math.abs(Date.now() - new Date(r?.createdAt || "2025-02-03T16:30:00").getTime()) / 1000) > 60) {
         return res.send({ success, msg: "OTP is Expired" })
       }
@@ -280,13 +282,13 @@ router.post(
         const result = await prisma.user.create({
           data: {
             name: r.name,
-            age:r.age,
-            collegeName:r.collegeName,
+            age: r.age,
+            collegeName: r.collegeName,
             email: r.email,
             password: r.password,
-            userName: r.userName,  
+            userName: r.userName,
             totalRank: 1000,
-            linkedin_url:null,
+            linkedin_url: null,
             solvedProblemDetails: [],
             activeDays: [],
 
@@ -455,16 +457,18 @@ router.put(
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
     try {
-      const response = await axios.post(
+      const response = await fetch(
         `${ServerUrl}/api/user/tokentodata`,
-        { token: req.body.token },
         {
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
+          body: JSON.stringify({ token: req.body.token })
         }
       );
-      const userDetails = response.data;
+
+      const userDetails = await response.json();
       if (userDetails.success === false) {
         return res.send({
           success,
@@ -525,7 +529,7 @@ router.put(
       }
       if (req.body.state) {
         query.state = req.body.state;
-      } 
+      }
       if (req.body.isAdmin) {
         query.isAdmin = req.body.isAdmin;
       }
@@ -568,7 +572,7 @@ router.put(
 router.post(
   "/login",
   [
-    body("email", "Please neter your email").exists(),
+    body("email", "Please enter your email").exists(),
     body("password", "Please enter your password"),
   ],
   async (req: Request, res: Response): Promise<any> => {
