@@ -144,6 +144,7 @@ model ProblemSet {
   aboveCodeTemplate CodeTemplateType
   belowCodeTemplate CodeTemplateType
   middleCode        CodeTemplateType
+  correctMiddleCode CodeTemplateType
 }
 
 model PraticeProblem {

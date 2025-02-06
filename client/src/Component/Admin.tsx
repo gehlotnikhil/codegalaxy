@@ -49,6 +49,7 @@ function Admin() {
     aboveCodeTemplate:CodeTemplate;
     belowCodeTemplate:CodeTemplate;
     middleCode:CodeTemplate;
+    correctMiddleCode:CodeTemplate;
     
 
   }
@@ -73,7 +74,8 @@ function Admin() {
     sampleInputOutput: null,
     aboveCodeTemplate:null,
     belowCodeTemplate:null,
-    middleCode:null
+    middleCode:null,
+    correctMiddleCode:null
 
    
 
@@ -99,7 +101,8 @@ function Admin() {
     sampleInputOutput: false,
     aboveCodeTemplate:false,
     belowCodeTemplate:false,
-    middleCode:false
+    middleCode:false,
+    correctMiddleCode:false
   
   };
   const [DisplayField, setDisplayField] = useState(initialDisplayValue);
@@ -147,7 +150,8 @@ function Admin() {
         sampleInputOutput: true,
         aboveCodeTemplate:true,
         belowCodeTemplate:true,
-        middleCode:true
+        middleCode:true,
+        correctMiddleCode:true
 
       });
     } else if (e === "btn5") {
@@ -165,7 +169,8 @@ function Admin() {
         sampleInputOutput: true,
         aboveCodeTemplate:true,
         belowCodeTemplate:true,
-        middleCode:true
+        middleCode:true,
+        correctMiddleCode:true
       });
     } else if (e === "btn6") {
       setModelHeading("Delete Problem");
@@ -328,6 +333,7 @@ function Admin() {
         testcases,
         sampleInputOutput,
         middleCode,
+        correctMiddleCode,
         aboveCodeTemplate,
         belowCodeTemplate
       } = ModalFieldData;
@@ -341,6 +347,7 @@ function Admin() {
         topic === null ||
         sampleInputOutput === null||
         middleCode===null ||
+        correctMiddleCode===null ||
         aboveCodeTemplate===null ||
         belowCodeTemplate===null 
       ) {
@@ -358,6 +365,7 @@ function Admin() {
         testcases: JSON.parse(testcases),
         sampleInputOutput: JSON.parse(sampleInputOutput),
         middleCode:JSON.parse(middleCode),
+        correctMiddleCode:JSON.parse(correctMiddleCode),
         belowCodeTemplate:JSON.parse(belowCodeTemplate),
         aboveCodeTemplate:JSON.parse(aboveCodeTemplate)
       };
@@ -396,7 +404,8 @@ console.log(bodyData);
       sampleInputOutput,
       aboveCodeTemplate,
       belowCodeTemplate,
-      middleCode
+      middleCode,
+      correctMiddleCode
     } = ModalFieldData;
     if (problemNo === null) {
       return toast.error("Failed to update problem");
@@ -419,6 +428,7 @@ console.log(bodyData);
     if (sampleInputOutput !== null)
       bodyData.sampleInputOutput = JSON.parse(sampleInputOutput);
     if (middleCode !== null) bodyData.middleCode = JSON.parse(middleCode);
+    if (correctMiddleCode !== null) bodyData.correctMiddleCode = JSON.parse(correctMiddleCode);
     if (aboveCodeTemplate !== null) bodyData.aboveCodeTemplate = JSON.parse(aboveCodeTemplate);
     if (belowCodeTemplate !== null) bodyData.belowCodeTemplate = JSON.parse(belowCodeTemplate);
 
@@ -876,6 +886,23 @@ console.log(bodyData);
                         type="text"
                         value={ModalFieldData.middleCode || ""}
                         name="middleCode"
+                        onChange={handleFieldValueChange}
+                        className="form-control"
+                        id=""
+                      />
+                    </div>
+                    <div
+                      className={`mb-3 ${
+                        DisplayField.correctMiddleCode ? "d-block" : "d-none"
+                      }`}
+                    >
+                      <label htmlFor="name" className="col-form-label">
+                      correct MiddleCode Code:
+                      </label>
+                      <input
+                        type="text"
+                        value={ModalFieldData.correctMiddleCode || ""}
+                        name="correctMiddleCode"
                         onChange={handleFieldValueChange}
                         className="form-control"
                         id=""

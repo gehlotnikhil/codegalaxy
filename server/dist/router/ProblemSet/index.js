@@ -35,6 +35,7 @@ router.post("/create", [
     (0, express_validator_1.body)("sampleInputOutput", "Please Enter a sampleInputOutput").exists(),
     (0, express_validator_1.body)("aboveCodeTemplate", "Please Enter a aboveCodeTemplate").exists(),
     (0, express_validator_1.body)("middleCode", "Please Enter a middleCode").exists(),
+    (0, express_validator_1.body)("correctMiddleCode", "Please Enter a correctMiddleCode").exists(),
     (0, express_validator_1.body)("belowCodeTemplate", "Please Enter a belowCodeTemplate").exists(),
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
@@ -43,7 +44,7 @@ router.post("/create", [
         if (!error.isEmpty()) {
             return res.status(404).send({ success, error: error.array() });
         }
-        let { problemName, description, companies, testcases, constraint, topic, category, sampleInputOutput, aboveCodeTemplate, belowCodeTemplate, middleCode } = req.body;
+        let { problemName, description, companies, testcases, constraint, topic, category, sampleInputOutput, aboveCodeTemplate, belowCodeTemplate, middleCode, correctMiddleCode } = req.body;
         console.log("topic-", topic);
         let t = yield prisma.problemSet.findMany();
         let newNumber = 1;
@@ -68,6 +69,7 @@ router.post("/create", [
                 aboveCodeTemplate: aboveCodeTemplate,
                 belowCodeTemplate: belowCodeTemplate,
                 middleCode: middleCode,
+                correctMiddleCode: correctMiddleCode,
             },
         });
         console.log(result);
@@ -135,6 +137,7 @@ router.put("/update/:problemno", [
     (0, express_validator_1.body)("aboveCodeTemplate", "Please Enter a aboveCodeTemplate").exists(),
     (0, express_validator_1.body)("belowCodeTemplate", "Please Enter a belowCodeTemplate").exists(),
     (0, express_validator_1.body)("middleCode", "Please Enter a middleCode").exists(),
+    (0, express_validator_1.body)("correctMiddleCode", "Please Enter a correctMiddleCode").exists(),
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
@@ -187,6 +190,9 @@ router.put("/update/:problemno", [
         }
         if (req.body.middleCode) {
             query.middleCode = req.body.middleCode;
+        }
+        if (req.body.correctMiddleCode) {
+            query.correctMiddleCode = req.body.correctMiddleCode;
         }
         if (Object.keys(query).length === 0) {
             return res.send({ success, msg: "Empty Content" });
@@ -247,7 +253,8 @@ router.post("/getallproblem/:pageno?", [
     (0, express_validator_1.body)("sampleInputOutput", "Please Enter a sampleInputOutput"),
     (0, express_validator_1.body)("aboveCodeTemplate", "Please Enter a aboveCodeTemplate"),
     (0, express_validator_1.body)("belowCodeTemplate", "Please Enter a belowCodeTemplate"),
-    (0, express_validator_1.body)("middleCode", "Please Enter a middleCode")
+    (0, express_validator_1.body)("middleCode", "Please Enter a middleCode"),
+    (0, express_validator_1.body)("correctMiddleCode", "Please Enter a correctMiddleCode")
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
@@ -297,6 +304,9 @@ router.post("/getallproblem/:pageno?", [
         }
         if (req.body.status) {
             query.status = 1;
+        }
+        if (req.body.correctMiddleCode) {
+            query.correctMiddleCode = 1;
         }
         if (req.body.sampleInputOutput) {
             query.sampleInputOutput = 1;

@@ -26,6 +26,7 @@ router.post(
     body("sampleInputOutput", "Please Enter a sampleInputOutput").exists(),
     body("aboveCodeTemplate", "Please Enter a aboveCodeTemplate").exists(),
     body("middleCode", "Please Enter a middleCode").exists(),
+    body("correctMiddleCode", "Please Enter a correctMiddleCode").exists(),
     body("belowCodeTemplate", "Please Enter a belowCodeTemplate").exists(),
 
   ],
@@ -48,7 +49,8 @@ router.post(
         sampleInputOutput,
         aboveCodeTemplate,
         belowCodeTemplate,
-        middleCode
+        middleCode,
+        correctMiddleCode
       } = req.body;
       console.log("topic-", topic);
 
@@ -75,6 +77,7 @@ router.post(
           aboveCodeTemplate: aboveCodeTemplate,
           belowCodeTemplate: belowCodeTemplate,
           middleCode: middleCode,
+          correctMiddleCode: correctMiddleCode,
           
         },
       });
@@ -170,6 +173,7 @@ router.put(
     body("aboveCodeTemplate", "Please Enter a aboveCodeTemplate").exists(),
     body("belowCodeTemplate", "Please Enter a belowCodeTemplate").exists(),
     body("middleCode", "Please Enter a middleCode").exists(),
+    body("correctMiddleCode", "Please Enter a correctMiddleCode").exists(),
   ],
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
@@ -224,6 +228,9 @@ router.put(
       }
       if (req.body.middleCode) {
         query.middleCode = req.body.middleCode
+      }
+      if (req.body.correctMiddleCode) {
+        query.correctMiddleCode = req.body.correctMiddleCode
       }
       if (Object.keys(query).length === 0) {
         return res.send({ success, msg: "Empty Content" })
@@ -295,7 +302,8 @@ router.post(
   body("sampleInputOutput", "Please Enter a sampleInputOutput"),
   body("aboveCodeTemplate", "Please Enter a aboveCodeTemplate"),
   body("belowCodeTemplate", "Please Enter a belowCodeTemplate"),
-  body("middleCode", "Please Enter a middleCode")
+  body("middleCode", "Please Enter a middleCode"),
+  body("correctMiddleCode", "Please Enter a correctMiddleCode")
 ],
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
@@ -352,6 +360,9 @@ router.post(
     }
     if (req.body.status) {
       query.status =1
+    }
+    if (req.body.correctMiddleCode) {
+      query.correctMiddleCode =1
     }
     if (req.body.sampleInputOutput) {
       query.sampleInputOutput =1

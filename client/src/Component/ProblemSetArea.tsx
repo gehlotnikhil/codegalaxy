@@ -42,6 +42,7 @@ const ProblemPage: React.FC = () => {
     testcases?: { input: string; output: string }[];
     aboveCodeTemplate?: { go: string; java: string; cpp: string; c: string };
     middleCode?: { go: string; java: string; cpp: string; c: string };
+    correctMiddleCode?: { go: string; java: string; cpp: string; c: string };
     belowCodeTemplate?: { go: string; java: string; cpp: string; c: string };
   }
   const [MainQuestion, setMainQuestion] = useState<MainQuestionType>({});
@@ -60,14 +61,17 @@ const ProblemPage: React.FC = () => {
   const context = useContext(MainContext);
   const { SERVER_URL } = context;
   const param = useParams<{ problemid: string }>();
-  const [showCustomTestCase, setshowCustomTestCase] = useState(false)
+  const [showCustomTestCase, setshowCustomTestCase] = useState(false);
   useEffect(() => {
-    
-  console.log(showCustomTestCase);
-  
+    console.log(showCustomTestCase);
+  }, [showCustomTestCase]);
 
-  }, [showCustomTestCase])
-  
+  const [CustomRunCodeSpinnerStatus, setCustomRunCodeSpinnerStatus] =
+    useState(false);
+  useEffect(() => {
+    console.log(CustomRunCodeSpinnerStatus);
+  }, [CustomRunCodeSpinnerStatus]);
+
   const navigate = useNavigate();
   const [LikeChoice, setLikeChoice] = useState(0);
   useEffect(() => {
@@ -181,14 +185,22 @@ const ProblemPage: React.FC = () => {
     isSuccess?: "pass" | "failed" | "pending";
   }
   const [DisplaySubmitCodeResult, setDisplaySubmitCodeResult] = useState({
-    input:"",
-    output:"",
-    expected:""
-  })
+    input: "",
+    output: "",
+    expected: "",
+  });
   useEffect(() => {
-    console.log("DisplaySubmitCodeResult-",DisplaySubmitCodeResult);
-  }, [DisplaySubmitCodeResult])
-  
+    console.log("DisplaySubmitCodeResult-", DisplaySubmitCodeResult);
+  }, [DisplaySubmitCodeResult]);
+  const [DisplayCustomRunCodeResult, setDisplayCustomRunCodeResult] = useState({
+    input: "",
+    output: "",
+    expected: "",
+  });
+  useEffect(() => {
+    console.log("DisplayCustomRunCodeResult-", DisplayCustomRunCodeResult);
+  }, [DisplayCustomRunCodeResult]);
+
   const [ResultOfTest, setResultOfTest] = useState<TestResult[]>([]);
   const [QuestionStatus, setQuestionStatus] = useState(false);
   const constraints = MainQuestion.constraint;
@@ -350,30 +362,41 @@ const ProblemPage: React.FC = () => {
         return { isSuccess: "pending" };
       })
     );
-    let output = ""
-    console.log("codetesting----", code, "-----", MainQuestion.middleCode, "----", MainQuestion.middleCode && code === MainQuestion.middleCode[SelectedLanguage]);
-if(MainQuestion.middleCode && code === MainQuestion.middleCode[SelectedLanguage]){
-  toast.error("Empty Code Not Accepted")
-  setshowCustomTestCase(false)
-  setShowResultTestCase(true)
-  setspinnerStatus(false);
-  return
-}    
+    let output = "";
+    console.log(
+      "codetesting----",
+      code,
+      "-----",
+      MainQuestion.middleCode,
+      "----",
+      MainQuestion.middleCode &&
+        code === MainQuestion.middleCode[SelectedLanguage]
+    );
+    if (
+      MainQuestion.middleCode &&
+      code === MainQuestion.middleCode[SelectedLanguage]
+    ) {
+      toast.error("Empty Code Not Accepted");
+      setshowCustomTestCase(false);
+      setShowResultTestCase(true);
+      setspinnerStatus(false);
+      return;
+    }
     const data = {
       code: aboveCodeTemplate + code + belowCodeTemplate,
       language: SelectedLanguage,
       testcases: MainQuestion.testcases,
     };
     setDisplaySubmitCodeResult({
-      input:"",
-      output:"",
-      expected:""
-    })
-    
+      input: "",
+      output: "",
+      expected: "",
+    });
+
     try {
       console.log("data send--", data);
       let jsondata = await handleCodeExecution(data);
-      let updateresult:any=""
+      let updateresult: any = "";
       if (!userDetail.activeDays.includes(getDayOfYear())) {
         updateresult = await fetch(`${SERVER_URL}/api/user/update/`, {
           method: "PUT",
@@ -385,7 +408,7 @@ if(MainQuestion.middleCode && code === MainQuestion.middleCode[SelectedLanguage]
             activeDays: [...userDetail.activeDays, getDayOfYear()],
           }),
         });
-        const jsondata2 = await updateresult.json();   
+        const jsondata2 = await updateresult.json();
         if (jsondata2.success) {
           dispatch(
             setUserDetail({
@@ -394,13 +417,13 @@ if(MainQuestion.middleCode && code === MainQuestion.middleCode[SelectedLanguage]
           );
         }
       }
-      
+
       console.log(jsondata);
-      console.log("qwqwqqwq---",jsondata);
-      console.log("qwqwqqwq---",jsondata.output);
-      console.log("qwqwqqwq---",typeof jsondata.output);
-      output=String(jsondata.output)
-      
+      console.log("qwqwqqwq---", jsondata);
+      console.log("qwqwqqwq---", jsondata.output);
+      console.log("qwqwqqwq---", typeof jsondata.output);
+      output = String(jsondata.output);
+
       let finalMsg = false;
       if (jsondata.success) {
         finalMsg = true;
@@ -438,12 +461,25 @@ if(MainQuestion.middleCode && code === MainQuestion.middleCode[SelectedLanguage]
         })
       );
     }
-    MainQuestion.testcases?.map((value)=>{
-      console.log(value," - - ",value.input," - - ",typeof value ," - ",typeof value.input);
-      setDisplaySubmitCodeResult({...DisplaySubmitCodeResult,input:String(value.input),output:String(output),expected:String(value.output)})
-    })
-    setshowCustomTestCase(false)
-    setShowResultTestCase(true)
+    MainQuestion.testcases?.map((value) => {
+      console.log(
+        value,
+        " - - ",
+        value.input,
+        " - - ",
+        typeof value,
+        " - ",
+        typeof value.input
+      );
+      setDisplaySubmitCodeResult({
+        ...DisplaySubmitCodeResult,
+        input: String(value.input),
+        output: String(output),
+        expected: String(value.output),
+      });
+    });
+    setshowCustomTestCase(false);
+    setShowResultTestCase(true);
     setspinnerStatus(false);
   };
 
@@ -461,7 +497,122 @@ if(MainQuestion.middleCode && code === MainQuestion.middleCode[SelectedLanguage]
     console.log(ShowResultTestCase);
   }, [ShowResultTestCase]);
 
-  const handleCustomTestCode = () => {};
+  const handleCustomTestCode = async () => {
+    setCustomRunCodeSpinnerStatus(true);
+    const userinput = DisplayCustomRunCodeResult.input || "";
+    const aboveCodeTemplate = MainQuestion.aboveCodeTemplate
+      ? MainQuestion.aboveCodeTemplate[SelectedLanguage]
+      : "";
+    const belowCodeTemplate = MainQuestion.belowCodeTemplate
+      ? MainQuestion.belowCodeTemplate[SelectedLanguage]
+      : "";
+    const correctMiddleCode =
+      (MainQuestion.correctMiddleCode &&
+        MainQuestion.correctMiddleCode[`${SelectedLanguage}`]) ||
+      "";
+    let expected = "";
+    let output = "";
+    console.log(
+      "codetesting----",
+      correctMiddleCode,
+      "-----",
+      MainQuestion.correctMiddleCode,
+      "----"
+    );
+    if (
+      MainQuestion.middleCode &&
+      code === MainQuestion.middleCode[SelectedLanguage]
+    ) {
+      toast.error("Empty Code Not Accepted");
+      setShowResultTestCase(false);
+      setshowCustomTestCase(true);
+      setCustomRunCodeSpinnerStatus(false);
+      return;
+    }
+    const expectedResultData = {
+      code: aboveCodeTemplate + correctMiddleCode + belowCodeTemplate,
+      language: SelectedLanguage,
+      testcases: [{ input: userinput, output: "" }],
+    };
+    const userResultData = {
+      code: aboveCodeTemplate + code + belowCodeTemplate,
+      language: SelectedLanguage,
+      testcases: [{ input: userinput, output: "" }],
+    };
+
+    console.log(aboveCodeTemplate, " - - - ", "aboveCodeTemplate,");
+    console.log(belowCodeTemplate, " - - - ", "belowCodeTemplate,");
+    console.log(correctMiddleCode, " - - - ", "correctMiddleCode,");
+
+    setDisplaySubmitCodeResult({
+      input: "",
+      output: "",
+      expected: "",
+    });
+
+    try {
+      console.log("expectedResultData send--", expectedResultData);
+      let jsondata = await handleCodeExecution(expectedResultData);
+      let jsondata_user = await handleCodeExecution(userResultData);
+      let updateresult: any = "";
+      if (!userDetail.activeDays.includes(getDayOfYear())) {
+        updateresult = await fetch(`${SERVER_URL}/api/user/update/`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            token: userDetail.token,
+            activeDays: [...userDetail.activeDays, getDayOfYear()],
+          }),
+        });
+        const jsondata2 = await updateresult.json();
+        if (jsondata2.success) {
+          dispatch(
+            setUserDetail({
+              activeDays: [...userDetail.activeDays, getDayOfYear()],
+            })
+          );
+        }
+      }
+
+      console.log(jsondata);
+      console.log("qwqwqqwq---", jsondata);
+      console.log("qwqwqqwq---", jsondata.output);
+      console.log("qwqwqqwq---", typeof jsondata.output);
+      expected = String(jsondata.output);
+      console.log(jsondata_user);
+      console.log("qwqwqqwq---", jsondata_user);
+      console.log("qwqwqqwq---", jsondata_user.output);
+      console.log("qwqwqqwq---", typeof jsondata_user.output);
+      output = String(jsondata_user.output);
+
+      let finalMsg = false;
+      if (jsondata_user.success ) {
+        finalMsg = true;
+        if (finalMsg === true && (jsondata_user.output).trim()===(jsondata.output).trim()) {
+          toast.success("Passed");
+        } else {
+          toast.error("Failed");
+        }
+      } else {
+        toast.error("Failed");
+      }
+    } catch (error) {
+      console.log(error);;
+    }
+
+    setDisplayCustomRunCodeResult({
+      ...DisplaySubmitCodeResult,
+      input: String(userinput),
+      output: String(output),
+      expected: String(expected),
+    });
+
+    setShowResultTestCase(false);
+    setshowCustomTestCase(true);
+    setCustomRunCodeSpinnerStatus(false);
+  };
 
   return (
     <>
@@ -634,7 +785,7 @@ if(MainQuestion.middleCode && code === MainQuestion.middleCode[SelectedLanguage]
           <div style={styles.actionButtons}>
             <button
               onClick={() => handleCustomTestCode()}
-              style={{...styles.submitButton}}
+              style={{ ...styles.submitButton }}
               className="runbtn"
             >
               <svg
@@ -651,9 +802,12 @@ if(MainQuestion.middleCode && code === MainQuestion.middleCode[SelectedLanguage]
                   fill="currentColor"
                   d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"
                 ></path>
-              </svg>{" "} Run
+              </svg>{" "}
+              Run
               <img
-                className={`d-${spinnerStatus ? "inline" : "none"}`}
+                className={`d-${
+                  CustomRunCodeSpinnerStatus ? "inline" : "none"
+                }`}
                 src={spinner}
                 height={"22px"}
                 width={"22px"}
@@ -662,7 +816,7 @@ if(MainQuestion.middleCode && code === MainQuestion.middleCode[SelectedLanguage]
             <button
               disabled={spinnerStatus}
               onClick={() => handleRunCode()}
-              style={{...styles.submitButton}}
+              style={{ ...styles.submitButton }}
               className="runbtn"
             >
               <svg
@@ -674,14 +828,14 @@ if(MainQuestion.middleCode && code === MainQuestion.middleCode[SelectedLanguage]
                 role="img"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 640 512"
-                style={{fontSize:"1.1rem"}}
+                style={{ fontSize: "1.1rem" }}
               >
                 <path
                   fill="currentColor"
                   d="M354.9 121.7c13.8 16 36.5 21.1 55.9 12.5c8.9-3.9 18.7-6.2 29.2-6.2c39.8 0 72 32.2 72 72c0 4-.3 7.9-.9 11.7c-3.5 21.6 8.1 42.9 28.1 51.7C570.4 276.9 592 308 592 344c0 46.8-36.6 85.2-82.8 87.8c-.6 0-1.3 .1-1.9 .2H504 144c-53 0-96-43-96-96c0-41.7 26.6-77.3 64-90.5c19.2-6.8 32-24.9 32-45.3l0-.2v0 0c0-66.3 53.7-120 120-120c36.3 0 68.8 16.1 90.9 41.7zM512 480v-.2c71.4-4.1 128-63.3 128-135.8c0-55.7-33.5-103.7-81.5-124.7c1-6.3 1.5-12.8 1.5-19.3c0-66.3-53.7-120-120-120c-17.4 0-33.8 3.7-48.7 10.3C360.4 54.6 314.9 32 264 32C171.2 32 96 107.2 96 200l0 .2C40.1 220 0 273.3 0 336c0 79.5 64.5 144 144 144H464h40 8zM223 255c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V384c0 13.3 10.7 24 24 24s24-10.7 24-24V249.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z"
                 ></path>
-              </svg>
-              {" "} Submit
+              </svg>{" "}
+              Submit
               <img
                 className={`d-${spinnerStatus ? "inline" : "none"}`}
                 src={spinner}
@@ -773,15 +927,16 @@ if(MainQuestion.middleCode && code === MainQuestion.middleCode[SelectedLanguage]
             <div className="card">
               <div className="card-header bg-dark text-light d-flex justify-content-between">
                 <span>Custom Testcase</span>
-                <span className="" >
+                <span className="">
                   <svg
-                  className={`d-${showCustomTestCase?"inline":"none"}`}
+                    className={`d-${showCustomTestCase ? "inline" : "none"}`}
                     width="25"
                     height="25"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
-                    onClick={()=>setshowCustomTestCase(false)}>
+                    onClick={() => setshowCustomTestCase(false)}
+                  >
                     <rect width="24" height="24" rx="4" fill="#333" />
                     <path
                       d="M6 15l6-6 6 6"
@@ -792,13 +947,14 @@ if(MainQuestion.middleCode && code === MainQuestion.middleCode[SelectedLanguage]
                     />
                   </svg>
                   <svg
-                    className={`d-${!showCustomTestCase?"inline":"none"}`}
+                    className={`d-${!showCustomTestCase ? "inline" : "none"}`}
                     width="25"
                     height="25"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
-                    onClick={()=>setshowCustomTestCase(true)}>
+                    onClick={() => setshowCustomTestCase(true)}
+                  >
                     <rect width="24" height="24" rx="4" fill="#333" />
                     <path
                       d="M6 9l6 6 6-6"
@@ -810,33 +966,47 @@ if(MainQuestion.middleCode && code === MainQuestion.middleCode[SelectedLanguage]
                   </svg>
                 </span>
               </div>
-              <div className={`card-body d-${showCustomTestCase?"block":"none"}`} >
+              <div
+                className={`card-body d-${
+                  showCustomTestCase ? "block" : "none"
+                }`}
+              >
                 <div className="mt-3">
                   <label className="form-label">Input</label>
-                  <input
-                    type="text"
+                  <textarea
                     className="form-control"
-                  />
+                    rows={2}
+                    onChange={(e) =>
+                      setDisplayCustomRunCodeResult({
+                        ...DisplayCustomRunCodeResult,
+                        input: e.target.value,
+                      })
+                    }
+                    value={DisplayCustomRunCodeResult.input}
+                  ></textarea>
                 </div>
                 <div className="mt-3">
                   <label className="form-label">Output</label>
                   <textarea
                     className="form-control"
+                    rows={2}
+                    value={DisplayCustomRunCodeResult.output}
                     disabled
                   ></textarea>
                 </div>
                 <div className="mt-3">
                   <label className="form-label">Expected Output</label>
-                  <input
-                    type="text"
+                  <textarea
+                    rows={2}
+                    value={DisplayCustomRunCodeResult.expected}
                     className="form-control"
                     disabled
-                  />
+                  ></textarea>
                 </div>
               </div>
-              </div>
-              </div>
             </div>
+          </div>
+        </div>
       </div>
     </>
   );
