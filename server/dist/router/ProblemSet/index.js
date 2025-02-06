@@ -427,7 +427,7 @@ router.post("/getpraticeproblemdetails", (req, res) => __awaiter(void 0, void 0,
         let c = 0;
         let totalNoOfUserReviewGiven = 0;
         let AccumulatedReview = 0;
-        getresult1.result.map((user) => {
+        (getresult1.result || []).map((user) => {
             var _a, _b, _c;
             if (((_a = user.praticeCourseDetail) === null || _a === void 0 ? void 0 : _a[language].review) > 0) {
                 AccumulatedReview += (_b = user.praticeCourseDetail) === null || _b === void 0 ? void 0 : _b[language].review;

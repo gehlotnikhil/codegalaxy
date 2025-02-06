@@ -506,8 +506,8 @@ router.post("/getpraticeproblemdetails", async (req: Request, res: Response): Pr
     console.log("d--",getresult1.result);
     let c = 0
     let totalNoOfUserReviewGiven=0;
-    let AccumulatedReview=0
-    getresult1.result.map((user:any)=>{
+    let AccumulatedReview=0;
+    (getresult1.result || []).map((user:any)=>{
       if(user.praticeCourseDetail?.[language].review >0){
         AccumulatedReview+= user.praticeCourseDetail?.[language].review
         totalNoOfUserReviewGiven++;
