@@ -14,17 +14,25 @@ console.log(`Server starting on port: ${PORT}`);
 // Middleware to parse JSON
 app.use(express.json());
 
-// Allow all origins in CORS
+const allowedOrigins = [
+  "https://codegalaxy1.vercel.app", // Production frontend
+  "http://localhost:5173", // Local development
+];
+
 app.use(
   cors({
-    origin: "*", // Allow all origins
-    credentials: true, // Allow cookies and authentication headers
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE", // Allowed HTTP methods
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
-// Handle preflight requests globally
-app.options("*", cors());
 
 // Add Helmet middleware for security (allowing cross-origin resources)
 app.use(
@@ -61,6 +69,7 @@ app.get("/test", async (req, res) => {
 app.use("/api/user", require("./router/User/index"));
 app.use("/api/problemset", require("./router/ProblemSet/index"));
 app.use("/api/contest", require("./router/Contest/index"));
+app.use("/api/dailynewproblem", require("./router/DailyNewProblem"));
 
 // Start server
 app.listen(PORT, () => {

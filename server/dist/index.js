@@ -25,14 +25,23 @@ const PORT = Number(process.env.PORT) || 8000;
 console.log(`Server starting on port: ${PORT}`);
 // Middleware to parse JSON
 app.use(express_1.default.json());
-// Allow all origins in CORS
+const allowedOrigins = [
+    "https://codegalaxy1.vercel.app", // Production frontend
+    "http://localhost:5173", // Local development
+];
 app.use((0, cors_1.default)({
-    origin: "*", // Allow all origins
-    credentials: true, // Allow cookies and authentication headers
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE", // Allowed HTTP methods
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        }
+        else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
 }));
-// Handle preflight requests globally
-app.options("*", (0, cors_1.default)());
 // Add Helmet middleware for security (allowing cross-origin resources)
 app.use((0, helmet_1.default)({
     crossOriginOpenerPolicy: { policy: "unsafe-none" },
@@ -63,6 +72,7 @@ app.get("/test", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 app.use("/api/user", require("./router/User/index"));
 app.use("/api/problemset", require("./router/ProblemSet/index"));
 app.use("/api/contest", require("./router/Contest/index"));
+app.use("/api/dailynewproblem", require("./router/DailyNewProblem"));
 // Start server
 app.listen(PORT, () => {
     console.log(`--> Server running at port ${PORT}`);

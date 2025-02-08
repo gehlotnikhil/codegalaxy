@@ -27,7 +27,7 @@ router.post("/create", [
     (0, express_validator_1.body)("problemName", "Please Enter a problem name").exists(),
     (0, express_validator_1.body)("description", "Please Enter a description ").exists(),
     (0, express_validator_1.body)("companies", "Please Enter a companies ").exists(),
-    (0, express_validator_1.body)("testcase", "Please Enter a testcase").exists(),
+    (0, express_validator_1.body)("testcases", "Please Enter a testcases").exists(),
     (0, express_validator_1.body)("constraint", "Please Enter a constraint").exists(),
     (0, express_validator_1.body)("topic", "Please Enter a topic").exists(),
     (0, express_validator_1.body)("category", "Please Enter a category").exists(),

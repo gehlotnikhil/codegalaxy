@@ -18,7 +18,7 @@ router.post(
     body("problemName", "Please Enter a problem name").exists(),
     body("description", "Please Enter a description ").exists(),
     body("companies", "Please Enter a companies ").exists(),
-    body("testcase", "Please Enter a testcase").exists(),
+    body("testcases", "Please Enter a testcases").exists(),
     body("constraint", "Please Enter a constraint").exists(),
     body("topic", "Please Enter a topic").exists(),
     body("category", "Please Enter a category").exists(),
@@ -27,7 +27,6 @@ router.post(
     body("middleCode", "Please Enter a middleCode").exists(),
     body("correctMiddleCode", "Please Enter a correctMiddleCode").exists(),
     body("belowCodeTemplate", "Please Enter a belowCodeTemplate").exists(),
-
   ],
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
