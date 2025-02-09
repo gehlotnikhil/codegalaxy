@@ -18,7 +18,7 @@ app.listen(PORT,()=>{
 app.get("/",(req:any,res:any)=>{
     res.send({success:true})
 }) 
-cron.schedule("* * * * *", async() => {
+cron.schedule("0 0 * * *", async() => {
       let result = await fetch(`${CronJobUrl1}/delete`,{
         method: "GET",
         headers: { "Content-Type": "application/json" },
