@@ -20,7 +20,7 @@ const Problem: React.FC = () => {
     accepted?: number;
     submission?: number;
     status?: "SOLVED" | "UNSOLVED";
-    category?: "AI" | "ALGORITHMS" | "CONCURRENCY";
+    category?: "DP" | "ALGORITHMS" | "CONCURRENCY";
     topic?: (
       | "ARRAY"
       | "STRING"
@@ -33,7 +33,7 @@ const Problem: React.FC = () => {
     category:
       | "All Topics"
       | "Algorithms"
-      | "Artificial Intelligence"
+      | "Dynamic Programming"
       | "Concurrency";
     status: "Status" | "UNSOLVED" | "SOLVED";
     tags:
@@ -114,7 +114,7 @@ const Problem: React.FC = () => {
       const categoryMap: { [key: string]: string } = {
         "All Topics": "",
         Algorithms: "ALGORITHMS",
-        "Artificial Intelligence": "AI",
+        DynamicProgramming: "DP",
         Concurrency: "CONCURRENCY",
       };
       filtered = filtered.filter(
@@ -222,7 +222,7 @@ const Problem: React.FC = () => {
           {[
             { label: "All Topics", icon: <BsFillGridFill /> },
             { label: "Algorithms", icon: <FaCode /> },
-            { label: "Artificial Intelligence", icon: <AiOutlineRobot /> },
+            { label: "Dynamic Programming", icon: <AiOutlineRobot /> },
             { label: "Concurrency", icon: <GiConvergenceTarget /> },
           ].map((filter) => (
             <button

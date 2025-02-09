@@ -43,7 +43,7 @@ function Admin() {
     companies?: String[];
     constraint?: String[];
     topic?: String[];
-    category?: "ALGORITHMS" | "AI" | "CONCURRANCY";
+    category?: "ALGORITHMS" | "DP" | "CONCURRANCY";
     testcases?: InOutTestCase[];
     sampleInputOutput?: InOutTestCase[];
     aboveCodeTemplate:CodeTemplate;

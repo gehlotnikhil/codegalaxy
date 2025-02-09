@@ -81,40 +81,41 @@ useEffect(() => {
   console.log("PraticeCourseDetailFromSpecificUser",PraticeCourseDetailFromSpecificUser);
   
 }, [PraticeCourseDetailFromSpecificUser])
-
-  const loadProblemDetail = async (language: string) => {
-    try {
-      const result = await fetch(
-        `${SERVER_URL}/api/problemset/getpraticeproblemdetails`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            token: userDetail.token,
-            language: language,
-          }),
-        }
-      );
-      const jsondata = await result.json();
-      console.log("jsondata--", jsondata);
-      if (jsondata.success) {
-        setPraticeQuestion(jsondata.result);
-        setPraticeCourseDetailFromSpecificUser(jsondata.praticeCourseDetail)
-        setIsRegistered(
-          jsondata.praticeCourseDetail[`${language}`].participated
-        );
-                
-        setLearners(jsondata.learner)
-        setTotalNumberOfUserReviewGiven(jsondata.totalNoOfUserReviewGiven)
-        setReviewRating(jsondata.finalReviewRating)
-        
+const loadProblemDetail = async (language: string) => {
+  try {
+    const result = await fetch(
+      `${SERVER_URL}/api/problemset/getpraticeproblemdetails`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: userDetail.token,
+          language: language,
+        }),
       }
-    } catch (error) {
-      console.log(error);
+    );
+
+    if (!result.ok) {
+      throw new Error(`Error ${result.status}: ${result.statusText}`);
     }
-  };
+
+    const jsondata = await result.json();
+    console.log("jsondata--", jsondata);
+    if (jsondata.success) {
+      setPraticeQuestion(jsondata.result);
+      setPraticeCourseDetailFromSpecificUser(jsondata.praticeCourseDetail);
+      setIsRegistered(jsondata.praticeCourseDetail?.[language]?.participated ?? false);
+      setLearners(jsondata.learner ?? []);
+      setTotalNumberOfUserReviewGiven(jsondata.totalNoOfUserReviewGiven ?? 0);
+      setReviewRating(jsondata.finalReviewRating ?? 0);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
   const handleRegisterCourse = async () => {
     try {
       const result = await fetch(`${SERVER_URL}/api/user/update/`, {
@@ -152,7 +153,7 @@ useEffect(() => {
   };
   useEffect(() => {
     console.log("language-", params.course);
-    loadProblemDetail(params.course || "");
+    loadProblemDetail(params.course || "c");
     setCourseName(() => {
       const course = params.course;
       if (course === "c") return "C";

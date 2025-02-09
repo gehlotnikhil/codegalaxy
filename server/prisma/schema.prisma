@@ -98,7 +98,7 @@ type InputOutputType {
 
 enum categoryEnum {
   ALGORITHMS
-  AI
+  DP
   CONCURRENCY
 }
 

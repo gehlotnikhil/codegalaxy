@@ -37,7 +37,7 @@ const ProblemPage: React.FC = () => {
     accepted?: number;
     submission?: number;
     status?: "SOLVED" | "UNSOLVED";
-    category?: "AI" | "ALGORITHMS" | "CONCURRENCY";
+    category?: "DP" | "ALGORITHMS" | "CONCURRENCY";
     sampleInputOutput?: { input: string; output: string }[];
     testcases?: { input: string; output: string }[];
     aboveCodeTemplate?: { go: string; java: string; cpp: string; c: string };
