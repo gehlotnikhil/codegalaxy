@@ -41,7 +41,7 @@ router.post("/create", [
         }
         let { problemName, description, companies, testcases, constraint, topic, category, sampleInputOutput, aboveCodeTemplate, belowCodeTemplate, middleCode, correctMiddleCode } = req.body;
         console.log("topic-", topic);
-        let t = yield prisma.problemSet.findMany();
+        let t = yield prisma.dailyNewProblem.findMany();
         let newNumber = 1;
         if (t.length > 0) {
             console.log(t[t.length - 1].problemNo);
@@ -64,7 +64,6 @@ router.post("/create", [
                 correctMiddleCode: correctMiddleCode,
             },
         });
-        console.log(result);
         success = true;
         res.send({ success, msg: "Daily new problem created", result });
     }
@@ -76,14 +75,14 @@ router.post("/create", [
 router.delete("/delete", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
-        let check1 = yield prisma.dailyNewProblem.findFirst({ where: { problemNo: 1 } });
-        if (!check1) {
+        let result = yield prisma.dailyNewProblem.findFirst({ where: { problemNo: 1 } });
+        if (!result) {
             return res.send({ success, msg: "Daily new Problem not Exist" });
         }
-        let result = yield prisma.dailyNewProblem.deleteMany({
+        let resultD = yield prisma.dailyNewProblem.deleteMany({
             where: { problemNo: 1 }
         }); // Update the problem numbers for the remaining problems
-        yield prisma.problemSet.updateMany({
+        yield prisma.dailyNewProblem.updateMany({
             where: {
                 problemNo: {
                     gt: 1,
@@ -95,6 +94,37 @@ router.delete("/delete", (req, res) => __awaiter(void 0, void 0, void 0, functio
                 },
             },
         });
+        // console.log(result);
+        let t2 = yield prisma.problemSet.findMany();
+        let newNumber2 = 1;
+        if (t2.length > 0) {
+            console.log(t2[t2.length - 1].problemNo);
+            newNumber2 = t2[t2.length - 1].problemNo + 1;
+        }
+        let result2 = yield prisma.problemSet.create({
+            data: {
+                problemNo: newNumber2,
+                problemName: result === null || result === void 0 ? void 0 : result.problemName,
+                description: result.description,
+                companies: result.companies,
+                Details: { like: [], dislike: [] },
+                testcases: result.testcases,
+                constraint: result.constraint,
+                topic: result.topic,
+                accepted: 0,
+                submission: 0,
+                category: result.category,
+                sampleInputOutput: result.sampleInputOutput,
+                aboveCodeTemplate: result.aboveCodeTemplate,
+                belowCodeTemplate: result.belowCodeTemplate,
+                middleCode: result.middleCode,
+                correctMiddleCode: result.correctMiddleCode,
+            },
+        });
+        console.log("done - ");
+        console.log("done - ", result2);
+        console.log("done - ", result2);
+        console.log("done - ");
         success = true;
         return res.send({ success, result, msg: "Daily new Problem deleted" });
     }

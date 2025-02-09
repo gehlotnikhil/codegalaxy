@@ -27,6 +27,8 @@ router.post(
     body("middleCode", "Please Enter a middleCode").exists(),
     body("correctMiddleCode", "Please Enter a correctMiddleCode").exists(),
     body("belowCodeTemplate", "Please Enter a belowCodeTemplate").exists(),
+    body("createdAt", "Please Enter a createdAt"),
+
   ],
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
@@ -36,6 +38,8 @@ router.post(
       if (!error.isEmpty()) {
         return res.status(404).send({ success, error: error.array() });
       }
+      let date:any = null
+      
       let {
         problemName,
         description,
@@ -48,7 +52,7 @@ router.post(
         aboveCodeTemplate,
         belowCodeTemplate,
         middleCode,
-        correctMiddleCode
+        correctMiddleCode,
       } = req.body;
       console.log("topic-", topic);
 
@@ -76,7 +80,7 @@ router.post(
           belowCodeTemplate: belowCodeTemplate,
           middleCode: middleCode,
           correctMiddleCode: correctMiddleCode,
-          
+          createdAt:new Date("2025-12-02T22:03:01.550Z")
         },
       });
       

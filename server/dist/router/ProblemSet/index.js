@@ -36,6 +36,7 @@ router.post("/create", [
     (0, express_validator_1.body)("middleCode", "Please Enter a middleCode").exists(),
     (0, express_validator_1.body)("correctMiddleCode", "Please Enter a correctMiddleCode").exists(),
     (0, express_validator_1.body)("belowCodeTemplate", "Please Enter a belowCodeTemplate").exists(),
+    (0, express_validator_1.body)("createdAt", "Please Enter a createdAt"),
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
@@ -43,7 +44,8 @@ router.post("/create", [
         if (!error.isEmpty()) {
             return res.status(404).send({ success, error: error.array() });
         }
-        let { problemName, description, companies, testcases, constraint, topic, category, sampleInputOutput, aboveCodeTemplate, belowCodeTemplate, middleCode, correctMiddleCode } = req.body;
+        let date = null;
+        let { problemName, description, companies, testcases, constraint, topic, category, sampleInputOutput, aboveCodeTemplate, belowCodeTemplate, middleCode, correctMiddleCode, } = req.body;
         console.log("topic-", topic);
         let t = yield prisma.problemSet.findMany();
         let newNumber = 1;
@@ -69,6 +71,7 @@ router.post("/create", [
                 belowCodeTemplate: belowCodeTemplate,
                 middleCode: middleCode,
                 correctMiddleCode: correctMiddleCode,
+                createdAt: new Date("2025-12-02T22:03:01.550Z")
             },
         });
         console.log(result);

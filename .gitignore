@@ -5,3 +5,4 @@ server/node_modules
 .vscode
 server/.env
 server/prisma/.env
+cron-job/node_modules

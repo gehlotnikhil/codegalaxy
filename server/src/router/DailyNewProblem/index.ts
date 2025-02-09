@@ -48,7 +48,7 @@ router.post("/create", [
             correctMiddleCode
         } = req.body;
         console.log("topic-", topic);
-        let t = await prisma.problemSet.findMany();
+        let t = await prisma.dailyNewProblem.findMany();
         let newNumber = 1;
         if (t.length > 0) {
           console.log(t[t.length - 1].problemNo);
@@ -70,13 +70,12 @@ router.post("/create", [
                 belowCodeTemplate: belowCodeTemplate,
                 middleCode: middleCode,
                 correctMiddleCode: correctMiddleCode,
+                
 
             },
         });
 
-        console.log(result);
-
-
+      
         success = true
         res.send({ success, msg: "Daily new problem created", result })
 
@@ -96,15 +95,15 @@ router.delete(
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
     try {
-      let check1 = await prisma.dailyNewProblem.findFirst({where:{problemNo:1}})
-      if (!check1) {
+      let result = await prisma.dailyNewProblem.findFirst({where:{problemNo:1}})
+      if (!result) {
         return res.send({ success, msg: "Daily new Problem not Exist" })
       }
 
-      let result = await prisma.dailyNewProblem.deleteMany({
+      let resultD = await prisma.dailyNewProblem.deleteMany({
         where: { problemNo: 1 }
     });      // Update the problem numbers for the remaining problems
-      await prisma.problemSet.updateMany({
+      await prisma.dailyNewProblem.updateMany({
         where: {
           problemNo: {
             gt: 1,
@@ -116,7 +115,47 @@ router.delete(
           },
         },
       });
+      
 
+          // console.log(result);
+
+          let t2 = await prisma.problemSet.findMany();
+          let newNumber2 = 1;
+          if (t2.length > 0) {
+            console.log(t2[t2.length - 1].problemNo);
+            newNumber2 = t2[t2.length - 1].problemNo + 1;
+          }
+          let result2 = await prisma.problemSet.create({
+            data: {
+              problemNo: newNumber2,
+              problemName: result?.problemName,
+              description: result.description,
+              companies: result.companies,
+              Details:{like:[],dislike:[]},
+              testcases: result.testcases,
+              constraint: result.constraint,
+              topic: result.topic,
+              accepted: 0,
+              submission: 0,
+              category: result.category,
+              sampleInputOutput: result.sampleInputOutput,
+              aboveCodeTemplate: result.aboveCodeTemplate,
+              belowCodeTemplate: result.belowCodeTemplate,
+              middleCode: result.middleCode,
+              correctMiddleCode: result.correctMiddleCode,
+              
+            },
+          });
+          console.log("done - ");
+          console.log("done - ",result2);
+          console.log("done - ",result2);
+          console.log("done - ");
+  
+          
+      
+    
+      
+    
       success = true;
       return res.send({ success, result, msg: "Daily new Problem deleted" });
     } catch (error) {
