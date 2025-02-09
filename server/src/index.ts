@@ -4,7 +4,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import { PrismaClient } from "@prisma/client";
- 
+  
 // Initialize environment variables and Prisma client
 const prisma = new PrismaClient();
 const app = express();

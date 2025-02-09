@@ -1,5 +1,5 @@
-import { Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
+import { Request, Response, Router } from "express";
 import { body, validationResult } from "express-validator"
 const router = Router();
 const ServerUrl = process.env.ServerUrl || "http://localhost:8000"
