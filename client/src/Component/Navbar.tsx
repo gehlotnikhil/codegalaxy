@@ -14,6 +14,7 @@ function AppNavbar() {
     console.log(ProfileName);
   }, [ProfileName]);
   const context = useContext(MainContext);
+  const {SERVER_URL} = context;
   const userDetails = useSelector((state: RootStateType) => {
     return state.userDetail;
   });
@@ -38,8 +39,8 @@ function AppNavbar() {
     profileIcon: true,
     prfileLink: true,
     playgroundLink: true,
-    profilename:true
-
+    profilename:true,
+    newproblem:true
   });
 
   useEffect(() => {
@@ -56,11 +57,13 @@ function AppNavbar() {
       profileIcon: true,
       prfileLink: true,
       playgroundLink: true,
-      profilename:true
+      profilename:true,
+      newproblem:true
     };
 
     if (locationHook.pathname === "/login") {
       updatedStatus.homeLink = false;
+      updatedStatus.newproblem = false;
       updatedStatus.aboutLink = false;
       updatedStatus.loginLink = false;
       updatedStatus.profileIcon = false;
@@ -70,6 +73,7 @@ function AppNavbar() {
       
     } else if (locationHook.pathname === "/signup") {
       updatedStatus.homeLink = false;
+      updatedStatus.newproblem = false;
       updatedStatus.aboutLink = false;
       updatedStatus.signupLink = false;
       updatedStatus.profileIcon = false;
@@ -78,6 +82,7 @@ function AppNavbar() {
       updatedStatus.profilename = false;
     } else if (locationHook.pathname === "/admin") {
       updatedStatus.homeLink = false;
+      updatedStatus.newproblem = false;
       updatedStatus.aboutLink = false;
       updatedStatus.loginLink = false;
       updatedStatus.signupLink = false;
@@ -88,6 +93,7 @@ function AppNavbar() {
       
     }else if (locationHook.pathname.startsWith("/u/")) {
       updatedStatus.homeLink = true;
+      updatedStatus.newproblem = true;
       updatedStatus.aboutLink = true;
       updatedStatus.loginLink = false;
       updatedStatus.signupLink = false;
@@ -97,6 +103,7 @@ function AppNavbar() {
       updatedStatus.profilename = true;
     } else if (locationHook.pathname === "/verify") {
       updatedStatus.homeLink = false;
+      updatedStatus.newproblem = false;
       updatedStatus.aboutLink = false;
       updatedStatus.loginLink = false;
       updatedStatus.signupLink = false;
@@ -171,6 +178,28 @@ function AppNavbar() {
               >
                 <Link className="white nav-link" to="/about">
                   About
+                </Link>
+              </li>
+              <li
+                className={`nav-item d-${
+                  NavbarLinkStatus.newproblem === true ? "inline" : "none"
+                }`}
+              >
+                <Link className="white nav-link  new-problem-link" onClick={async()=>{
+                  const result = await fetch(`${SERVER_URL}/api/problemset/getdailynewproblem`,{
+                    method: "GET",
+                    headers: {
+                      "Content-Type": "application/json",
+                    }
+                  })
+                  const jsondata1 = await result.json()
+                  console.log("jsondata1----",jsondata1);
+                  if(jsondata1.success){
+                    navigate(`/problem/${jsondata1.result.id}`)
+                  }
+                  
+                }} to="">
+                  New Problem
                 </Link>
               </li>
             </ul>

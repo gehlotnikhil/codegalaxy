@@ -9,34 +9,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const dotenv = require("dotenv");
-dotenv.config();
 const client_1 = require("@prisma/client");
+const express_1 = require("express");
 const express_validator_1 = require("express-validator");
-// Initialize environment variables and Prisma client
+const router = (0, express_1.Router)();
+const ServerUrl = process.env.ServerUrl || "http://localhost:8000";
+console.log(ServerUrl);
 const prisma = new client_1.PrismaClient();
-const cron = require("node-cron");
-// Schedule the job to run at 12:00 AM daily
-const CronJobUrl1 = process.env.CronJobUrl1 || "http://localhost:8001";
-const express = require("express");
-const app = express();
-const PORT = process.env.PORT || 8001;
-app.use(express.json());
-app.listen(PORT, () => {
-    console.log("server running at", PORT);
+router.get("/", (req, res) => {
+    res.send({ success: "Daily New Problem Routing is on" });
 });
-app.get("/", (req, res) => {
-    res.send({ success: true });
-});
-cron.schedule("0 0 * * *", () => __awaiter(void 0, void 0, void 0, function* () {
-    let result = yield fetch(`${CronJobUrl1}/delete`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-    });
-    let response = yield result.json();
-    console.log(response);
-}));
-app.post("/create", [
+router.post("/create", [
     (0, express_validator_1.body)("problemName", "Please Enter a problem name").exists(),
     (0, express_validator_1.body)("description", "Please Enter a description ").exists(),
     (0, express_validator_1.body)("companies", "Please Enter a companies ").exists(),
@@ -89,7 +72,7 @@ app.post("/create", [
         res.send({ success, msg: "Internal Server Error " });
     }
 }));
-app.get("/delete", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.delete("/delete", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
         let result = yield prisma.dailyNewProblem.findFirst({ where: { problemNo: 1 } });
@@ -148,5 +131,48 @@ app.get("/delete", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     catch (error) {
         console.log(error);
         return res.status(500).send({ success, error, msg: "Internal Server Error" });
+    }
+}));
+module.exports = router;
+router.post("/push", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let success = false;
+    try {
+        const getfirst = yield prisma.dailyNewProblem.findFirst({ where: { problemNo: 1 } });
+        if (!getfirst) {
+            res.send({ success, msg: "Not able to create" });
+        }
+        if (getfirst) {
+            let t = yield prisma.problemSet.findMany();
+            let newNumber = 1;
+            if (t.length > 0) {
+                console.log(t[t.length - 1].problemNo);
+                newNumber = t[t.length - 1].problemNo + 1;
+            }
+            const response2 = yield prisma.problemSet.create({ data: {
+                    problemNo: newNumber,
+                    problemName: getfirst.problemName,
+                    description: getfirst.description,
+                    companies: getfirst.companies,
+                    Details: { like: [], dislike: [] },
+                    testcases: getfirst.testcases,
+                    constraint: getfirst.constraint,
+                    topic: getfirst.topic,
+                    accepted: 0,
+                    submission: 0,
+                    category: getfirst.category,
+                    sampleInputOutput: getfirst.sampleInputOutput,
+                    aboveCodeTemplate: getfirst.aboveCodeTemplate,
+                    belowCodeTemplate: getfirst.belowCodeTemplate,
+                    middleCode: getfirst.middleCode,
+                    correctMiddleCode: getfirst.correctMiddleCode,
+                } });
+            console.log("res2-", response2);
+            success = true;
+            res.send({ success, msg: "Operation Done" });
+        }
+    }
+    catch (error) {
+        console.log(error);
+        res.send({ success, msg: "Internal Server Error" });
     }
 }));

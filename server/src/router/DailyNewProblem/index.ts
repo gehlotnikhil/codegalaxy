@@ -1,37 +1,17 @@
-const  dotenv =require("dotenv");
-dotenv.config();
 import { PrismaClient } from "@prisma/client";
-import { Request, Response } from "express";
+import { Request, Response, Router } from "express";
 import { body, validationResult } from "express-validator"
-// Initialize environment variables and Prisma client
+const router = Router();
+const ServerUrl = process.env.ServerUrl || "http://localhost:8000"
+console.log(ServerUrl);
 const prisma = new PrismaClient();
-const cron = require("node-cron");
-// Schedule the job to run at 12:00 AM daily
-const  CronJobUrl1 =  process.env.CronJobUrl1||"http://localhost:8001"
-const express = require("express")
-const app = express()
-const PORT = process.env.PORT || 8001
-app.use(express.json())
-app.listen(PORT,()=>{
-    console.log("server running at",PORT);
-})
-app.get("/",(req:any,res:any)=>{
-    res.send({success:true})
-}) 
-cron.schedule("0 0 * * *", async() => {
-      let result = await fetch(`${CronJobUrl1}/delete`,{
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-    })
+ 
 
-    let response = await result.json()
-    console.log(response);
-    
-    
+
+router.get("/", (req: Request, res: Response) => {
+    res.send({ success: "Daily New Problem Routing is on" });
 });
-
-
-app.post("/create", [
+router.post("/create", [
     body("problemName", "Please Enter a problem name").exists(),
     body("description", "Please Enter a description ").exists(),
     body("companies", "Please Enter a companies ").exists(),
@@ -110,7 +90,7 @@ app.post("/create", [
 
 
 
-app.get(
+router.delete(
   "/delete",
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
@@ -170,6 +150,11 @@ app.get(
           console.log("done - ",result2);
           console.log("done - ",result2);
           console.log("done - ");
+  
+          
+      
+    
+      
     
       success = true;
       return res.send({ success, result, msg: "Daily new Problem deleted" });
@@ -179,3 +164,50 @@ app.get(
     }
   }
 );
+
+module.exports = router;
+
+router.post("/push",async(req:Request,res:Response):Promise<any>=>{
+    let success = false
+    try {
+        const getfirst = await prisma.dailyNewProblem.findFirst({where:{problemNo:1}})
+        if(!getfirst){
+            res.send({success,msg:"Not able to create"})
+        }
+        if(getfirst){
+            let t = await prisma.problemSet.findMany();
+            let newNumber = 1;
+            if (t.length > 0) {
+              console.log(t[t.length - 1].problemNo);
+              newNumber = t[t.length - 1].problemNo + 1;
+            }
+       const response2 =  await prisma.problemSet.create({data:{
+            problemNo:newNumber,
+            problemName: getfirst.problemName,
+            description: getfirst.description,
+            companies: getfirst.companies,
+            Details:{like:[],dislike:[]},
+            testcases: getfirst.testcases,
+            constraint: getfirst.constraint,
+            topic: getfirst.topic,
+            accepted: 0,
+            submission: 0,
+            category: getfirst.category,
+            sampleInputOutput: getfirst.sampleInputOutput,
+            aboveCodeTemplate: getfirst.aboveCodeTemplate,
+            belowCodeTemplate: getfirst.belowCodeTemplate,
+            middleCode: getfirst.middleCode,
+            correctMiddleCode: getfirst.correctMiddleCode,
+        }})
+        console.log("res2-",response2);
+        
+            success = true
+            res.send({success,msg:"Operation Done"})
+    }
+    } catch (error) {
+        console.log(error);
+        res.send({success,msg:"Internal Server Error"})
+        
+        
+    }
+})
