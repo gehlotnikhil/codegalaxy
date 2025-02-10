@@ -560,4 +560,31 @@ router.post("/executeproblem", [
     (0, express_validator_1.body)("language", "Please enter a language").exists(),
     (0, express_validator_1.body)("code", "Please enter a code").exists(),
 ], ExecuteProblem_1.default.execute);
+router.get("/getdailynewproblem", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let success = false;
+    try {
+        const today = new Date();
+        const startday = new Date();
+        const endday = new Date();
+        startday.setUTCHours(0, 0, 0, 0);
+        endday.setUTCHours(23, 59, 59, 999);
+        const result = yield prisma.problemSet.findFirst({
+            where: {
+                createdAt: {
+                    gte: startday,
+                    lte: endday
+                }
+            }
+        });
+        if (!result) {
+            return res.send({ success, result, msg: "Not Found" });
+        }
+        success = true;
+        return res.send({ success, msg: "Operation Done", result });
+    }
+    catch (error) {
+        console.log(error);
+        return res.send({ success, msg: "Internal Server Error " });
+    }
+}));
 module.exports = router;

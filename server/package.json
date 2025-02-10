@@ -13,7 +13,7 @@
   "description": "",
   "dependencies": {
     "@faker-js/faker": "^9.3.0",
-    "@prisma/client": "^6.2.1",
+    "@prisma/client": "^6.3.1",
     "@types/node": "^22.10.1",
     "@types/nodemailer": "^6.4.17",
     "bcryptjs": "^2.4.3",
@@ -39,6 +39,6 @@
     "@types/express": "^5.0.0",
     "@types/node-fetch": "^2.6.12",
     "axios": "^1.7.9",
-    "prisma": "^6.2.1"
+    "prisma": "^6.3.1"
   }
 }

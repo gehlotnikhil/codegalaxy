@@ -641,15 +641,10 @@ router.post(
       } else {
         result.status = "UNSOLVED";
       }
-
       console.log("final -", result);
-
-
-
       if (result !== null) {
         success = true;
       }
-
       return res.send({ success, result });
     } catch (error) {
       console.log(error);
@@ -663,5 +658,34 @@ router.post("/executeproblem", [
   body("language", "Please enter a language").exists(),
   body("code", "Please enter a code").exists(),
 ], executeproblem.execute);
+
+router.get("/getdailynewproblem",async(req:Request,res:Response):Promise<any>=>{
+  let success = false;
+  try{
+    const today = new Date();
+    const startday = new Date()
+    const endday = new Date()
+    startday.setUTCHours(0,0,0,0)
+    endday.setUTCHours(23,59,59,999)
+    const result = await prisma.problemSet.findFirst({
+      where:{
+        createdAt:{
+          gte:startday,
+          lte:endday
+
+        }
+      }
+    })
+    if(!result){
+     return  res.send({success,result,msg:"Not Found"})
+    }
+
+    success = true;
+    return res.send({success,msg:"Operation Done",result})
+  }catch(error){
+    console.log(error);
+    return res.send({success,msg:"Internal Server Error "});
+  }
+})
 
 module.exports = router;

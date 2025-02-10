@@ -23,6 +23,7 @@
     "express": "^4.21.2",
     "express-validator": "^7.2.1",
     "jwt-decode": "^4.0.0",
+    "nodemon": "^3.1.9",
     "prisma": "^6.3.1",
     "react-router-dom": "^7.1.1",
     "vercel": "^39.2.5"

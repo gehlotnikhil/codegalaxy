@@ -28,14 +28,9 @@ app.listen(PORT, () => {
 app.get("/", (req, res) => {
     res.send({ success: true });
 });
-cron.schedule("0 0 * * *", () => __awaiter(void 0, void 0, void 0, function* () {
-    let result = yield fetch(`${CronJobUrl1}/delete`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-    });
-    let response = yield result.json();
-    console.log(response);
-}));
+app.get("/abc", (req, res) => {
+    res.send({ success: true, msg: "Hello" });
+});
 app.post("/create", [
     (0, express_validator_1.body)("problemName", "Please Enter a problem name").exists(),
     (0, express_validator_1.body)("description", "Please Enter a description ").exists(),
@@ -87,6 +82,23 @@ app.post("/create", [
     catch (error) {
         console.log(error);
         res.send({ success, msg: "Internal Server Error " });
+    }
+}));
+app.get("/push", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let success = false;
+    try {
+        let result = yield fetch(`${CronJobUrl1}/delete`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        });
+        let response = yield result.json();
+        console.log(response);
+        success = true;
+        res.send({ success, msg: "Operation  Done" });
+    }
+    catch (error) {
+        console.log(error);
+        res.send({ success, msg: "Internal Server Error" });
     }
 }));
 app.get("/delete", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
