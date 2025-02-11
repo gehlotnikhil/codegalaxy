@@ -33,7 +33,6 @@ router.post(
         startTime,
         problems,
         status,
-        noOfParticipated,
       } = req.body;
 
       let t = await prisma.contest.findMany();
@@ -52,7 +51,6 @@ router.post(
           startTime: new Date(startTime),
           problems,
           status,
-          noOfParticipated:0,
         },
       });
       console.log(result);

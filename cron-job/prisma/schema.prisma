@@ -49,7 +49,6 @@ model Contest {
   startTime        DateTime
   problems         Int[]
   status           String
-  noOfParticipated Int
 }
 
 type ContestInfo {

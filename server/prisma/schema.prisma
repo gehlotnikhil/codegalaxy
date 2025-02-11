@@ -46,10 +46,9 @@ model Contest {
   contestNo        Int      @unique
   contestName      String
   duration         Int
-  startTime        DateTime
+  startTime        DateTime 
   problems         Int[]
   status           String
-  noOfParticipated Int
 }
 
 type ContestInfo {

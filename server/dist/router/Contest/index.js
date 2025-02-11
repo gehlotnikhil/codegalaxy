@@ -31,7 +31,7 @@ router.post("/create", [
         if (!error.isEmpty()) {
             return res.status(404).send({ success, error: error.array() });
         }
-        let { contestName, duration, startTime, problems, status, noOfParticipated, } = req.body;
+        let { contestName, duration, startTime, problems, status, } = req.body;
         let t = yield prisma.contest.findMany();
         console.log(t[t.length - 1].contestNo);
         console.log(t);
@@ -47,7 +47,6 @@ router.post("/create", [
                 startTime: new Date(startTime),
                 problems,
                 status,
-                noOfParticipated: 0,
             },
         });
         console.log(result);

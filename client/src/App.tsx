@@ -31,6 +31,7 @@ import PraticeCourseArena from "./Component/PraticeCourseArena";
 import SolvedPraticeProblem from "./Component/SolvedPraticeProblem";
 import OTPVerification from "./Component/OTPVerification";
 import ForgetPassword from "./Component/ForgetPassword";
+import ContestMainPage from "./Component/ContestMainPage";
 interface ProtectedRouteProps {
   children: React.ReactNode;
 } 
@@ -276,6 +277,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/contest"
+              element={
+                <ProtectedRoute>
+                  <ContestMainPage />
                 </ProtectedRoute>
               }
             />

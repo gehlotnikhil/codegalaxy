@@ -40,7 +40,8 @@ function AppNavbar() {
     prfileLink: true,
     playgroundLink: true,
     profilename:true,
-    newproblem:true
+    newproblem:true,
+    contestLink:true
   });
 
   useEffect(() => {
@@ -58,11 +59,13 @@ function AppNavbar() {
       prfileLink: true,
       playgroundLink: true,
       profilename:true,
-      newproblem:true
+      newproblem:true,
+      contestLink:true
     };
 
     if (locationHook.pathname === "/login") {
       updatedStatus.homeLink = false;
+      updatedStatus.contestLink = false;
       updatedStatus.newproblem = false;
       updatedStatus.aboutLink = false;
       updatedStatus.loginLink = false;
@@ -73,6 +76,7 @@ function AppNavbar() {
       
     } else if (locationHook.pathname === "/signup") {
       updatedStatus.homeLink = false;
+      updatedStatus.contestLink = false;
       updatedStatus.newproblem = false;
       updatedStatus.aboutLink = false;
       updatedStatus.signupLink = false;
@@ -82,6 +86,7 @@ function AppNavbar() {
       updatedStatus.profilename = false;
     } else if (locationHook.pathname === "/admin") {
       updatedStatus.homeLink = false;
+      updatedStatus.contestLink = false;
       updatedStatus.newproblem = false;
       updatedStatus.aboutLink = false;
       updatedStatus.loginLink = false;
@@ -93,6 +98,7 @@ function AppNavbar() {
       
     }else if (locationHook.pathname.startsWith("/u/")) {
       updatedStatus.homeLink = true;
+      updatedStatus.contestLink = true;
       updatedStatus.newproblem = true;
       updatedStatus.aboutLink = true;
       updatedStatus.loginLink = false;
@@ -103,6 +109,7 @@ function AppNavbar() {
       updatedStatus.profilename = true;
     } else if (locationHook.pathname === "/verify") {
       updatedStatus.homeLink = false;
+      updatedStatus.contestLink = false;
       updatedStatus.newproblem = false;
       updatedStatus.aboutLink = false;
       updatedStatus.loginLink = false;
@@ -178,6 +185,15 @@ function AppNavbar() {
               >
                 <Link className="white nav-link" to="/about">
                   About
+                </Link>
+              </li>
+              <li
+                className={`nav-item d-${
+                  NavbarLinkStatus.contestLink === true ? "inline" : "none"
+                }`}
+              >
+                <Link className="white nav-link" to="/contest">
+                  Contest
                 </Link>
               </li>
               <li
