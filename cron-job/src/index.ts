@@ -113,10 +113,10 @@ app.get("/push", async (req: Request, res: Response): Promise<any> => {
     console.log(response);
 
     success = true;
-    res.send({ success, msg: "Operation  Done" })
+    res.send("Yes")
   } catch (error) {
     console.log(error)
-    res.send({ success, msg: "Internal Server Error" })
+    res.send("No")
   }
 
 })
