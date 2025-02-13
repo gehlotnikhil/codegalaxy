@@ -14,8 +14,8 @@ let url = "https://api.jdoodle.com/v1/execute";
 // let clientId ="3cb6c6b56019717db130949865c7091f"
 //   let clientSecret ="79caf22b6c76651bc39c941615728ab37f8f78acaf61204d35bef61358208626"
 //2 
-let clientId ="cb2165bd6377e25e8bb6e3e27ed1dcf3" 
-  let clientSecret ="35cb67935f0b7469b0d9825f2a34f16e987ad29a3f634c03bbd79c00b5218f55"
+// let clientId ="cb2165bd6377e25e8bb6e3e27ed1dcf3" 
+//   let clientSecret ="35cb67935f0b7469b0d9825f2a34f16e987ad29a3f634c03bbd79c00b5218f55"
 //3
 // let clientId ="345502c18407a9ab659abc4f94cb0161"
 //   let clientSecret ="1983d761dcb61af72af3171356f2b0d8a104d5dbe08ec16228ce66ca0ed8248d"
@@ -36,7 +36,10 @@ let clientId ="cb2165bd6377e25e8bb6e3e27ed1dcf3"
 // let clientId ="850b170bd8a43bded95a6e0f5601ff76"
 //   let clientSecret ="43bbb4d915d70d9180504f6b6aa95976d744c0c821bbf9aece636896bc8c6732"
 
-  let success = false;
+
+let clientId =process.env.clientId
+let clientSecret =process.env.clientSecret
+let success = false;
   try {
    
     let result = [];
