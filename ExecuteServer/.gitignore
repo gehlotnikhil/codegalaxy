@@ -1,0 +1,6 @@
+pubsub/node_modules
+worker/node_modules
+ws2/node_modules
+main-server/node_modules
+frontend/node_modules
+.env

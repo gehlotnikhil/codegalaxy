@@ -262,58 +262,167 @@ console.log("Let see - ");
 
 
   }
-
+  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [clientId, setClientId] = useState<string | null>(null);
+  const [responses, setResponses] = useState<any[]>([]);
+  
+  useEffect(() => {
+    console.log("socket - ", socket);
+  }, [socket]);
+  
+  useEffect(() => {
+    console.log("clientId - ", clientId);
+  }, [clientId]);
+  
+  useEffect(() => {
+    console.log("responses - ", responses);
+  }, [responses]);
+  
+  const connectAndSendMessage = (payload: any): Promise<any> => {
+    return new Promise((resolve, reject) => {
+      console.log("Connecting WebSocket...");
+  
+      const newSocket = new WebSocket("ws://localhost:8080");
+  
+      const timeout = setTimeout(() => {
+        console.error("WebSocket response timeout after 10 seconds");
+        newSocket.close();
+        reject({ success: false });
+      }, 10000); // 10 seconds timeout
+  
+      newSocket.onopen = () => {
+        console.log("WebSocket connection established");
+        setSocket(newSocket);
+      };
+  
+      newSocket.onmessage = async (event) => {
+        clearTimeout(timeout); // Clear timeout on receiving a message
+        const data = JSON.parse(event.data);
+        console.log("Message from server:", data);
+  
+        if (data.type === "welcome") {
+          setClientId(data.clientId);
+          console.log(`Assigned clientId: ${data.clientId}`);
+  
+          // Send message now that we have clientId
+          sendMessage(newSocket, { ...payload, clientId: data.clientId });
+        } else if (data.type === "response") {
+          setResponses((prev) => [...prev, data.message]);
+          resolve(data.message);
+        } else if (data.type === "error") {
+          console.error(`Error from server: ${data.message}`);
+          reject(new Error(data.message));
+        } else if (data.type === "question") {
+          try {
+            const parsedData = JSON.parse(data.message);
+            console.log({ success: true, data: parsedData });
+            resolve(parsedData.result);
+          } catch (error) {
+            console.error("Error parsing server response:", error);
+            reject(error);
+          }
+        }
+      };
+  
+      newSocket.onerror = (error) => {
+        clearTimeout(timeout);
+        console.error("WebSocket error:", error);
+        reject(error);
+      };
+  
+      newSocket.onclose = () => {
+        clearTimeout(timeout);
+        console.log("WebSocket connection closed");
+        setSocket(null);
+        setClientId(null);
+      };
+    }).catch(() => ({ success: false }));
+  };
+  
+  const sendMessage = async (ws: WebSocket, mdata: any) => {
+    try {
+      const payload = JSON.stringify({
+        clientId: mdata.clientId,
+        content: "Test message from client",
+      });
+  
+      ws.send(payload);
+      console.log("Message sent via WebSocket");
+  
+      // Make a POST request
+      const response = await fetch("http://localhost:5000/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          clientId: `${mdata.clientId}`,
+          code: mdata.code,
+          language: mdata.language,
+          problemId: "1",
+          testcases: mdata.testcases,
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to submit the message");
+      }
+  
+      console.log("Message sent successfully");
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
+  
   const handleRunCode = async () => {
     setspinnerStatus(true);
-    const testcases = MainQuestion.testcases ? MainQuestion.testcases : [];
-    const aboveCodeTemplate = MainQuestion.aboveCodeTemplate
-      ? MainQuestion.aboveCodeTemplate[SelectedLanguage]
-      : "";
-    const belowCodeTemplate = MainQuestion.belowCodeTemplate
-      ? MainQuestion.belowCodeTemplate[SelectedLanguage]
-      : "";
-    setResultOfTest(
-      testcases.map(() => {
-        return { isSuccess: "pending" };
-      })
-    );
-    let output = "";
-    console.log(
-      "codetesting----",
-      code,
-      "-----",
-      MainQuestion.middleCode,
-      "----",
-      MainQuestion.middleCode &&
-        code === MainQuestion.middleCode[SelectedLanguage]
-    );
-    if (
-      MainQuestion.middleCode &&
-      code === MainQuestion.middleCode[SelectedLanguage]
-    ) {
+    const testcases = MainQuestion.testcases || [];
+    const aboveCodeTemplate = MainQuestion.aboveCodeTemplate?.[SelectedLanguage] || "";
+    const belowCodeTemplate = MainQuestion.belowCodeTemplate?.[SelectedLanguage] || "";
+  
+    setResultOfTest(testcases.map(() => ({ isSuccess: "pending" })));
+  
+    if (MainQuestion.middleCode?.[SelectedLanguage] === code) {
       toast.error("Empty Code Not Accepted");
-      setshowCustomTestCase(false);
       setShowResultTestCase(true);
       setspinnerStatus(false);
       return;
     }
+  
     const data = {
       code: aboveCodeTemplate + code + belowCodeTemplate,
       language: SelectedLanguage,
-      testcases: MainQuestion.testcases,
+      testcases: testcases,
     };
-    setDisplaySubmitCodeResult({
-      input: "",
-      output: "",
-      expected: "",
-    });
-
+  
+    setDisplaySubmitCodeResult({ input: "", output: "", expected: "" });
+  let output=""
     try {
       console.log("data send--", data);
-      let jsondata = await handleCodeExecution(data);
-      let updateresult: any = "";
+      let jsondata: any = await connectAndSendMessage(data);
+      
+      console.log("Received response:", jsondata);
+      output = String(jsondata.output || "");
+  
+      let finalMsg = false
+      jsondata.result.map((e:any)=>{if(e===true){finalMsg=true}})
+      let finalStatus = jsondata.result?.map((value: any) => ({
+        isSuccess: value === true ? "pass" : "failed",
+      })) || [];
+  
+      setResultOfTest(finalStatus);
+  
+      if (finalMsg) {
+        setQuestionStatus(true);
+        updateContestDetailInUser("PASS");
+        updateLeaderBoard("PASS");
+        toast.success("Passed");
+      } else {
+        toast.error("Failed");
+      }
+  
       if (!userDetail.activeDays.includes(getDayOfYear())) {
-        updateresult = await fetch(`${SERVER_URL}/api/user/update/`, {
+        const updateResponse = await fetch(`${SERVER_URL}/api/user/update/`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -323,82 +432,32 @@ console.log("Let see - ");
             activeDays: [...userDetail.activeDays, getDayOfYear()],
           }),
         });
-        const jsondata2 = await updateresult.json();
+  
+        const jsondata2 = await updateResponse.json();
         if (jsondata2.success) {
-          dispatch(
-            setUserDetail({
-              activeDays: [...userDetail.activeDays, getDayOfYear()],
-            })
-          );
-          
+          dispatch(setUserDetail({ activeDays: [...userDetail.activeDays, getDayOfYear()] }));
         }
       }
-
-      console.log(jsondata);
-      console.log("qwqwqqwq---", jsondata);
-      console.log("qwqwqqwq---", jsondata.output);
-      console.log("qwqwqqwq---", typeof jsondata.output);
-      output = String(jsondata.output);
-
-      let finalMsg = false;
-      if (jsondata.success) {
-        finalMsg = true;
-        let finalStatus = jsondata.result.map((value: any) => {
-          if (value === true) {
-            return { isSuccess: "pass" };
-          } else {
-            finalMsg = false;
-            return { isSuccess: "failed" };
-          }
-        });
-        setResultOfTest(finalStatus);
-
-        if (finalMsg === true) {
-          setQuestionStatus(true);
-          updateContestDetailInUser("PASS")
-          updateLeaderBoard("PASS")
-          toast.success("Passed");
-        } else {
-          toast.error("Failed");
-        }
-      } else {
-        toast.error("Failed");
-        setResultOfTest(
-          testcases.map(() => {
-            return { isSuccess: "failed" };
-          })
-        );
-      }
-    } catch (error) {
-      console.log(error);
-      setResultOfTest(
-        testcases.map(() => {
-          return { isSuccess: "failed" };
-        })
-      );
-    }
-    MainQuestion.testcases?.map((value) => {
-      console.log(
-        value,
-        " - - ",
-        value.input,
-        " - - ",
-        typeof value,
-        " - ",
-        typeof value.input
-      );
-      setDisplaySubmitCodeResult({
-        ...DisplaySubmitCodeResult,
-        input: String(value.input),
-        output: String(output),
-        expected: String(value.output),
+  
+      testcases.forEach((value) => {
+        setDisplaySubmitCodeResult((prev) => ({
+          ...prev,
+          input: String(value.input),
+          output: output,
+          expected: String(value.output),
+        }));
       });
-    });
-    setshowCustomTestCase(false);
-    setShowResultTestCase(true);
-    setspinnerStatus(false);
+  
+      setShowResultTestCase(true);
+    } catch (error) {
+      console.error(error);
+      setResultOfTest(testcases.map(() => ({ isSuccess: "failed" })));
+      toast.error("Execution failed.");
+    } finally {
+      setspinnerStatus(false);
+    }
   };
-
+  
   const toggleQuestionInfo = (
     QuestionInfoKey: keyof typeof showQuestionInfos
   ) => {
@@ -708,6 +767,7 @@ console.log("Let see - ");
                 width={"22px"}
               />
             </button>
+
           </div>
           <TestStatus tests={ResultOfTest} />
           <div className="container mt-3">

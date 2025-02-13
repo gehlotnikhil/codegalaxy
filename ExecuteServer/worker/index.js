@@ -1,19 +1,27 @@
-const axios = require("axios");
-const { body, validationResult } = require("express-validator");
-import e, { Request, Response } from "express";
+const { createClient } = require('redis');
+// const client = createClient(); //default url of redis it is taking
+const client = createClient({
+  password: process.env.password,
+  socket: {
+      host: process.env.host,
+      port: process.env.port
+  }
+})
+
+const executeproblem = async( language, code, testcases)=>{
 let url = "https://api.jdoodle.com/v1/execute";
 //1
 // let clientId ="3cb6c6b56019717db130949865c7091f"
 //   let clientSecret ="79caf22b6c76651bc39c941615728ab37f8f78acaf61204d35bef61358208626"
-//2
-// let clientId ="cb2165bd6377e25e8bb6e3e27ed1dcf3"
-//   let clientSecret ="35cb67935f0b7469b0d9825f2a34f16e987ad29a3f634c03bbd79c00b5218f55"
+//2 
+let clientId ="cb2165bd6377e25e8bb6e3e27ed1dcf3" 
+  let clientSecret ="35cb67935f0b7469b0d9825f2a34f16e987ad29a3f634c03bbd79c00b5218f55"
 //3
 // let clientId ="345502c18407a9ab659abc4f94cb0161"
 //   let clientSecret ="1983d761dcb61af72af3171356f2b0d8a104d5dbe08ec16228ce66ca0ed8248d"
 //4
-  let clientId ="ceb8d7514750a4147ffce9a3a3190691"
-  let clientSecret ="870220b6e357ee0768b3561207b95491e0225aae58bc169ba11c273df1e3f1ce"
+  // let clientId ="ceb8d7514750a4147ffce9a3a3190691"
+  // let clientSecret ="870220b6e357ee0768b3561207b95491e0225aae58bc169ba11c273df1e3f1ce"
 //5
   // let clientId ="fe433fd7a361a4a412a4454380ecd54f"
   // let clientSecret ="80849acee2f7b865c39c0648264e3dc76c8a55cf3948fab6ff4fb3268d1e1200"
@@ -28,45 +36,15 @@ let url = "https://api.jdoodle.com/v1/execute";
 // let clientId ="850b170bd8a43bded95a6e0f5601ff76"
 //   let clientSecret ="43bbb4d915d70d9180504f6b6aa95976d744c0c821bbf9aece636896bc8c6732"
 
-  
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const execute = async (req: Request, res: Response): Promise<any> => {
   let success = false;
   try {
-    let error = validationResult(req.body);
-    if (!error.isEmpty()) {
-      return res.status(404).send({ success, error: error.array() });
-    }
-    let { language, code, testcases } = req.body;
+   
     let result = [];
     let output = [];
     let err = [];
     let cpuTime = [];
     let script = code;
-    let versionIndex: string | null = "";
+    let versionIndex= "";
     if (language === "java") {
       versionIndex = "4";
     } else {
@@ -120,7 +98,7 @@ const execute = async (req: Request, res: Response): Promise<any> => {
     } while (i < testcases.length);
         
     success = true;
-    return res.send({
+    return ({
       success,
       result,
       error: err,
@@ -129,9 +107,59 @@ const execute = async (req: Request, res: Response): Promise<any> => {
     });
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ success, error });
+    return ({ success, error });
   }
 };
 
-const executeproblem = { execute };
-export default executeproblem;
+
+
+ 
+async function processSubmission(submission) {
+  const { problemId, code, language,clientId,testcases } = JSON.parse(submission);
+  console.log(`Processing submission for problemId ${problemId}...`);
+  console.log(`Code: ${code}`);
+  console.log(`Language: ${language}`);
+  console.log(`Clientid: ${clientId}`);
+  console.log(`Testcase: ${testcases}`);
+
+
+  let result ={}
+
+  try {
+    result =  await executeproblem(language,code,testcases)
+
+  } catch (error) {
+    result = {success:false,msg:"Not Done"}
+  }
+   submission = {result:result,clientId,problemId}
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  console.log(`Finished processing submission for problemId ${problemId}.`);
+  console.log(submission);
+  
+  client.publish("question", JSON.stringify(submission));
+}
+
+async function startWorker() {
+  try {
+    await client.connect();
+    console.log("Worker connected to Redis.");
+    
+    // Main loop
+    while (true) {
+      try {
+        const submission = await client.brPop("problems", 0);
+         await processSubmission(submission.element);
+
+
+      } catch (error) {
+        console.error("Error processing submission:", error);
+        // Implement your error handling logic here. For example, you might want
+        // to push the submission back onto the queue or log the error to a file.
+      }
+    }
+  } catch (error) {
+    console.error("Failed to connect to Redis", error);
+  }
+}
+
+startWorker();

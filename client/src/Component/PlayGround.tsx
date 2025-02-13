@@ -97,7 +97,7 @@ func main() {
       console.log(result.executionTime[0]===null,"---", typeof result.executionTime[0]);
       if (result.success === true) {
         let output: string = result.output[0];
-        let updatedOutput = output.replace("jdoodle", "file");
+        let updatedOutput = output?output.replace("jdoodle", "file"):"";
         setDisplayOutput(updatedOutput);    
       } else {
         toast.error("Failed");
