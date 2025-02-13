@@ -119,7 +119,7 @@ wss.on("connection", (ws) => {
 });
 
 // Start the server
-server.listen(8080, () => {
+server.listen(process.env.PORT||8080, () => {
   console.log("WebSocket server is running on ws://localhost:8080");
 });
 initializeSubscriber();
