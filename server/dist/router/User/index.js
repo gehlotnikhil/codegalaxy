@@ -233,6 +233,7 @@ router.post("/verify", [
                     userName: r.userName,
                     totalRank: 1000,
                     linkedin_url: null,
+                    ContestDetail: [],
                     solvedProblemDetails: [],
                     activeDays: [],
                     ThirdPartyLoginAccess: false,
@@ -363,6 +364,7 @@ router.put("/update/", [
     (0, express_validator_1.body)("email", "Please fill email field").exists(),
     (0, express_validator_1.body)("password", "Please fill password field").exists(),
     (0, express_validator_1.body)("linkedin_url", "Please fill linkedin_url field").exists(),
+    (0, express_validator_1.body)("ContestDetail", "Please fill ContestDetail field").exists(),
     (0, express_validator_1.body)("userName", "Please fill userName field").exists(),
     (0, express_validator_1.body)("totalRank", "Please fill totalRank field").exists(),
     (0, express_validator_1.body)("noOfProblemSolved", "Please fill noOfProblemSolved field").exists(),
@@ -438,6 +440,9 @@ router.put("/update/", [
         }
         if (req.body.linkedin_url) {
             query.linkedin_url = req.body.linkedin_url;
+        }
+        if (req.body.ContestDetail) {
+            query.ContestDetail = req.body.ContestDetail;
         }
         if (req.body.collegeName) {
             query.collegeName = req.body.collegeName;
@@ -551,12 +556,33 @@ router.get("/getspecificuser", [
         return res.status(505).send({ success, error });
     }
 }));
-router.get("/getalluser", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/getalluser", [
+    (0, express_validator_1.body)("name", "Please fill Name field"),
+    (0, express_validator_1.body)("ContestDetail", "Please fill ContestDetail field"),
+], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
-        let result = yield prisma.user.findMany();
+        let error = (0, express_validator_1.validationResult)(req);
+        if (!error.isEmpty()) {
+            return res.status(404).send({ success, error: error.array() });
+        }
+        console.log(req.body);
+        console.log(Object.keys(req.body).length);
+        if (Object.keys(req.body).length === 0) {
+            let result = yield prisma.user.findMany();
+            success = true;
+            return res.send({ success, result });
+        }
+        let query = {};
+        if (req.body.name) {
+            query.name = 1;
+        }
+        if (req.body.ContestDetail) {
+            query.ContestDetail = 1;
+        }
+        let r = yield prisma.user.findMany({ select: Object.assign({ id: 1 }, query) });
         success = true;
-        return res.send({ success, result });
+        return res.send({ success, result: r });
     }
     catch (error) {
         console.log(error);

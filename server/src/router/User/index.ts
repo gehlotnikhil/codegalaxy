@@ -272,7 +272,7 @@ router.post(
       else if (r && r.email && r.password && r.userName) {
         const k = await prisma.emailOtpService.deleteMany({ where: { code, email: verifyemail } })
         // creating user
-        const result = await prisma.user.create({
+        const result = await prisma.user.create({  
           data: {
             name: r.name,
             age: r.age,
@@ -282,6 +282,7 @@ router.post(
             userName: r.userName,
             totalRank: 1000,
             linkedin_url: null,
+            ContestDetail: [],
             solvedProblemDetails: [],
             activeDays: [],
 
@@ -426,6 +427,7 @@ router.put(
     body("email", "Please fill email field").exists(),
     body("password", "Please fill password field").exists(),
     body("linkedin_url", "Please fill linkedin_url field").exists(),
+    body("ContestDetail", "Please fill ContestDetail field").exists(),
     body("userName", "Please fill userName field").exists(),
     body("totalRank", "Please fill totalRank field").exists(),
     body("noOfProblemSolved", "Please fill noOfProblemSolved field").exists(),
@@ -513,6 +515,9 @@ router.put(
       }
       if (req.body.linkedin_url) {
         query.linkedin_url = req.body.linkedin_url;
+      }
+      if (req.body.ContestDetail) {
+        query.ContestDetail = req.body.ContestDetail;
       }
       if (req.body.collegeName) {
         query.collegeName = req.body.collegeName;
@@ -646,12 +651,46 @@ router.get(
   }
 );
 
-router.get("/getalluser", async (req: Request, res: Response): Promise<any> => {
+router.post("/getalluser",[
+  body("name", "Please fill Name field"),
+  body("ContestDetail", "Please fill ContestDetail field"),
+], async (req: Request, res: Response): Promise<any> => {
   let success = false;
   try {
-    let result = await prisma.user.findMany();
+
+  let error = validationResult(req);
+      if (!error.isEmpty()) {
+        return res.status(404).send({ success, error: error.array() });
+      }
+      console.log(req.body);
+      console.log(Object.keys(req.body).length);
+      
+
+
+      if(Object.keys(req.body).length === 0){
+        let result = await prisma.user.findMany();
+        success = true;
+        return res.send({ success, result });
+      }
+
+      let query:any={}
+      if (req.body.name) {
+        query.name = 1;
+      }
+      if (req.body.ContestDetail) {
+        query.ContestDetail = 1;
+      }
+      
+      
+    
+
+
+    let r = await prisma.user.findMany({select:{
+      id:1,
+      ...query
+    }});
     success = true;
-    return res.send({ success, result });
+    return res.send({ success ,result:r});
   } catch (error) {
     console.log(error);
     return res.status(505).send({ success, error });

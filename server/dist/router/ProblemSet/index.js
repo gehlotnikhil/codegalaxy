@@ -422,7 +422,7 @@ router.post("/getpraticeproblemdetails", (req, res) => __awaiter(void 0, void 0,
         const solvedProblems = new Set(((_a = getresult.result.praticeCourseDetail[language]) === null || _a === void 0 ? void 0 : _a.solvedProblemDetails) || []);
         const formattedProblems = problems.map((problem) => (Object.assign(Object.assign({}, problem), { status: solvedProblems.has(problem.id) ? "SOLVED" : "UNSOLVED" })));
         const response = yield fetch(`${ServerUrl}/api/user/getalluser`, {
-            method: "GET",
+            method: "POST",
             headers: { "Content-Type": "application/json" },
         });
         const getresult1 = yield response.json();

@@ -12,6 +12,10 @@ interface praticeCourseDetailType {
   java:parcticeDetailType,
   go:parcticeDetailType,
 }
+interface ContestDetailType{
+  contestid:string, 
+  solvedProblem:string[]
+}
 type UserDetailType = {
   id: string;
   name: string;
@@ -28,6 +32,7 @@ type UserDetailType = {
   noOfProblemSolved: number;
   isAdmin: boolean;
   solvedProblemDetails: any[];
+  ContestDetail:ContestDetailType[]
   state: string;
   totalRank: number;
   token: null | string;
@@ -56,6 +61,7 @@ const initialUserDetail: UserDetailType = {
   isAdmin:false,
   solvedProblemDetails: [],
   state: '',
+  ContestDetail:[],
   totalRank: 0,
   token: null,
   profilePictureUrl: '',

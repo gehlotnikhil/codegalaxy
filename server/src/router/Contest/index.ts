@@ -1,4 +1,4 @@
-import { Request, Response, Router } from "express";
+import { Request, response, Response, Router } from "express";
 
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
@@ -69,8 +69,8 @@ router.post(
         },
       });
       console.log(result);
-      const response2 = await fetch(`${ServerUrl}/api/contest/leaderboard/create/${result.id}`,{
-        method:"GET",
+      const response2 = await fetch(`${ServerUrl}/api/contest/leaderboard/create/${result.id}`, {
+        method: "GET",
         headers: { "Content-Type": "application/json" }
       })
 
@@ -253,14 +253,16 @@ router.get(
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
     try {
-      let {  contestid} = req.params;
+      let { contestid } = req.params;
       if (!contestid) {
         return res.send({ success, msg: "Please provide ContestId" })
       }
       let result;
-     result = await prisma.leaderBoard.create({data:{
-      contestid,
-     }})
+      result = await prisma.leaderBoard.create({
+        data: {
+          contestid,
+        }
+      })
 
       if (result === null) {
         success = false;
@@ -276,6 +278,226 @@ router.get(
     }
   }
 );
+
+
+router.put(
+  "/leaderboard/update/:contestid",
+  [
+    body("problemid", "Please enter the problem id").exists(),
+    body("userid", "Please enter the userid").exists(),
+    body("startTime", "Please enter the startTime").exists(),
+    body("duration", "Please enter the duration").exists()
+  ],
+  async (req: Request, res: Response): Promise<any> => {
+    let success = false;
+    try {
+
+      let error = validationResult(req);
+      if (!error.isEmpty()) {
+        return res.status(404).send({ success, error: error.array() });
+      }
+
+      const { problemid, userid,startTime,duration } = req.body
+      const { contestid } = req.params
+      if (!problemid || !userid || !contestid || !startTime || !duration) {
+        return res.send({ success, msg: "Paramater missing" })
+      }
+
+      const response1 = await prisma.leaderBoard.findFirst({ where: { contestid } })
+
+      console.log(response1);
+      if (!response1) return res.send({ success, msg: "Contest not exist" })
+
+        const startDate = new Date(startTime);
+        const durationMs = duration * 60 * 1000; 
+        const endDate = new Date(startDate.getTime() + durationMs); 
+        
+        const remainingTime = endDate.getTime() - Date.now(); 
+        
+        if (remainingTime < 0) {
+          return res.send({success,msg:"Contest Ended"})
+        } else {
+          console.log(`Remaining time: ${remainingTime / 1000} seconds`);
+        }
+        
+      const response2 = await prisma.user.findFirst({ where: { id: userid } })
+      if (!response2) return res.send({ success, msg: "User not exist" })
+
+      const response3 = await prisma.contestProblem.findFirst({ where: { id: problemid } })
+      if (!response3) return res.send({ success, msg: "ContestProblem not exist" })
+      
+        console.log(response1); 
+        let UpdateleaderBoard = response1
+        let flag = 0
+        console.log("first - ",UpdateleaderBoard);
+        let check1 = UpdateleaderBoard.participent
+        check1.map((e)=>{
+          console.log(e);
+          if(e.userid === userid){
+            flag= 1;
+            console.log("hello");
+            
+            let c = e.solvedProblem.includes(problemid)
+            if(!c) e.solvedProblem = [...e.solvedProblem,problemid]
+          }
+          return e
+          
+        })
+        if(flag ===0){ // if userid not found
+        console.log("yellow");
+          UpdateleaderBoard.participent = [...UpdateleaderBoard.participent,{userid:userid,solvedProblem:[problemid]}]
+        }
+        console.log(UpdateleaderBoard.participent);
+        const result =await prisma.leaderBoard.update({where:{
+          id: UpdateleaderBoard.id
+        },
+        data:{
+          participent:UpdateleaderBoard.participent
+        }
+      })
+        
+        
+      
+
+
+      success = true;
+      res.send({ success, msg: "Done" })
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({ success, error });
+    }
+  }
+);
+
+router.get(
+  "/leaderboard/:contestid",
+  async (req: Request, res: Response): Promise<any> => {
+    let success = false;
+    try {
+
+      let error = validationResult(req);
+      if (!error.isEmpty()) {
+        return res.status(404).send({ success, error: error.array() });
+      }
+      const { contestid } = req.params
+      if ( !contestid) {
+        return res.send({ success, msg: "Paramater missing" })
+      }
+
+      const response1 = await prisma.leaderBoard.findFirst({ where: { contestid } })
+      console.log(response1);
+      
+      if(!response1) return res.send({success,msg:"Leaderboard not exist"})
+
+      success = true;
+      res.send({ success, msg: "Done",result:response1 })
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({ success, error });
+    }
+  }
+);
+
+router.put(
+  "/usercontestdetail/update/:contestid",
+  [
+    body("problemid", "Please enter the problem id").exists(),
+    body("userid", "Please enter the userid").exists(),
+  ],
+  async (req: Request, res: Response): Promise<any> => {
+    let success = false;
+    try {
+
+      let error = validationResult(req);
+      if (!error.isEmpty()) {
+        return res.status(404).send({ success, error: error.array() });
+      }
+
+      const { problemid, userid } = req.body
+      const { contestid } = req.params
+      if (!problemid || !userid || !contestid  ) {
+        return res.send({ success, msg: "Paramater missing" })
+      }
+
+      const response1 = await prisma.leaderBoard.findFirst({ where: { contestid } })
+      console.log(response1);
+      if (!response1) return res.send({ success, msg: "Contest not exist" })
+
+      const response2 = await prisma.user.findFirst({ where: { id: userid } })
+      if (!response2) return res.send({ success, msg: "User not exist" })
+
+      const response3 = await prisma.contestProblem.findFirst({ where: { id: problemid } })
+      if (!response3) return res.send({ success, msg: "ContestProblem not exist" })
+      
+
+        console.log(response2); 
+        let UpdateUser = response2
+        let flag = 0
+        console.log("first - ",UpdateUser);
+        let check1 = UpdateUser.ContestDetail
+        check1.map((e)=>{
+          console.log(e);
+          if(e.contestid === contestid){
+            flag= 1;
+            console.log("hello");
+            
+            let c = e.solvedProblem.includes(problemid)
+            if(!c) e.solvedProblem = [...e.solvedProblem,problemid]
+          }
+          return e
+          
+        })
+        if(flag ===0){ // if userid not found
+        console.log("yellow");
+        UpdateUser.ContestDetail = [...UpdateUser.ContestDetail,{contestid:contestid,solvedProblem:[problemid]}]
+        }
+        console.log(UpdateUser.ContestDetail);
+        const result =await prisma.user.update({where:{
+          id: UpdateUser.id
+        },
+        data:{
+          ContestDetail:UpdateUser.ContestDetail
+        }
+      })
+        
+        
+      
+
+
+      success = true;
+      res.send({ success, msg: "Done" })
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({ success, error });
+    }
+  }
+);
+
+router.get(
+  "/getcontestrank/:userid",
+  async (req: Request, res: Response): Promise<any> => {
+    let success = false;
+    try {
+      console.log( "  - ",req.params.userid);
+      const result = await prisma.leaderBoard.findMany()
+
+      let no = 0;
+      result.map((e)=>{
+         e.participent.map((k)=>{
+          if(k.userid === req.params.userid) no+=k.solvedProblem.length
+        })
+      })
+
+      
+      success = true;
+      res.send({ success, msg: "Done",result:(1000+no*50) })
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({ success, error });
+    }
+  }
+);
+
 
 
 

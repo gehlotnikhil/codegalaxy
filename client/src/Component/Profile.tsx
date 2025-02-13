@@ -28,7 +28,7 @@ function Profile() {
     state: "",
     country: "",
     linkedin_url: "",
-    totalRank: 0,
+    totalRank: 1000,
     easy: 0,
     medium: 0,
     hard: 0,
@@ -36,6 +36,8 @@ function Profile() {
     solvedProblemDetails: [],
     activeDays: [],
   });
+
+
   useEffect(() => {
     console.log("ProfileData--", ProfileData);
     setEditButtonDisplay(() => {
@@ -103,7 +105,22 @@ function Profile() {
         });
       }
 
-      setProfileData({
+      const id = jsondata.result.id
+      console.log("id - - ",id);
+      const response2 = await fetch(`${SERVER_URL}/api/contest/getcontestrank/${userDetail.id}`,{
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      const jsondata3 = await response2.json()
+      if(jsondata3.success){
+        setProfileData({...ProfileData,totalRank:jsondata3.result})
+      }
+      
+
+      setProfileData((e)=>({
+        ...e,
         profilePictureUrl: jsondata.result.profilePictureUrl,
         name: jsondata.result.name,
         userName: jsondata.result.userName,
@@ -112,14 +129,13 @@ function Profile() {
         state: jsondata.result.state,
         country: jsondata.result.country,
         linkedin_url: jsondata.result.linkedin_url,
-        totalRank: jsondata.result.totalRank,
         activeDays: jsondata.result.activeDays,
         solvedProblemDetails: jsondata.result.solvedProblemDetails,
         totalNumberOfQuestion: jsondata2.result.length,
         easy,
         medium,
         hard,
-      });
+      }));
     } else {
       toast.error(`${userName} Username not exist`);
     }

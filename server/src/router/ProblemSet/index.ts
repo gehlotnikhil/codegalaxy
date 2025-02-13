@@ -501,7 +501,7 @@ router.post("/getpraticeproblemdetails", async (req: Request, res: Response): Pr
     }));
 
     const response = await fetch(`${ServerUrl}/api/user/getalluser`,{
-      method:"GET",
+      method:"POST",
       headers: { "Content-Type": "application/json" },
 
     })

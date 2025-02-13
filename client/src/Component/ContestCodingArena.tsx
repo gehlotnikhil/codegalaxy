@@ -40,7 +40,7 @@ const ContestCodingArena: React.FC = () => {
 
   const context = useContext(MainContext);
   const { SERVER_URL } = context;
-  const param = useParams<{ problemid: string }>();
+  const param = useParams<{ problemid: string,contestid:string }>();
   const [showCustomTestCase, setshowCustomTestCase] = useState(false);
   useEffect(() => {
     console.log(showCustomTestCase);
@@ -76,9 +76,35 @@ const ContestCodingArena: React.FC = () => {
       navigate("/error");
     }
   };
+  interface ContestType{
+    id               :string
+    contestNo        :number      
+    contestName      :string
+    duration         :number
+    startTime        :string
+    problems         :string[]
+  }
+  const [Contest, setContest] = useState<ContestType | null>(null)
+  const loadContest = async(contestid:string)=>{
+    const result = await fetch(`${SERVER_URL}/api/contest/getspecificcontest?id=${contestid}`,{
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    const jsondata = await result.json()
+    if(jsondata.success){
+      console.log("contest done - ",jsondata.result);
+      
+      setContest(jsondata.result)
+    }else{
+      navigate("/error")
+    }
+  }
   useEffect(() => {
     console.log(typeof param.problemid, "param", param.problemid);
     loadMainQuestion(param.problemid as string);
+    loadContest(param.contestid as string)
   }, []);
 
   function getDayOfYear() {
@@ -176,6 +202,66 @@ const ContestCodingArena: React.FC = () => {
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedLanguage(e.target.value as Language);
   };
+  const updateLeaderBoard=async(status:("PASS"|"FAIL"),problemid=param.problemid,contestid=param.contestid)=>{
+console.log("status - ",status);
+console.log("problemid - ",problemid);
+console.log("contestid - ",contestid);
+
+if(status ==="PASS"){
+  const response1 = await fetch(`${SERVER_URL}/api/contest/leaderboard/update/${contestid}`,{
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      userid:userDetail.id,
+      problemid:problemid,
+      startTime:Contest?.startTime,
+      duration:Contest?.duration
+  })
+})
+const res1 = await response1.json()
+if(res1.success){
+  console.log("All Done");
+  
+}else{
+  console.log(res1.msg);
+  
+}
+console.log("Let see - ");
+}
+
+
+  }
+  const updateContestDetailInUser =async(status:("PASS"|"FAIL"),problemid=param.problemid,contestid=param.contestid)=>{
+console.log("status - ",status);
+console.log("problemid - ",problemid);
+console.log("contestid - ",contestid);
+
+if(status ==="PASS"){
+  const response1 = await fetch(`${SERVER_URL}/api/contest/usercontestdetail/update/${contestid}`,{
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      userid:userDetail.id,
+      problemid:problemid
+  })
+})
+const res1 = await response1.json()
+if(res1.success){
+  console.log("All Done");
+  
+}else{
+  console.log(res1.msg);
+  
+}
+console.log("Let see - ");
+}
+
+
+  }
 
   const handleRunCode = async () => {
     setspinnerStatus(true);
@@ -244,6 +330,7 @@ const ContestCodingArena: React.FC = () => {
               activeDays: [...userDetail.activeDays, getDayOfYear()],
             })
           );
+          
         }
       }
 
@@ -268,6 +355,8 @@ const ContestCodingArena: React.FC = () => {
 
         if (finalMsg === true) {
           setQuestionStatus(true);
+          updateContestDetailInUser("PASS")
+          updateLeaderBoard("PASS")
           toast.success("Passed");
         } else {
           toast.error("Failed");

@@ -299,7 +299,7 @@ function App() {
               }
             />
             <Route
-              path="/contest/main/:problemid"
+              path="/contest/:contestid/:problemid"
               element={
                 <ProtectedRoute>
                   <ContestCodingArena />
