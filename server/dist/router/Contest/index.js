@@ -12,6 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
+const ServerUrl = process.env.ServerUrl || "http://localhost:8000";
+console.log(ServerUrl);
 const router = (0, express_1.Router)();
 const { body, validationResult } = require("express-validator");
 router.get("/", (req, res) => {
@@ -23,21 +25,32 @@ router.post("/create", [
     body("duration", "Please Enter a duration").exists(),
     body("startTime", "Please Enter a startTime").exists(),
     body("problems", "Please Enter a problems's id").exists(),
-    body("status", "Please Enter a status").exists()
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
-        let error = validationResult(req.body);
+        let error = validationResult(req);
         if (!error.isEmpty()) {
             return res.status(404).send({ success, error: error.array() });
         }
-        let { contestName, duration, startTime, problems, status, } = req.body;
-        let t = yield prisma.contest.findMany();
-        console.log(t[t.length - 1].contestNo);
-        console.log(t);
+        let { contestName, duration, startTime, problems, } = req.body;
         let newNumber = 1;
-        if (t.length > 0) {
-            newNumber = t[t.length - 1].contestNo + 1;
+        let t = (yield prisma.contest.findMany());
+        console.log("1- ", t);
+        console.log("1- ", t.length);
+        if (t.length !== 0) {
+            console.log(t[t.length - 1].contestNo);
+            console.log("2- ", t[t.length - 1].contestNo);
+            console.log(t);
+            if (t.length > 0) {
+                newNumber = t[t.length - 1].contestNo + 1;
+            }
+            console.log("3- ", newNumber);
+        }
+        for (const e of problems) {
+            let response1 = yield prisma.contestProblem.findFirst({ where: { id: e } });
+            if (!response1) {
+                return res.status(400).json({ success, msg: `${e} not found` });
+            }
         }
         let result = yield prisma.contest.create({
             data: {
@@ -46,10 +59,13 @@ router.post("/create", [
                 duration,
                 startTime: new Date(startTime),
                 problems,
-                status,
             },
         });
         console.log(result);
+        const response2 = yield fetch(`${ServerUrl}/api/contest/leaderboard/create/${result.id}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" }
+        });
         success = true;
         return res.send({ success, body: req.body, msg: "Contest Created" });
     }
@@ -74,9 +90,6 @@ router.put("/update/:contestno", [], (req, res) => __awaiter(void 0, void 0, voi
         }
         if (req.body.duration) {
             query.duration = req.body.duration;
-        }
-        if (req.body.status) {
-            query.status = req.body.status;
         }
         if (req.body.problems) {
             query.problems = req.body.problems;
@@ -136,6 +149,33 @@ router.get("/getallcontest", [], (req, res) => __awaiter(void 0, void 0, void 0,
         return res.status(500).send({ success, error });
     }
 }));
+router.get("/getcontestproblemfromcontestid/:contestid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let success = false;
+    try {
+        const c = req.params.contestid;
+        console.log("Contest ID:", c);
+        let res1 = yield prisma.contest.findFirst({ where: { id: c } });
+        if (!res1) {
+            return res.status(404).send({ success, msg: "Not found" });
+        }
+        const problemIds = res1.problems;
+        console.log("Problem IDs:", problemIds);
+        let result = [];
+        for (const e of problemIds) {
+            const problem = yield prisma.contestProblem.findFirst({ where: { id: e } });
+            console.log("Problem:", problem);
+            if (problem)
+                result.push(problem);
+        }
+        console.log("Final Result:", result);
+        success = true;
+        return res.send({ success, result });
+    }
+    catch (error) {
+        console.error(error);
+        return res.status(500).send({ success, error: "Internal Server Error" });
+    }
+}));
 router.get("/getspecificcontest", [], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
@@ -150,6 +190,31 @@ router.get("/getspecificcontest", [], (req, res) => __awaiter(void 0, void 0, vo
         if (id) {
             result = yield prisma.contest.findFirst({ where: { id: id } });
         }
+        if (result === null) {
+            success = false;
+        }
+        else {
+            success = true;
+        }
+        console.log(result);
+        return res.send({ success, result });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).send({ success, error });
+    }
+}));
+router.get("/leaderboard/create/:contestid", [], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let success = false;
+    try {
+        let { contestid } = req.params;
+        if (!contestid) {
+            return res.send({ success, msg: "Please provide ContestId" });
+        }
+        let result;
+        result = yield prisma.leaderBoard.create({ data: {
+                contestid,
+            } });
         if (result === null) {
             success = false;
         }

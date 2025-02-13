@@ -47,8 +47,7 @@ model Contest {
   contestName      String
   duration         Int
   startTime        DateTime 
-  problems         Int[]
-  status           String
+  problems         String[]
 }
 
 type ContestInfo {
@@ -195,4 +194,35 @@ model DailyNewProblem {
   middleCode        CodeTemplateType
   correctMiddleCode CodeTemplateType
   createdAt         DateTime          @default(now())
+}
+
+
+model ContestProblem{
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+  problemNo         Int               @unique
+  problemName       String
+  description       String
+  constraint        String[]
+  topic             TopicEnum[]
+  testcases         InputOutputType[]
+  sampleInputOutput InputOutputType[]
+  aboveCodeTemplate CodeTemplateType
+  belowCodeTemplate CodeTemplateType
+  middleCode        CodeTemplateType
+  correctMiddleCode CodeTemplateType
+  createdAt         DateTime          @default(now())
+}
+
+
+
+type ParticipentType{
+  userid String?
+  solvedProblem String[]
+}
+
+
+model LeaderBoard{
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+  contestid String
+  participent ParticipentType[]
 }

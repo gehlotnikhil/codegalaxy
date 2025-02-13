@@ -32,6 +32,8 @@ import SolvedPraticeProblem from "./Component/SolvedPraticeProblem";
 import OTPVerification from "./Component/OTPVerification";
 import ForgetPassword from "./Component/ForgetPassword";
 import ContestMainPage from "./Component/ContestMainPage";
+import ContestProblemPage from "./Component/ContestProblemPage";
+import ContestCodingArena from "./Component/ContestCodingArena";
 interface ProtectedRouteProps {
   children: React.ReactNode;
 } 
@@ -285,6 +287,22 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ContestMainPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/contest/:contestId"
+              element={
+                <ProtectedRoute>
+                  <ContestProblemPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/contest/main/:problemid"
+              element={
+                <ProtectedRoute>
+                  <ContestCodingArena />
                 </ProtectedRoute>
               }
             />

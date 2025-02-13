@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Card, Button, Container, Row, Col } from "react-bootstrap";
 import MainContext from "../context/main";
+import { useNavigate } from "react-router";
 
 
 interface ContestType{
@@ -14,6 +15,7 @@ interface ContestType{
 
 
 const ContestCard: React.FC<{ contest: ContestType }> = ({ contest }) => {
+  const naivgate = useNavigate()
   const [isActive, setisActive] = useState<"ACTIVE" | "UPCOMMING" | "ENDED">("ACTIVE")
   useEffect(() => {
     setisActive(()=>{
@@ -50,7 +52,9 @@ const ContestCard: React.FC<{ contest: ContestType }> = ({ contest }) => {
             {isActive}
           </span>
         </Card.Text>
-        <Button variant="light" className="fw-bold">Participate</Button>
+        <Button variant="light" onClick={()=>{
+          naivgate(`/contest/${contest.id}`)
+        }} className={`fw-bold d-${isActive==="UPCOMMING"?"none":"block"}`}>Participate</Button>
       </Card.Body>
     </Card>
   );
@@ -117,7 +121,7 @@ const [AllContest, setAllContest] = useState<ContestType[] | null>(null)
         <p className="text-muted">Check out the previous programming contests on CodeGalaxy.</p>
         <Row className="g-4">
         {(AllContest||[]).map(contest => {
-                if(new Date().getTime()-  (new Date((new Date(contest.startTime)).getTime() + (contest.duration) * 60 * 1000).getTime())  <0){
+                if(new Date().getTime()-(new Date((new Date(contest.startTime)).getTime() + (contest.duration) * 60 * 1000).getTime())  <0){
                 return;
                 }
           return(  <Col md={6} key={contest.id}>

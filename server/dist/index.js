@@ -73,6 +73,7 @@ app.use("/api/user", require("./router/User/index"));
 app.use("/api/problemset", require("./router/ProblemSet/index"));
 app.use("/api/contest", require("./router/Contest/index"));
 app.use("/api/dailynewproblem", require("./router/DailyNewProblem"));
+app.use("/api/contestproblem", require("./router/ContestProblem"));
 // Start server
 app.listen(PORT, () => {
     console.log(`--> Server running at port ${PORT}`);

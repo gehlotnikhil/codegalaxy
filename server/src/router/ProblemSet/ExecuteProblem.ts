@@ -18,11 +18,11 @@ let url = "https://api.jdoodle.com/v1/execute";
   // let clientId ="fe433fd7a361a4a412a4454380ecd54f"
   // let clientSecret ="80849acee2f7b865c39c0648264e3dc76c8a55cf3948fab6ff4fb3268d1e1200"
 //6
-  // let clientId ="cb896ba9a94408c20a3bca93d0ef0df1"
-  // let clientSecret ="a2dddd28fefc644e7872296073a3ad90dd07c2b167f5618c63f45f2bc796a614"
+  let clientId ="cb896ba9a94408c20a3bca93d0ef0df1"
+  let clientSecret ="a2dddd28fefc644e7872296073a3ad90dd07c2b167f5618c63f45f2bc796a614"
 //7
-  let clientId ="217d8757f3bb711dc38f5f2d5d61ecd8"
-  let clientSecret ="9c0eae78724a15785cee75f5fc80e4ffcb1cabdbe41da51ac88731305bd7dd17"
+  // let clientId ="217d8757f3bb711dc38f5f2d5d61ecd8"
+  // let clientSecret ="9c0eae78724a15785cee75f5fc80e4ffcb1cabdbe41da51ac88731305bd7dd17"
 
 //8 from 006
 // let clientId ="850b170bd8a43bded95a6e0f5601ff76"
