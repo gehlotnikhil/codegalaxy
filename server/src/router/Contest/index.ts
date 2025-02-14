@@ -163,7 +163,7 @@ router.get(
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
     try {
-      let result = await prisma.contest.findMany()
+      let result = await prisma.contest.findMany({})
       console.log(result);
 
       success = true;

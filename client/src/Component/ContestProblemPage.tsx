@@ -52,6 +52,12 @@ function ContestProblemPage() {
     participent:ParticipentType[]
   }
   const [Contest, setContest] = useState<ContestType | null>(null);
+  useEffect(() => {console.log(Contest);}, [Contest])
+  useEffect(() => {
+    console.log(Contest);
+    
+  }, [Contest])
+  
   const [problems, setProblems] = useState<ProblemType[]>([]);
   const [contestName, setContestName] = useState<string>("");
   const [remainingTime, setRemainingTime] = useState<string>("");
