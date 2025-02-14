@@ -4,7 +4,15 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const jwt = require("jsonwebtoken")
 let JWT_Secret = "Nikhil123"
+import { faker } from "@faker-js/faker";
 
+function generateRandomName() {
+  // Generate a random name using faker
+  const firstName = faker.person.firstName(); // Random first name
+  const lastName = faker.person.lastName(); // Random last name
+
+  return `${firstName} ${lastName}`;
+}
 function generateUsername(length = 8) {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -39,19 +47,44 @@ const googleLogin = async (req: Request, res: Response): Promise<any> => {
     console.log("3");
     if (!check1) {
       console.log("created");
-      
+      let name: string = generateRandomName();
+
       result = await prisma.user.create({
         data: {
+          name,
           email: email,
           totalRank: 1000,
-          noOfProblemSolved: 0,
           userName: new_username,
+          linkedin_url: null,
+          ContestDetail: [],
           solvedProblemDetails: [],
-          noOfContestParticipated: 0,
-          contestDetails: [],
+          activeDays: [],
           ThirdPartyLoginAccess: true,
-          role: { User: true, Admin: false },
-          profilePictureUrl:"https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk"
+          isAdmin:false,
+          profilePictureUrl:"https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk",
+          praticeCourseDetail: {
+            c: {
+              solvedProblemDetails: [],
+              participated: false,
+              review: 0
+            },
+            cpp: {
+              solvedProblemDetails: [],
+              participated: false,
+              review: 0
+            },
+            java: {
+              solvedProblemDetails: [],
+              participated: false,
+              review: 0
+            },
+            go: {
+              solvedProblemDetails: [],
+              participated: false,
+              review: 0
+            },
+          }
+
         },
       });
     }
