@@ -680,6 +680,9 @@ router.post("/getalluser",[
       if (req.body.ContestDetail) {
         query.ContestDetail = 1;
       }
+      if (req.body.profilePictureUrl) {
+        query.profilePictureUrl = 1;
+      }
       
       
     
@@ -933,6 +936,21 @@ router.post("/verifyotptoresetpassword",[
   } catch (error) {
     console.log("verifyotptoresetpassword--",error);
     res.send({success,msg:`verifyotptoresetpassword - ${error}`})
+    
+  }
+})
+
+
+router.get("/getuserbyid/:id",async(req:Request,res:Response):Promise<any>=>{
+  let success = false;
+  try {
+    if(!req.params.id)  return res.send({success,msg:"Parameter missing: ID"})
+    let result = await prisma.user.findFirst({where:{id:req.params.id}})
+    success = true;
+    return res.send({success,result})
+  } catch (error) {
+    console.log(error);
+   return res.send({success,error:error})
     
   }
 })

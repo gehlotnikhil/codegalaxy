@@ -34,6 +34,9 @@ import ForgetPassword from "./Component/ForgetPassword";
 import ContestMainPage from "./Component/ContestMainPage";
 import ContestProblemPage from "./Component/ContestProblemPage";
 import ContestCodingArena from "./Component/ContestCodingArena";
+import OneToOneCompete from "./Component/OneToOneCompete";
+import OneToOneCompeteSpinner from "./Component/OneToOneCompeteSpinner";
+import OneToOneCodeEditor from "./Component/OneToOneCodeEditor";
 interface ProtectedRouteProps {
   children: React.ReactNode;
 } 
@@ -279,6 +282,30 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/onetoonecompete"
+              element={
+                <ProtectedRoute>
+                  <OneToOneCompete />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/findopponent"
+              element={
+                <ProtectedRoute>
+                  <OneToOneCompeteSpinner />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/codeonetoone"
+              element={
+                <ProtectedRoute>
+                  <OneToOneCodeEditor />
                 </ProtectedRoute>
               }
             />

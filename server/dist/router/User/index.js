@@ -580,6 +580,9 @@ router.post("/getalluser", [
         if (req.body.ContestDetail) {
             query.ContestDetail = 1;
         }
+        if (req.body.profilePictureUrl) {
+            query.profilePictureUrl = 1;
+        }
         let r = yield prisma.user.findMany({ select: Object.assign({ id: 1 }, query) });
         success = true;
         return res.send({ success, result: r });
@@ -787,6 +790,20 @@ router.post("/verifyotptoresetpassword", [
     catch (error) {
         console.log("verifyotptoresetpassword--", error);
         res.send({ success, msg: `verifyotptoresetpassword - ${error}` });
+    }
+}));
+router.get("/getuserbyid/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let success = false;
+    try {
+        if (!req.params.id)
+            return res.send({ success, msg: "Parameter missing: ID" });
+        let result = yield prisma.user.findFirst({ where: { id: req.params.id } });
+        success = true;
+        return res.send({ success, result });
+    }
+    catch (error) {
+        console.log(error);
+        return res.send({ success, error: error });
     }
 }));
 router.post("/sendemail", sendEmail_1.default.sendEmail);
