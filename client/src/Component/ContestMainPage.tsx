@@ -69,7 +69,7 @@ const ContestMainPage: React.FC = () => {
       
     
       const result1 = await fetch(`${SERVER_URL}/api/contest/getallcontest`,{
-        method:"GET",
+        method:"POST",
         headers: {
           "Content-Type": "application/json",
         }

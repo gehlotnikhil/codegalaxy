@@ -536,7 +536,7 @@ console.log(bodyData);
   const handleGetAllContest = async () => {
     try {
       const response = await fetch(`${SERVER_URL}/api/contest/getallcontest`, {
-        method: "GET",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },

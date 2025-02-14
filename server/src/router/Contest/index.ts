@@ -157,14 +157,23 @@ router.delete(
   }
 );
 
-router.get(
+router.post(
   "/getallcontest",
   [],
   async (req: Request, res: Response): Promise<any> => {
-    let success = false;
+    let success = false; 
     try {
-      let result = await prisma.contest.findMany({})
-      console.log(result);
+      let result = await prisma.contest.findMany({
+        select: {
+          id: true,
+          contestNo: true,
+          contestName: true,
+          duration:true,
+          startTime:true,
+          problems: true
+        },
+      });
+            console.log(result);
 
       success = true;
       return res.send({ success, result });

@@ -136,10 +136,19 @@ router.delete("/delete/:contestno", (req, res) => __awaiter(void 0, void 0, void
         return res.status(500).send({ success, error });
     }
 }));
-router.get("/getallcontest", [], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/getallcontest", [], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
-        let result = yield prisma.contest.findMany();
+        let result = yield prisma.contest.findMany({
+            select: {
+                id: true,
+                contestNo: true,
+                contestName: true,
+                duration: true,
+                startTime: true,
+                problems: true
+            },
+        });
         console.log(result);
         success = true;
         return res.send({ success, result });
