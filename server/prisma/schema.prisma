@@ -235,10 +235,14 @@ model LeaderBoard{
 }
 
 
+type CompeteUserType{
+  id String
+  name String
+}
 
 model OneToOneCompeteLeaderboard{
     id                String            @id @default(auto()) @map("_id") @db.ObjectId
-    user  String[]
+    user  CompeteUserType[]
     Result String
     createdAt         DateTime          @default(now())
     duration  Int

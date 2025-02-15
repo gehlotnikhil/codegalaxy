@@ -32,6 +32,15 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -43,37 +52,51 @@ const server = http_1.default.createServer((req, res) => {
     res.writeHead(200, { "Content-Type": "text/plain" });
     res.end("WebSocket server is running");
 });
+const SERVER_URL = process.env.SERVER_URL || "http://localhost:8000";
 // Create WebSocket server
 const wss = new ws_1.WebSocketServer({ server });
 const waitingClients = new Map(); // Store unmatched clients
 const clientPairs = new Map(); // Store matched pairs
 wss.on("connection", (ws) => {
     console.log("New client connected");
-    ws.on("message", (message) => {
+    ws.on("message", (message) => __awaiter(void 0, void 0, void 0, function* () {
+        var _a, _b;
         try {
             const data = JSON.parse(message);
-            if (data.type === "register" && data.userId) {
-                const userId = data.userId;
+            if (data.type === "register" && ((_a = data.user) === null || _a === void 0 ? void 0 : _a.id)) {
+                const userId = data.user.id; // Extract the id
                 const iterator = waitingClients.entries().next();
                 if (!iterator.done) {
                     // Match with an existing waiting client
-                    const [opponentId, opponentWs] = iterator.value;
+                    const [opponentId, opponentData] = iterator.value;
                     waitingClients.delete(opponentId);
+                    const opponentWs = opponentData.socket;
+                    const opponentUser = opponentData.user; // Full user object
                     clientPairs.set(ws, opponentWs);
                     clientPairs.set(opponentWs, ws);
-                    ws.send(JSON.stringify({ type: "matched", opponentId }));
-                    opponentWs.send(JSON.stringify({ type: "matched", opponentId: userId }));
+                    const result = yield fetch(`${SERVER_URL}/api/onetoonecompete/createonetoonecompeteleaderboard`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ user: [opponentUser, data.user] })
+                    });
+                    const jsondata = yield result.json();
+                    if (jsondata.success) {
+                        ws.send(JSON.stringify({ type: "matched", opponent: opponentUser }));
+                        opponentWs.send(JSON.stringify({ type: "matched", opponent: data.user }));
+                    }
                 }
                 else {
                     // No available client, add to waiting list
-                    waitingClients.set(userId, ws);
+                    waitingClients.set(userId, { socket: ws, user: data.user });
                     ws.send(JSON.stringify({ type: "waiting", message: "Waiting for an opponent..." }));
                 }
             }
-            if (data.type === "message" && data.userId && data.message) {
+            if (data.type === "message" && ((_b = data.user) === null || _b === void 0 ? void 0 : _b.id) && data.message) {
                 const opponentWs = clientPairs.get(ws);
                 if (opponentWs && opponentWs.readyState === ws_1.default.OPEN) {
-                    opponentWs.send(JSON.stringify({ type: "message", from: data.userId, message: data.message }));
+                    opponentWs.send(JSON.stringify({ type: "message", from: data.user, message: data.message }));
                 }
                 else {
                     ws.send(JSON.stringify({ type: "error", message: "Opponent disconnected." }));
@@ -84,13 +107,12 @@ wss.on("connection", (ws) => {
             console.error("Error processing message:", error);
             ws.send(JSON.stringify({ type: "error", message: "Invalid message format." }));
         }
-    });
+    }));
     ws.on("close", () => {
-        var _a;
         // Find the userId associated with the WebSocket connection
-        const userId = (_a = [...waitingClients.entries()].find(([_, socket]) => socket === ws)) === null || _a === void 0 ? void 0 : _a[0];
-        if (userId) {
-            waitingClients.delete(userId);
+        const userEntry = [...waitingClients.entries()].find(([_, data]) => data.socket === ws);
+        if (userEntry) {
+            waitingClients.delete(userEntry[0]);
         }
         if (clientPairs.has(ws)) {
             const opponentWs = clientPairs.get(ws);
@@ -105,5 +127,5 @@ wss.on("connection", (ws) => {
 });
 // Start the server
 server.listen(process.env.PORT || 8080, () => {
-    console.log("WebSocket server is running on ws://localhost:8080");
+    console.log("WebSocket server is running");
 });

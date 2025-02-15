@@ -41,7 +41,8 @@ function AppNavbar() {
     playgroundLink: true,
     profilename:true,
     newproblem:true,
-    contestLink:true
+    contestLink:true,
+    oneTooneCompeteLink:true
   });
 
   useEffect(() => {
@@ -60,12 +61,14 @@ function AppNavbar() {
       playgroundLink: true,
       profilename:true,
       newproblem:true,
-      contestLink:true
+      contestLink:true,
+      oneTooneCompeteLink:true
     };
 
     if (locationHook.pathname === "/login") {
       updatedStatus.homeLink = false;
       updatedStatus.contestLink = false;
+      updatedStatus.oneTooneCompeteLink = false;
       updatedStatus.newproblem = false;
       updatedStatus.aboutLink = false;
       updatedStatus.loginLink = false;
@@ -77,6 +80,7 @@ function AppNavbar() {
     } else if (locationHook.pathname === "/signup") {
       updatedStatus.homeLink = false;
       updatedStatus.contestLink = false;
+      updatedStatus.oneTooneCompeteLink = false;
       updatedStatus.newproblem = false;
       updatedStatus.aboutLink = false;
       updatedStatus.signupLink = false;
@@ -87,6 +91,7 @@ function AppNavbar() {
     } else if (locationHook.pathname === "/admin") {
       updatedStatus.homeLink = false;
       updatedStatus.contestLink = false;
+      updatedStatus.oneTooneCompeteLink = false;
       updatedStatus.newproblem = false;
       updatedStatus.aboutLink = false;
       updatedStatus.loginLink = false;
@@ -99,6 +104,7 @@ function AppNavbar() {
     }else if (locationHook.pathname.startsWith("/u/")) {
       updatedStatus.homeLink = true;
       updatedStatus.contestLink = true;
+      updatedStatus.oneTooneCompeteLink = true;
       updatedStatus.newproblem = true;
       updatedStatus.aboutLink = true;
       updatedStatus.loginLink = false;
@@ -110,6 +116,7 @@ function AppNavbar() {
     } else if (locationHook.pathname === "/verify") {
       updatedStatus.homeLink = false;
       updatedStatus.contestLink = false;
+      updatedStatus.oneTooneCompeteLink = false;
       updatedStatus.newproblem = false;
       updatedStatus.aboutLink = false;
       updatedStatus.loginLink = false;
@@ -194,6 +201,15 @@ function AppNavbar() {
               >
                 <Link className="white nav-link" to="/contest">
                   Contest
+                </Link>
+              </li>
+              <li
+                className={`nav-item d-${
+                  NavbarLinkStatus.oneTooneCompeteLink === true ? "inline" : "none"
+                }`}
+              >
+                <Link className="white nav-link" to="/onetoonecompete">
+                Coding Battle
                 </Link>
               </li>
               <li

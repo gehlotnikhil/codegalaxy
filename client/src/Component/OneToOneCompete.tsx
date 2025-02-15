@@ -1,10 +1,43 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import img from "../assets/compete.jfif";
 import { Row, Col, Form, Button, Card, Table } from "react-bootstrap";
+import { useSelector } from "react-redux";
+import { RootStateType } from "../store";
+import MainContext from "../context/main";
 
 const ContestPage: React.FC = () => {
   const [opponent, setOpponent] = useState("");
+  const [CompeteWithWorld, setCompeteWithWorld] = useState(false)
+  const context = useContext(MainContext)
+  const {SERVER_URL} = context
+  useEffect(() => {console.log(CompeteWithWorld);}, [CompeteWithWorld])
+  const userDetail = useSelector((state:RootStateType)=>state.userDetail)
+  const [checkIsThereAnyBattleLeft,setCheckIsThereAnyBattleLeft] = useState(true)
+  const loadUserBattleDetail = async()=>{
+    try {
+      
+  
+    const result1 = await fetch(`${SERVER_URL}/api/onetoonecompete/getonetoonecompeteleaderboard/${userDetail.id}`,{
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    const jsondata = await result1.json()
+    if(jsondata.success){
 
+    }else{
+
+    }
+  } catch (error) {
+      console.log(error);
+  }
+  }
+  useEffect(() => {
+    
+  }, [])
+  
+  
   return (
     <div className="container-fluid bg-black text-white p-4">
       <div className="row">
@@ -35,7 +68,7 @@ const ContestPage: React.FC = () => {
               </Card>
             </Col>
           </Row>
-          <Button className="custom-btn mt-2" disabled={!opponent}>
+          <Button className="custom-btn mt-2" disabled={checkIsThereAnyBattleLeft}>
             Compete With World
           </Button>
         </div>
@@ -52,6 +85,15 @@ const ContestPage: React.FC = () => {
           </tr>
         </thead>
         <tbody>
+        {/* {
+          Leaderboard.map((e,index)=>{
+            <tr>
+            <td>{index}</td>
+            <td><strong>{userDetail.name} VS PythonWarrior</strong></td>
+            <td className="win">Win ✅</td>
+          </tr>
+          })
+        } */}
           <tr>
             <td>1</td>
             <td><strong>CodeMaster99 VS PythonWarrior</strong></td>

@@ -30,7 +30,7 @@ function OneToOneCompeteSpinner() {
 
     socket.onopen = () => {
       console.log("Connected to WebSocket server");
-      socket.send(JSON.stringify({ type: "register", userId: userDetails.id }));
+      socket.send(JSON.stringify({ type: "register", user: {id:userDetails.id,name:userDetails.name} }));
     };
 
     socket.onmessage = (event) => {
@@ -41,7 +41,7 @@ function OneToOneCompeteSpinner() {
         console.log("Matched with an opponent!");
         console.log("id - -",data.opponentId);
         setMatchFound({match:true,id:data.opponentId})
-        navigate(`/codeonetoone`)
+        navigate(`/error`)
 
         // setOpponentDetail({ id: data.opponentId, profilePictureUrl: img, name: "Opponent" ,match:true});
       }
