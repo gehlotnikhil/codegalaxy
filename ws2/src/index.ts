@@ -44,8 +44,8 @@ wss.on("connection", (ws: WebSocket) => {
           })
           const jsondata = await result.json();
           if(jsondata.success){
-            ws.send(JSON.stringify({ type: "matched", opponent: opponentUser }));
-          opponentWs.send(JSON.stringify({ type: "matched", opponent: data.user }));
+            ws.send(JSON.stringify({ type: "matched", opponent: {...opponentUser,leaderboardid:jsondata.result.id} }));
+          opponentWs.send(JSON.stringify({ type: "matched", opponent: {...data.user,leaderboardid:jsondata.result.id} }));
     
 }
              } else {

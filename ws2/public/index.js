@@ -83,8 +83,8 @@ wss.on("connection", (ws) => {
                     });
                     const jsondata = yield result.json();
                     if (jsondata.success) {
-                        ws.send(JSON.stringify({ type: "matched", opponent: opponentUser }));
-                        opponentWs.send(JSON.stringify({ type: "matched", opponent: data.user }));
+                        ws.send(JSON.stringify({ type: "matched", opponent: Object.assign(Object.assign({}, opponentUser), { leaderboardid: jsondata.result.id }) }));
+                        opponentWs.send(JSON.stringify({ type: "matched", opponent: Object.assign(Object.assign({}, data.user), { leaderboardid: jsondata.result.id }) }));
                     }
                 }
                 else {

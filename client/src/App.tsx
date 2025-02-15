@@ -305,7 +305,7 @@ function App() {
               }
             />
             <Route
-              path="/codeonetoone"
+              path="/codeonetoone/:leaderboardid"
               element={
                 <ProtectedRoute>
                   <OneToOneCodeEditor />

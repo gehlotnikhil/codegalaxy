@@ -40,7 +40,7 @@ const OneToOneCodeEditor: React.FC = () => {
 
   const context = useContext(MainContext);
   const { SERVER_URL } = context;
-  const param = useParams<{ problemid: string,contestid:string }>();
+  const param = useParams<{ leaderboardid: string }>();
   const [showCustomTestCase, setshowCustomTestCase] = useState(false);
   useEffect(() => {
     console.log(showCustomTestCase);
@@ -53,10 +53,27 @@ const OneToOneCodeEditor: React.FC = () => {
   }, [CustomRunCodeSpinnerStatus]);
 
   const navigate = useNavigate();
+  interface CompeteUserType {
+    id: string;
+    name: string;
+  }
+  interface LeaderboardType {
+    id: string;
+    user: CompeteUserType[];
+    Result: string;
+    createdAt: string;
+    duration: number;
+    problemId: string;
+  }
+  const [Leaderboard, setLeaderboard] = useState<LeaderboardType | null>(null);
+  useEffect(() => {console.log("Leaderboard - -",Leaderboard);
+    if(Leaderboard?.problemId){loadMainQuestion(Leaderboard.problemId)}
+  }, [Leaderboard])
+  
 
   const loadMainQuestion = async (id: string) => {
     const response = await fetch(
-      `${SERVER_URL}/api/contestproblem/getspecificproblem?id=${id}`,
+      `${SERVER_URL}/api/problemset/getspecificproblem?id=${id}`,
       {
         method: "POST",
         headers: {
@@ -73,39 +90,33 @@ const OneToOneCodeEditor: React.FC = () => {
       setCode(jsondata.result.middleCode[SelectedLanguage]);
       setQuestionStatus(jsondata.result.status === "SOLVED");
     } else {
+      console.error("Loadmainquestion")
       navigate("/error");
     }
   };
-  interface ContestType{
-    id               :string
-    contestNo        :number      
-    contestName      :string
-    duration         :number
-    startTime        :string
-    problems         :string[]
-  }
-  const [Contest, setContest] = useState<ContestType | null>(null)
-  const loadContest = async(contestid:string)=>{
-    const result = await fetch(`${SERVER_URL}/api/contest/getspecificcontest?id=${contestid}`,{
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-    const jsondata = await result.json()
-    if(jsondata.success){
-      console.log("contest done - ",jsondata.result);
-      
-      setContest(jsondata.result)
-    }else{
-      navigate("/error")
+ 
+ 
+  const loadLeaderboard = async () => {
+    const result = await fetch(
+      `${SERVER_URL}/api/onetoonecompete/getspecficleaderboardbyid/${param.leaderboardid}/${userDetail.id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const jsondata = await result.json();
+    if (jsondata.success) {
+      console.log("Leaderboard done - ", jsondata.result);
+
+      setLeaderboard(jsondata.result);
+    } else {
+      navigate("/error");
+      console.error("loadleaderboard")
+
     }
-  }
-  useEffect(() => {
-    console.log(typeof param.problemid, "param", param.problemid);
-    loadMainQuestion(param.problemid as string);
-    loadContest(param.contestid as string)
-  }, []);
+  };
 
   function getDayOfYear() {
     const date = new Date();
@@ -202,67 +213,53 @@ const OneToOneCodeEditor: React.FC = () => {
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedLanguage(e.target.value as Language);
   };
-  const updateLeaderBoard=async(status:("PASS"|"FAIL"),problemid=param.problemid,contestid=param.contestid)=>{
-console.log("status - ",status);
-console.log("problemid - ",problemid);
-console.log("contestid - ",contestid);
 
-if(status ==="PASS"){
-  const response1 = await fetch(`${SERVER_URL}/api/contest/leaderboard/update/${contestid}`,{
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      userid:userDetail.id,
-      problemid:problemid,
-      startTime:Contest?.startTime,
-      duration:Contest?.duration
-  })
-})
-const res1 = await response1.json()
-if(res1.success){
-  console.log("All Done");
+
+
+  useEffect(() => {
+    console.log(typeof param.leaderboardid, "param", param.leaderboardid);
+    loadLeaderboard();
+  }, []);
+
+
   
-}else{
-  console.log(res1.msg);
+
+
+  const updateLeaderBoard = async (
+    status: "PASS" | "FAIL",
+    problemid = Leaderboard?.problemId,
+    leaderboardid = Leaderboard?.id
+  ) => {
+    console.log("status - ", status);
+    console.log("problemid - ", problemid);
+    console.log("leaderboardid - ", leaderboardid);
+
+    // if (status === "PASS") {
+    //   const response1 = await fetch(
+    //     `${SERVER_URL}/api/contest/leaderboard/update/${contestid}`,
+    //     {
+    //       method: "PUT",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //       body: JSON.stringify({
+    //         userid: userDetail.id,
+    //         problemid: problemid,
+    //         startTime: Contest?.startTime,
+    //         duration: Contest?.duration,
+    //       }),
+    //     }
+    //   );
+    //   const res1 = await response1.json();
+    //   if (res1.success) {
+    //     console.log("All Done");
+    //   } else {
+    //     console.log(res1.msg);
+    //   }
+    //   console.log("Let see - ");
+    // }
+  };
   
-}
-console.log("Let see - ");
-}
-
-
-  }
-  const updateContestDetailInUser =async(status:("PASS"|"FAIL"),problemid=param.problemid,contestid=param.contestid)=>{
-console.log("status - ",status);
-console.log("problemid - ",problemid);
-console.log("contestid - ",contestid);
-
-if(status ==="PASS"){
-  const response1 = await fetch(`${SERVER_URL}/api/contest/usercontestdetail/update/${contestid}`,{
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      userid:userDetail.id,
-      problemid:problemid
-  })
-})
-const res1 = await response1.json()
-if(res1.success){
-  console.log("All Done");
-  
-}else{
-  console.log(res1.msg);
-  
-}
-console.log("Let see - ");
-}
-
-
-  }
-
   const handleRunCode = async () => {
     setspinnerStatus(true);
     const testcases = MainQuestion.testcases ? MainQuestion.testcases : [];
@@ -330,7 +327,6 @@ console.log("Let see - ");
               activeDays: [...userDetail.activeDays, getDayOfYear()],
             })
           );
-          
         }
       }
 
@@ -355,8 +351,7 @@ console.log("Let see - ");
 
         if (finalMsg === true) {
           setQuestionStatus(true);
-          updateContestDetailInUser("PASS")
-          updateLeaderBoard("PASS")
+          updateLeaderBoard("PASS");
           toast.success("Passed");
         } else {
           toast.error("Failed");
@@ -536,9 +531,7 @@ console.log("Let see - ");
         {/* Left Section */}
         <div style={{ ...styles.leftSection, minWidth: "45%" }}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <h1 style={styles.title}>
-               {MainQuestion.problemName}
-            </h1>
+            <h1 style={styles.title}>{MainQuestion.problemName}</h1>
             <div
               style={styles.status}
               className={`d-${QuestionStatus ? "inline-block" : "none"}`}
@@ -577,7 +570,7 @@ console.log("Let see - ");
                 </div>
               ))}
           </div>
-        
+
           <hr />
 
           <div style={{}}>

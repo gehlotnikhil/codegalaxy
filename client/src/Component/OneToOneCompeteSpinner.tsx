@@ -39,9 +39,9 @@ function OneToOneCompeteSpinner() {
 
       if (data.type === "matched") {
         console.log("Matched with an opponent!");
-        console.log("id - -",data.opponentId);
-        setMatchFound({match:true,id:data.opponentId})
-        navigate(`/error`)
+        console.log("id - -",data);
+        setMatchFound({match:true,id:data.opponent.id})
+        navigate(`/codeonetoone/${data.opponent.leaderboardid}`)
 
         // setOpponentDetail({ id: data.opponentId, profilePictureUrl: img, name: "Opponent" ,match:true});
       }

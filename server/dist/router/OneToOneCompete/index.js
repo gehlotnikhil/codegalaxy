@@ -124,6 +124,7 @@ router.get("/getonetoonecompeteleaderboard/:userid", (req, res) => __awaiter(voi
         if (result1.length === 0)
             return res.send({ success, msg: "User does not exist" });
         const r = result1.map((e) => {
+            e.Result = e.Result === "TIE" ? "TIE" : (e.Result === userid ? "WON" : "LOSE");
             e.user = e.user[0].id === userid ? e.user[1] : e.user[0];
             const startDate = new Date(e.createdAt);
             const durationMs = e.duration * 60 * 1000;
@@ -142,6 +143,45 @@ router.get("/getonetoonecompeteleaderboard/:userid", (req, res) => __awaiter(voi
         console.log(r);
         success = true;
         return res.send({ success, result: r, msg: "Done" });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).send({ success, error, msg: "Internal Server Error" });
+    }
+}));
+router.get("/getspecficleaderboardbyid/:leaderboardid/:userid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let success = false;
+    try {
+        let error = (0, express_validator_1.validationResult)(req);
+        if (!error.isEmpty()) {
+            return res.status(404).send({ success, error: error.array() });
+        }
+        const leaderboardid = req.params.leaderboardid;
+        const userid = req.params.userid;
+        let result1 = yield prisma.oneToOneCompeteLeaderboard.findFirst({
+            where: { id: leaderboardid, user: { some: { id: userid } }
+            }
+        });
+        console.log(result1);
+        if (!result1)
+            return res.send({ success, msg: " not exist" });
+        result1.Result = result1.Result === "TIE" ? "TIE" : (result1.Result === userid ? "WON" : "LOSE");
+        result1.user = result1.user[0].id === userid ? result1.user[1] : result1.user[0];
+        const startDate = new Date(result1.createdAt);
+        const durationMs = result1.duration * 60 * 1000;
+        const endDate = new Date(startDate.getTime() + durationMs);
+        const currentTime = new Date().getTime();
+        const remainingTime = endDate.getTime() - currentTime;
+        console.log(`Remaining time: ${remainingTime / 1000} seconds`);
+        if (remainingTime > 0) {
+            result1.status = "ACTIVE";
+        }
+        else {
+            result1.status = "INACTIVE";
+        }
+        console.log(result1);
+        success = true;
+        return res.send({ success, result: result1, msg: "Done" });
     }
     catch (error) {
         console.log(error);
