@@ -71,6 +71,7 @@ app.use("/api/problemset", require("./router/ProblemSet/index"));
 app.use("/api/contest", require("./router/Contest/index"));
 app.use("/api/dailynewproblem", require("./router/DailyNewProblem"));
 app.use("/api/contestproblem", require("./router/ContestProblem"));
+app.use("/api/onetoonecompete", require("./router/OneToOneCompete"));
 
 // Start server
 app.listen(PORT, () => {

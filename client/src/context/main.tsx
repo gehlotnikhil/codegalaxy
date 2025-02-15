@@ -7,6 +7,7 @@ interface MainContextType {
   profilePicture: File;
   setProfilePicture: React.Dispatch<React.SetStateAction<File>>;
   defaultProfilePicture: string;
+  WEBSOCKET_URL:string;
   initialProfilePicture: string;
   setinitialProfilePicture: React.Dispatch<React.SetStateAction<string>>;
   handleShowProfileToggle: Function;
@@ -31,6 +32,7 @@ const MainContext = createContext<MainContextType>({
   setinitialProfilePicture: () => {},
   handleShowProfileToggle: () => {},
   ShowEditProfile: false,
+  WEBSOCKET_URL:"",
   ShowProfile: false,
   setShowEditProfile: () => {},
   setShowProfile: () => {},

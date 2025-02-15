@@ -6,3 +6,4 @@ server/node_modules
 server/.env
 server/prisma/.env
 cron-job/node_modules
+ws2/node_modules

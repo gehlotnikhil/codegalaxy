@@ -42,6 +42,8 @@ interface ProtectedRouteProps {
 } 
 // const SERVER_URL = "http://localhost:8000";
 const SERVER_URL = "https://codegalaxy-server.onrender.com";
+const WEBSOCKET_URL = "wss://codegalaxy-onetoonecompete-ws.onrender.com"
+// const WEBSOCKET_URL = "ws://localhost:8080"
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -210,6 +212,7 @@ function App() {
     <>
       <MainContext.Provider
         value={{
+          WEBSOCKET_URL,
           handleCodeExecution,
           SERVER_URL,
           updateProfileInformation,

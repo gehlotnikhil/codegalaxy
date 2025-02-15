@@ -282,6 +282,7 @@ router.post(
             password: r.password,
             userName: r.userName,
             linkedin_url: null,
+            oneToOneCompeteLeaderboardId:[],
             ContestDetail: [],
             solvedProblemDetails: [],
             activeDays: [],

@@ -64,6 +64,7 @@ const googleLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     activeDays: [],
                     ThirdPartyLoginAccess: true,
                     isAdmin: false,
+                    oneToOneCompeteLeaderboardId: [],
                     profilePictureUrl: "https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk",
                     praticeCourseDetail: {
                         c: {

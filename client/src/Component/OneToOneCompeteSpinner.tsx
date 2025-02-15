@@ -21,11 +21,11 @@ function OneToOneCompeteSpinner() {
   useEffect(() => {console.log(opponentDetail);}, [opponentDetail])
   useEffect(() => {console.log(ws);}, [ws])
   const context = useContext(MainContext)
-  const {SERVER_URL} = context
+  const {SERVER_URL,WEBSOCKET_URL} = context
 
   const navigate = useNavigate()
   useEffect(() => {
-    const socket = new WebSocket( process.env.WEBSOCKET_URL||"ws://localhost:8080"); // Replace with your WebSocket server URL
+    const socket = new WebSocket(WEBSOCKET_URL); // Replace with your WebSocket server URL
     setWs(socket);
 
     socket.onopen = () => {

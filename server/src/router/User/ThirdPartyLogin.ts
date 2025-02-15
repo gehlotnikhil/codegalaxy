@@ -61,6 +61,7 @@ const googleLogin = async (req: Request, res: Response): Promise<any> => {
           activeDays: [],
           ThirdPartyLoginAccess: true,
           isAdmin:false,
+          oneToOneCompeteLeaderboardId:[],
           profilePictureUrl:"https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk",
           praticeCourseDetail: {
             c: {
