@@ -66,10 +66,12 @@ const OneToOneCodeEditor: React.FC = () => {
     problemId: string;
   }
   const [Leaderboard, setLeaderboard] = useState<LeaderboardType | null>(null);
-  useEffect(() => {console.log("Leaderboard - -",Leaderboard);
-    if(Leaderboard?.problemId){loadMainQuestion(Leaderboard.problemId)}
-  }, [Leaderboard])
-  
+  useEffect(() => {
+    console.log("Leaderboard - -", Leaderboard);
+    if (Leaderboard?.problemId) {
+      loadMainQuestion(Leaderboard.problemId);
+    }
+  }, [Leaderboard]);
 
   const loadMainQuestion = async (id: string) => {
     const response = await fetch(
@@ -90,12 +92,11 @@ const OneToOneCodeEditor: React.FC = () => {
       setCode(jsondata.result.middleCode[SelectedLanguage]);
       setQuestionStatus(jsondata.result.status === "SOLVED");
     } else {
-      console.error("Loadmainquestion")
+      console.error("Loadmainquestion");
       navigate("/error");
     }
   };
- 
- 
+
   const loadLeaderboard = async () => {
     const result = await fetch(
       `${SERVER_URL}/api/onetoonecompete/getspecficleaderboardbyid/${param.leaderboardid}/${userDetail.id}`,
@@ -113,8 +114,7 @@ const OneToOneCodeEditor: React.FC = () => {
       setLeaderboard(jsondata.result);
     } else {
       navigate("/error");
-      console.error("loadleaderboard")
-
+      console.error("loadleaderboard");
     }
   };
 
@@ -214,16 +214,10 @@ const OneToOneCodeEditor: React.FC = () => {
     setSelectedLanguage(e.target.value as Language);
   };
 
-
-
   useEffect(() => {
     console.log(typeof param.leaderboardid, "param", param.leaderboardid);
     loadLeaderboard();
   }, []);
-
-
-  
-
 
   const updateLeaderBoard = async (
     status: "PASS" | "FAIL",
@@ -234,32 +228,32 @@ const OneToOneCodeEditor: React.FC = () => {
     console.log("problemid - ", problemid);
     console.log("leaderboardid - ", leaderboardid);
 
-    // if (status === "PASS") {
-    //   const response1 = await fetch(
-    //     `${SERVER_URL}/api/contest/leaderboard/update/${contestid}`,
-    //     {
-    //       method: "PUT",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
-    //       body: JSON.stringify({
-    //         userid: userDetail.id,
-    //         problemid: problemid,
-    //         startTime: Contest?.startTime,
-    //         duration: Contest?.duration,
-    //       }),
-    //     }
-    //   );
-    //   const res1 = await response1.json();
-    //   if (res1.success) {
-    //     console.log("All Done");
-    //   } else {
-    //     console.log(res1.msg);
-    //   }
-    //   console.log("Let see - ");
-    // }
+    if (status === "PASS") {
+      const response1 = await fetch(
+        `${SERVER_URL}/api/onetoonecompete/updateonetoonecompeteleaderboard`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            Result: userDetail.id,
+            leaderboardId: param.leaderboardid,
+          }),
+        }
+      );
+      const res1 = await response1.json();
+      if (res1.success) {
+        toast.success("You Won")
+        console.log("All Done");
+      } else {
+        toast.info(res1.msg)
+        console.log(res1.msg);
+      }
+      console.log("Let see - ");
+    }
   };
-  
+
   const handleRunCode = async () => {
     setspinnerStatus(true);
     const testcases = MainQuestion.testcases ? MainQuestion.testcases : [];
