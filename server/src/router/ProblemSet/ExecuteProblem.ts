@@ -12,47 +12,29 @@ let url = "https://api.jdoodle.com/v1/execute";
 // let clientId ="345502c18407a9ab659abc4f94cb0161"
 //   let clientSecret ="1983d761dcb61af72af3171356f2b0d8a104d5dbe08ec16228ce66ca0ed8248d"
 //4
-  let clientId ="ceb8d7514750a4147ffce9a3a3190691"
-  let clientSecret ="870220b6e357ee0768b3561207b95491e0225aae58bc169ba11c273df1e3f1ce"
+  // let clientId ="ceb8d7514750a4147ffce9a3a3190691"
+  // let clientSecret ="870220b6e357ee0768b3561207b95491e0225aae58bc169ba11c273df1e3f1ce"
 //5
   // let clientId ="fe433fd7a361a4a412a4454380ecd54f"
   // let clientSecret ="80849acee2f7b865c39c0648264e3dc76c8a55cf3948fab6ff4fb3268d1e1200"
 //6
   // let clientId ="cb896ba9a94408c20a3bca93d0ef0df1"
   // let clientSecret ="a2dddd28fefc644e7872296073a3ad90dd07c2b167f5618c63f45f2bc796a614"
-//7
+  //7
   // let clientId ="217d8757f3bb711dc38f5f2d5d61ecd8"
   // let clientSecret ="9c0eae78724a15785cee75f5fc80e4ffcb1cabdbe41da51ac88731305bd7dd17"
-
-//8 from 006
-// let clientId ="850b170bd8a43bded95a6e0f5601ff76"
-//   let clientSecret ="43bbb4d915d70d9180504f6b6aa95976d744c0c821bbf9aece636896bc8c6732"
+  
+  //8 from 006
+  // let clientId ="850b170bd8a43bded95a6e0f5601ff76"
+  //   let clientSecret ="43bbb4d915d70d9180504f6b6aa95976d744c0c821bbf9aece636896bc8c6732"
+  
 
   
- 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  let clientId =process.env.JDOOLE_ID
+  let clientSecret =process.env.JDOOLE_SECRET
 const execute = async (req: Request, res: Response): Promise<any> => {
   let success = false;
   try {
