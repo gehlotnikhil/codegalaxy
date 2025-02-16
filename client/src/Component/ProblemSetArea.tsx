@@ -529,11 +529,11 @@ const ProblemPage: React.FC = () => {
       setCustomRunCodeSpinnerStatus(false);
       return;
     }
-    const expectedResultData = {
-      code: aboveCodeTemplate + correctMiddleCode + belowCodeTemplate,
-      language: SelectedLanguage,
-      testcases: [{ input: userinput, output: "" }],
-    };
+    // const expectedResultData = {
+    //   code: aboveCodeTemplate + correctMiddleCode + belowCodeTemplate,
+    //   language: SelectedLanguage,
+    //   testcases: [{ input: userinput, output: "" }],
+    // };
     const userResultData = {
       code: aboveCodeTemplate + code + belowCodeTemplate,
       language: SelectedLanguage,
@@ -551,8 +551,8 @@ const ProblemPage: React.FC = () => {
     });
 
     try {
-      console.log("expectedResultData send--", expectedResultData);
-      let jsondata = await handleCodeExecution(expectedResultData);
+      // console.log("expectedResultData send--", expectedResultData);
+      // let jsondata = await handleCodeExecution(expectedResultData);
       let jsondata_user = await handleCodeExecution(userResultData);
       let updateresult: any = "";
       if (!userDetail.activeDays.includes(getDayOfYear())) {
@@ -576,11 +576,11 @@ const ProblemPage: React.FC = () => {
         }
       }
 
-      console.log(jsondata);
-      console.log("qwqwqqwq---", jsondata);
-      console.log("qwqwqqwq---", jsondata.output);
-      console.log("qwqwqqwq---", typeof jsondata.output);
-      expected = String(jsondata.output);
+      // console.log(jsondata);
+      // console.log("qwqwqqwq---", jsondata);
+      // console.log("qwqwqqwq---", jsondata.output);
+      // console.log("qwqwqqwq---", typeof jsondata.output);
+      // expected = String(jsondata.output);
       console.log(jsondata_user);
       console.log("qwqwqqwq---", jsondata_user);
       console.log("qwqwqqwq---", jsondata_user.output);
@@ -590,7 +590,7 @@ const ProblemPage: React.FC = () => {
       let finalMsg = false;
       if (jsondata_user.success ) {
         finalMsg = true;
-        if (finalMsg === true && (jsondata_user.output)===(jsondata.output)) {
+        if (finalMsg === true ) {
           toast.success("Passed");
         } else {
           toast.error("Failed");
@@ -994,7 +994,7 @@ const ProblemPage: React.FC = () => {
                     disabled
                   ></textarea>
                 </div>
-                <div className="mt-3">
+                {/*<div className="mt-3">
                   <label className="form-label">Expected Output</label>
                   <textarea
                     rows={2}
@@ -1002,7 +1002,7 @@ const ProblemPage: React.FC = () => {
                     className="form-control"
                     disabled
                   ></textarea>
-                </div>
+                </div>*/}
               </div>
             </div>
           </div>

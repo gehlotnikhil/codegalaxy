@@ -139,7 +139,7 @@ function Admin() {
       setModelHeading("Create Problem");
       setDisplayField({
         ...initialDisplayValue,
-        problemNo: true,
+        problemNo: false,
         problemName: true,
         description: true,
         companies: true,
