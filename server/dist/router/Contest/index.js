@@ -23,7 +23,6 @@ router.get("/", (req, res) => {
 router.post("/create", [
     body("contestName", "Please Enter a contestName").exists(),
     body("duration", "Please Enter a duration").exists(),
-    body("startTime", "Please Enter a startTime").exists(),
     body("problems", "Please Enter a problems's id").exists(),
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
@@ -32,7 +31,7 @@ router.post("/create", [
         if (!error.isEmpty()) {
             return res.status(404).send({ success, error: error.array() });
         }
-        let { contestName, duration, startTime, problems, } = req.body;
+        let { contestName, duration, problems, } = req.body;
         let newNumber = 1;
         let t = (yield prisma.contest.findMany());
         console.log("1- ", t);
@@ -57,7 +56,6 @@ router.post("/create", [
                 contestNo: newNumber,
                 contestName,
                 duration,
-                startTime: new Date(startTime),
                 problems,
             },
         });

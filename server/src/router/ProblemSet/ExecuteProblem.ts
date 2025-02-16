@@ -26,7 +26,7 @@ let url = "https://api.jdoodle.com/v1/execute";
   
   //8 from 006
   // let clientId ="850b170bd8a43bded95a6e0f5601ff76"
-  //   let clientSecret ="43bbb4d915d70d9180504f6b6aa95976d744c0c821bbf9aece636896bc8c6732"
+    // let clientSecret ="43bbb4d915d70d9180504f6b6aa95976d744c0c821bbf9aece636896bc8c6732"
   
 
   

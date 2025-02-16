@@ -53,7 +53,7 @@ model Contest {
   contestNo        Int      @unique
   contestName      String
   duration         Int
-  startTime        DateTime 
+  startTime        DateTime  @default(now())
   problems         String[]
 }
 

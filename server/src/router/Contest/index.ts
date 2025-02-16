@@ -16,7 +16,6 @@ router.post(
   [
     body("contestName", "Please Enter a contestName").exists(),
     body("duration", "Please Enter a duration").exists(),
-    body("startTime", "Please Enter a startTime").exists(),
     body("problems", "Please Enter a problems's id").exists(),
   ],
   async (req: Request, res: Response): Promise<any> => {
@@ -30,7 +29,6 @@ router.post(
       let {
         contestName,
         duration,
-        startTime,
         problems,
       } = req.body;
 
@@ -64,7 +62,6 @@ router.post(
           contestNo: newNumber,
           contestName,
           duration,
-          startTime: new Date(startTime),
           problems,
         },
       });

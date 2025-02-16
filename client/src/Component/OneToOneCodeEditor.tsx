@@ -526,13 +526,6 @@ const OneToOneCodeEditor: React.FC = () => {
         <div style={{ ...styles.leftSection, minWidth: "45%" }}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <h1 style={styles.title}>{MainQuestion.problemName}</h1>
-            <div
-              style={styles.status}
-              className={`d-${QuestionStatus ? "inline-block" : "none"}`}
-            >
-              <span style={styles.solvedText}>Solved</span>
-              <span style={styles.checkmark}>✅</span>
-            </div>
           </div>
           <pre
             style={{

@@ -234,10 +234,7 @@ const loadProblemDetail = async (language: string) => {
           <span>{PraticeQuestion.length}</span>
           <p>Problems</p>
         </Stat>
-        <Stat>
-          <span>{Learners}</span>
-          <p>Learners</p>
-        </Stat>
+      
       </Stats>
 
       {/* User Rating */}

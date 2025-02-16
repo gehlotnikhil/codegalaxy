@@ -35,7 +35,7 @@ let url = "https://api.jdoodle.com/v1/execute";
 // let clientSecret ="9c0eae78724a15785cee75f5fc80e4ffcb1cabdbe41da51ac88731305bd7dd17"
 //8 from 006
 // let clientId ="850b170bd8a43bded95a6e0f5601ff76"
-//   let clientSecret ="43bbb4d915d70d9180504f6b6aa95976d744c0c821bbf9aece636896bc8c6732"
+// let clientSecret ="43bbb4d915d70d9180504f6b6aa95976d744c0c821bbf9aece636896bc8c6732"
 let clientId = process.env.JDOOLE_ID;
 let clientSecret = process.env.JDOOLE_SECRET;
 const execute = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
