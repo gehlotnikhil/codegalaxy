@@ -369,7 +369,7 @@ function App() {
               }
             />
             <Route
-              path="/test2"
+              path="/test7"
               element={
                 // <ProtectedRoute>
                 <Testing1 />

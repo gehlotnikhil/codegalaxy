@@ -114,9 +114,9 @@ function Admin() {
         ...initialDisplayValue,
         contestName: true,
         duration: true,
-        startTime: true,
+        startTime: false,
         problems: true,
-        status: true,
+        status: false,
       });
     } else if (e === "btn2") {
       setModelHeading("Update Contest");
@@ -127,7 +127,7 @@ function Admin() {
         duration: true,
         startTime: true,
         problems: true,
-        status: true,
+        status: false,
       });
     } else if (e === "btn3") {
       setModelHeading("Delete Contest");
@@ -217,20 +217,18 @@ function Admin() {
 
   const handleCreateContest = async (): Promise<any> => {
     try {
-      let { contestName, duration, startTime, problems, status } =
+      let { contestName, duration, problems } =
         ModalFieldData;
       if (
         contestName === null ||
         duration === null ||
-        startTime === null ||
-        problems === null ||
-        status === null
+        problems === null 
       ) {
         return toast.error("Failed to create constest");
       }
       const problemsData = (problems as string).split(",");
       problemsData.map((value) => {
-        return Number(value);
+        return Number(value); 
       });
       const response = await fetch(`${SERVER_URL}/api/contest/create`, {
         method: "POST",
@@ -240,9 +238,7 @@ function Admin() {
         body: JSON.stringify({
           contestName,
           duration: Number(duration),
-          startTime,
-          problemsData,
-          status,
+          problems:problemsData,
         }),
       });
       const jsondata = await response.json();
@@ -258,7 +254,7 @@ function Admin() {
     }
   };
   const handleUpdateContest = async (): Promise<any> => {
-    let { contestNo, contestName, duration, startTime, problems, status } =
+    let { contestNo, contestName, duration, startTime, problems } =
       ModalFieldData;
     if (contestNo === null) {
       return toast.error("Failed to update constest");
@@ -269,7 +265,6 @@ function Admin() {
       duration?: Number;
       startTime?: string;
       problems?: Number[];
-      status?: string;
     } = {};
     let problemsData = problems
       ? (problems as string).split(",").map((value) => Number(value))
@@ -279,7 +274,6 @@ function Admin() {
     if (duration !== null) bodyData.duration = Number(duration);
     if (startTime !== null) bodyData.startTime = startTime;
     if (problems !== null) bodyData.problems = problemsData;
-    if (status !== null) bodyData.status = status;
 
     console.log(bodyData);
     try {

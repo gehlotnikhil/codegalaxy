@@ -14,7 +14,7 @@ console.log(`Server starting on port: ${PORT}`);
 // Middleware to parse JSON
 app.use(express.json());
 
-const allowedOrigins = [
+const allowedOrigins = [ 
   "https://codegalaxy1.vercel.app", // Production frontend
   "http://localhost:5173", // Local development
 ];
@@ -33,7 +33,7 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
+ 
 // Add Helmet middleware for security (allowing cross-origin resources)
 app.use(
   helmet({

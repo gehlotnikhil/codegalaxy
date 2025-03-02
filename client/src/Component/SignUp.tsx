@@ -8,12 +8,12 @@ import { SignedOut, SignInButton, useUser } from "@clerk/clerk-react";
 import logo from "../assets/logo.png";
 
 
-import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
-import { jwtDecode } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { setUserDetail } from "../store/slice/UserDetailSlice";
 import MainContext from "../context/main";
 import { toast } from "react-toastify";
+import { Button } from "react-bootstrap";
+import { signInWithGoogle } from "./firebase";
 
 // Define the form schema using Yup
 const schema = yup.object({
@@ -41,11 +41,36 @@ interface SignUpFormValues {
   confirmPassword: string;
   email: string;
 }
-interface JWTDECODETYPE {
-  email: string;
-}
+
 
 const SignUp: React.FC = () => {
+  
+    // Handle Google Sign-in
+    const handleGoogleLogin = async () => {
+      const user = await signInWithGoogle();
+      console.log("user-", user?.email);
+  
+      if (user) {
+        let result = await fetch(`${SERVER_URL}/api/user/thirdpartylogin`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: user.email }),
+        });
+        let jsondata = await result.json();
+        console.log("res---", jsondata);
+        console.log(jsondata.result);
+        if (jsondata.success) {
+          dispatch(setUserDetail(jsondata.result));
+          localStorage.setItem("token", jsondata.result.token);
+  
+          navigate("/");
+          toast.success("Logged in");
+        }
+      }
+    };
+  
   const [spinnerStatus, setspinnerStatus] = useState<boolean>(false);
   useEffect(() => {
     console.log(spinnerStatus);
@@ -252,40 +277,61 @@ const SignUp: React.FC = () => {
           </p>
           <div>
             <div style={{marginBottom:"0.3rem"}}>
-            <GoogleOAuthProvider clientId="1046247015186-25rspsek03t24m78r9qme04grrq433ue.apps.googleusercontent.com">
-              <GoogleLogin
-                onSuccess={async (credentialResponse) => {
-                  var decode = jwtDecode<JWTDECODETYPE>(
-                    credentialResponse.credential as string
-                  );
-                  console.log(decode.email);
-                  let result = await fetch(
-                    `${SERVER_URL}/api/user/thirdpartylogin`,
-                    {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
-                      body: JSON.stringify({ email: decode.email }),
-                    }
-                  );
-                  let jsondata = await result.json();
-                  console.log("res---", jsondata);
-                  console.log(jsondata.result);
-                  if (jsondata.success) {
-                    dispatch(setUserDetail(jsondata.result));
-                    localStorage.setItem("token", jsondata.result.token);
+            <Button
+  onClick={handleGoogleLogin}
+  style={{
+    marginTop: "0.3rem",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "10px",
+    backgroundColor: "white",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    padding: "10px 10px",
+    fontSize: "13px",
+    cursor: "pointer",
+    width: "100%",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    color:"black"
+  }}
+>
+  {/* Google Logo */}
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 48 48"
+    width="20"
+    height="20"
+  >
+    <path
+      fill="#4285F4"
+      d="M24 9.5c3.67 0 6.31 1.45 8.2 2.67l6.1-6.1C34.78 3.46 29.93 1.5 24 1.5 14.92 1.5 7.26 7.08 4 14.5l7.1 5.5C12.61 14.4 17.83 9.5 24 9.5z"
+    />
+    <path
+      fill="#34A853"
+      d="M46.1 24.5c0-1.35-.12-2.64-.35-3.89H24v7.89h12.7c-.58 2.89-2.32 5.32-4.83 6.99l7.1 5.5c4.17-3.84 6.3-9.51 6.3-16.49z"
+    />
+    <path
+      fill="#FBBC05"
+      d="M10.9 28.5c-1.26-3.77-1.26-7.99 0-11.76l-7.1-5.5c-3.09 6.14-3.09 13.12 0 19.26l7.1-5.5z"
+    />
+    <path
+      fill="#EA4335"
+      d="M24 46.5c5.93 0 10.78-1.96 14.3-5.5l-7.1-5.5c-2 1.37-4.56 2.18-7.2 2.18-6.17 0-11.39-4.9-12.9-11.5l-7.1 5.5c3.26 7.42 10.92 12.99 19 12.99z"
+    />
+  </svg>
 
-                    navigate("/");
-                    toast.success("Signed Up");
-                  }
-                }}
-                onError={() => {
-                  console.log("Login Failed");
-                  toast.error("Login Failed");
-                }}
-              />
-            </GoogleOAuthProvider>
+  {/* Sign-in Text */}
+  <span
+    style={{
+      flexGrow: 1,
+      textAlign: "center",
+      fontSize: "0.9rem",
+    }}
+  >
+    Continue with Google
+  </span>
+</Button>
             </div>
             <SignedOut>
               <SignInButton mode="modal">

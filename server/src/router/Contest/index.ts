@@ -1,5 +1,5 @@
 import { Request, response, Response, Router } from "express";
-
+import nodemailer from "nodemailer";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 const ServerUrl = process.env.ServerUrl || "http://localhost:8000"
@@ -10,6 +10,83 @@ router.get("/", (req: Request, res: Response) => {
   res.send({ success: "Contest Routing is on" });
 });
 // console.log("-->",prisma);
+
+
+router.post(
+  "/notify-all-users",
+  [
+    body("contestName", "Please Enter a contestName").exists(),
+    body("duration", "Please Enter a duration").exists(),
+  ],
+  async (req: Request, res: Response): Promise<any> => {
+    let success = false;
+
+    // Validate request body
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success, errors: errors.array() });
+    }
+
+    const { contestName, duration } = req.body;
+
+    try {
+      // Fetch all users' emails from the database
+      const users = await prisma.user.findMany({select:{email:true}});
+      const emails = users.map((user) => user.email);
+
+      if (emails.length === 0) {
+        return res.status(400).json({ success, msg: "No users found to notify" });
+      }
+
+      // Set up Nodemailer transport
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          type: "OAuth2",
+          user: process.env.EMAIL,
+          clientId: process.env.CLIENT_ID,
+          clientSecret: process.env.CLIENT_SECRET,
+          refreshToken: process.env.REFRESH_TOKEN,
+        },
+      });
+
+      // Email options
+      const mailOptions = (email: string) => ({
+        from: process.env.EMAIL,
+        to: email,
+        subject: `New Contest: ${contestName}!`,
+        html: `
+          <div style="font-family: Arial, sans-serif; padding: 20px;">
+            <h2 style="color: #000;">CodeGalaxy Contest Alert!</h2>
+            <h1 style="color: #0078D4;">${contestName}</h1>
+            <p>We are excited to announce a new contest!</p>
+            <p><strong>Duration:</strong> ${duration}</p>
+            <p>Prepare yourself and start coding!</p>
+            <p>Thanks, <br> The CodeGalaxy Team</p>
+          </div>
+        `,
+      });
+
+      // Send emails concurrently
+      const emailPromises = emails.map((email) =>
+        transporter.sendMail(mailOptions(email)).catch((err) => {
+          console.error(`Failed to send email to ${email}:`, err);
+          return null; // Handle failed emails gracefully
+        })
+      );
+
+      await Promise.all(emailPromises);
+
+      success = true;
+      return res.json({ success, msg: "Emails sent successfully!" });
+    } catch (error) {
+      console.error("Error:", error);
+      return res.status(500).json({ success, error });
+    }
+  }
+);
+
+
 
 router.post(
   "/create",
@@ -70,8 +147,12 @@ router.post(
         method: "GET",
         headers: { "Content-Type": "application/json" }
       })
+      
+      // notify all user
+
 
       success = true;
+      
       return res.send({ success, body: req.body, msg: "Contest Created" });
     } catch (error) {
       console.log(error);
