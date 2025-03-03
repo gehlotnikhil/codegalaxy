@@ -84,7 +84,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   };
 
   const verifyAuthentication = async (): Promise<React.ReactNode> => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
 
     if (!userDetail.token && token) {
       const success = await loadDataTokenToUserDetail(token);

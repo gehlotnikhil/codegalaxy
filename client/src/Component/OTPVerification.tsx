@@ -18,7 +18,7 @@ const OTPVerification: React.FC = () => {
   const [status, setStatus] = useState(false);
   
   useEffect(() => {
-    const email = localStorage.getItem("verifyemail") || "";
+    const email = sessionStorage.getItem("verifyemail") || "";
     setVerifyEmail(email);
     if (!email.trim()) {
       navigate("/signup");
@@ -62,7 +62,7 @@ const OTPVerification: React.FC = () => {
       const jsonData = await response.json();
       if (jsonData.success) {
         dispatch(setUserDetail(jsonData.result));
-        localStorage.setItem("token",jsonData.result.token)
+        sessionStorage.setItem("token",jsonData.result.token)
         toast.success("Account Created");
         setStatus(true);
       } else {

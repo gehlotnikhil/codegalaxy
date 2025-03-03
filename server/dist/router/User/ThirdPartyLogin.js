@@ -96,7 +96,8 @@ const googleLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         let data = {
             id: result.id
         };
-        let token = jwt.sign(data, JWT_Secret);
+        const expiresIn = '1m';
+        const token = jwt.sign(data, JWT_Secret, { expiresIn });
         console.log("4");
         success = true;
         res.send({ success, result: Object.assign(Object.assign({}, result), { token: token }) });

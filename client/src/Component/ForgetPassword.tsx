@@ -137,7 +137,7 @@ function ForgetPassword() {
       const jsondata = await result.json();
       if (jsondata.success) {
         dispatch(setUserDetail(jsondata.result));
-        localStorage.setItem("token-", jsondata.result.token);
+        sessionStorage.setItem("token-", jsondata.result.token);
         toast.success(jsondata.msg);
         navigate("/login")
       } else {

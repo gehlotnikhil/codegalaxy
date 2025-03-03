@@ -317,9 +317,10 @@ router.post(
         });
         //create access token
         let data = {
-          id: result.id,
+          id: result.id, 
         };
-        let token = jwt.sign(data, JWT_Secret);
+        const expiresIn = '1m';
+        const token = jwt.sign(data, JWT_Secret, { expiresIn });
         console.log("User created:", result);
         success = true;
         return res.send({ success, result: { ...result, token: token } }); // Sending the user object as response

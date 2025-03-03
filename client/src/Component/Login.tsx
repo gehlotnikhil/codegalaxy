@@ -49,7 +49,7 @@ function Login() {
       console.log(jsondata.result);
       if (jsondata.success) {
         dispatch(setUserDetail(jsondata.result));
-        localStorage.setItem("token", jsondata.result.token);
+        sessionStorage.setItem("token", jsondata.result.token);
 
         navigate("/");
         toast.success("Logged in");
@@ -92,7 +92,7 @@ function Login() {
       console.log(jsondata);
       if (jsondata.success) {
         dispatch(setUserDetail(jsondata.result));
-        localStorage.setItem("token", jsondata.result.token);
+        sessionStorage.setItem("token", jsondata.result.token);
 
         navigate("/");
         toast.success("Hello " + jsondata.result.name);
@@ -128,7 +128,7 @@ function Login() {
   
           if (jsonData.success) {
             dispatch(setUserDetail(jsonData.result));
-            localStorage.setItem("token", jsonData.result.token);
+            sessionStorage.setItem("token", jsonData.result.token);
             navigate("/");
             toast.success("Signed Up");
           }

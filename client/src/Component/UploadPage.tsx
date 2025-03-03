@@ -29,7 +29,7 @@ const UploadPage: React.FC = () => {
       const uploadedImageUrl = response.data.secure_url;
 
       // Store the uploaded image URL in localStorage
-      localStorage.setItem('uploadedImageUrl', uploadedImageUrl);
+      sessionStorage.setItem('uploadedImageUrl', uploadedImageUrl);
 
       // Navigate to the display page
       navigate('/display');

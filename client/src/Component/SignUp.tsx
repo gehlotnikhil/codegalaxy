@@ -63,7 +63,7 @@ const SignUp: React.FC = () => {
         console.log(jsondata.result);
         if (jsondata.success) {
           dispatch(setUserDetail(jsondata.result));
-          localStorage.setItem("token", jsondata.result.token);
+          sessionStorage.setItem("token", jsondata.result.token);
   
           navigate("/");
           toast.success("Logged in");
@@ -114,7 +114,7 @@ const SignUp: React.FC = () => {
       console.log("-a-a - ", jsondata);
       console.log(jsondata.result);
       if (jsondata.success) {
-        localStorage.setItem("verifyemail", jsondata.result.email);
+        sessionStorage.setItem("verifyemail", jsondata.result.email);
         navigate("/verify");
         toast.success(jsondata.msg);
       } else {
@@ -176,7 +176,7 @@ const SignUp: React.FC = () => {
 
         if (jsonData.success) {
           dispatch(setUserDetail(jsonData.result));
-          localStorage.setItem("token", jsonData.result.token);
+          sessionStorage.setItem("token", jsonData.result.token);
           navigate("/");
           toast.success("Signed Up");
         }

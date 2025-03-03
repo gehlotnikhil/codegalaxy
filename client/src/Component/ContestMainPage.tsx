@@ -77,7 +77,7 @@ const ContestMainPage: React.FC = () => {
       const jsondata = await result1.json()
       if(jsondata.success){
         console.log("Contest - - - ",jsondata);
-        localStorage.setItem("hi",JSON.stringify(jsondata.result))
+        sessionStorage.setItem("hi",JSON.stringify(jsondata.result))
         setAllContest([...jsondata.result])
       }
       else{

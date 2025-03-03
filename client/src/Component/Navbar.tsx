@@ -29,7 +29,7 @@ function AppNavbar() {
 
   function handleClickSignOut(): void {
     console.log("hi--");
-    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
   }
   const [NavbarLinkStatus, setNavbarLinkStatus] = useState({
     loginLink: true,
