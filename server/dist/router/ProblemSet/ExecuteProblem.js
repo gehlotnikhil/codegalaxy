@@ -13,8 +13,8 @@ const axios = require("axios");
 const { body, validationResult } = require("express-validator");
 let url = "https://api.jdoodle.com/v1/execute";
 //1
-let clientId = "3cb6c6b56019717db130949865c7091f";
-let clientSecret = "79caf22b6c76651bc39c941615728ab37f8f78acaf61204d35bef61358208626";
+// let clientId ="3cb6c6b56019717db130949865c7091f"
+// let clientSecret ="79caf22b6c76651bc39c941615728ab37f8f78acaf61204d35bef61358208626"
 //2
 // let clientId ="cb2165bd6377e25e8bb6e3e27ed1dcf3"
 //   let clientSecret ="35cb67935f0b7469b0d9825f2a34f16e987ad29a3f634c03bbd79c00b5218f55"
@@ -36,8 +36,8 @@ let clientSecret = "79caf22b6c76651bc39c941615728ab37f8f78acaf61204d35bef6135820
 //8 from 006 
 // let clientId ="850b170bd8a43bded95a6e0f5601ff76"
 //   let clientSecret ="43bbb4d915d70d9180504f6b6aa95976d744c0c821bbf9aece636896bc8c6732"
-// let clientId =process.env.JDOOLE_ID
-// let clientSecret =process.env.JDOOLE_SECRET
+let clientId = process.env.JDOOLE_ID;
+let clientSecret = process.env.JDOOLE_SECRET;
 const execute = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {

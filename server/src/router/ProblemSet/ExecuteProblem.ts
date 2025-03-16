@@ -3,8 +3,8 @@ const { body, validationResult } = require("express-validator");
 import e, { Request, Response } from "express";
 let url = "https://api.jdoodle.com/v1/execute";
 //1
-let clientId ="3cb6c6b56019717db130949865c7091f"
-  let clientSecret ="79caf22b6c76651bc39c941615728ab37f8f78acaf61204d35bef61358208626"
+// let clientId ="3cb6c6b56019717db130949865c7091f"
+  // let clientSecret ="79caf22b6c76651bc39c941615728ab37f8f78acaf61204d35bef61358208626"
 //2
 // let clientId ="cb2165bd6377e25e8bb6e3e27ed1dcf3"
 //   let clientSecret ="35cb67935f0b7469b0d9825f2a34f16e987ad29a3f634c03bbd79c00b5218f55"
@@ -33,8 +33,8 @@ let clientId ="3cb6c6b56019717db130949865c7091f"
  
 
 
-  // let clientId =process.env.JDOOLE_ID
-  // let clientSecret =process.env.JDOOLE_SECRET
+  let clientId =process.env.JDOOLE_ID
+  let clientSecret =process.env.JDOOLE_SECRET
 const execute = async (req: Request, res: Response): Promise<any> => {
   let success = false;
   try {
