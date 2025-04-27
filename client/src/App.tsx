@@ -40,10 +40,10 @@ import OneToOneCodeEditor from "./Component/OneToOneCodeEditor";
 interface ProtectedRouteProps {
   children: React.ReactNode;
 } 
-const SERVER_URL = "http://localhost:8000";  
-// const SERVER_URL = "https://codegalaxy-server.onrender.com";
-// const WEBSOCKET_URL = "wss://codegalaxy-onetoonecompete-ws.onrender.com"
-const WEBSOCKET_URL = "ws://localhost:8080" 
+// const SERVER_URL = "http://localhost:8000";  
+const SERVER_URL = "https://codegalaxy-server.onrender.com";
+const WEBSOCKET_URL = "wss://codegalaxy-onetoonecompete-ws.onrender.com"
+// const WEBSOCKET_URL = "ws://localhost:8080" 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();    
