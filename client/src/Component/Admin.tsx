@@ -249,7 +249,7 @@ function Admin() {
         toast.error("Failed to create constest");
       }
     } catch (error) {
-      toast.error("Internal server error");
+      toast.error("Internal server error -");
       console.log(error);
     }
   };
@@ -315,6 +315,7 @@ function Admin() {
     }
   };
   const handleCreateProblem = async (): Promise<any> => {
+    console.log("1")
     try {
       let {
         problemNo,
@@ -348,6 +349,19 @@ function Admin() {
         return toast.error("Failed to create problem");
       }
       console.log(problemNo);
+      console.log("check- 1 ", (testcases))
+      console.log("check- 2 ", (sampleInputOutput))
+      console.log("check- 3 ", (middleCode))
+      console.log("check- 4 ", (correctMiddleCode))
+      console.log("check- 5 ", (belowCodeTemplate))
+      console.log("check- 6 ", (aboveCodeTemplate))
+      console.log("mate- 1 ", JSON.parse(testcases))
+      console.log("mate- 2 ", JSON.parse(sampleInputOutput))
+      console.log("mate- 3 ", JSON.parse(middleCode))
+      console.log("mate- 4 ", JSON.parse(correctMiddleCode))
+      console.log("mate- 5 ", JSON.parse(belowCodeTemplate))
+      console.log("mate- 6 ", JSON.parse(aboveCodeTemplate))
+
       
       const bodyData: ProblemSet = {
         problemName,
@@ -365,6 +379,8 @@ function Admin() {
       };
 console.log(bodyData);
 
+
+
       const response = await fetch(`${SERVER_URL}/api/problemset/create`, {
         method: "POST",
         headers: {
@@ -381,7 +397,9 @@ console.log(bodyData);
       }
       console.log(jsondata);
     } catch (error) {
-      toast.error("Internal server error");
+      console.log("1-")
+      console.log("1 - - - ",error);
+      toast.error("Internal server error --");
       console.log(error);
     }
   };

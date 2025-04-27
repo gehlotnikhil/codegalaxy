@@ -44,13 +44,13 @@ router.post(
     body("collegeName", "Please Enter Your collegeName").exists(),
     body("email", "Please Enter Your Email").exists(),
     body("email", "Enter Valid Email Format").isEmail(),
-    body("password", "Please Enter Your Password").exists(),
+    body("password", "Please Enter Your Password").exists(), 
     body("userName", "Please Enter Your Username").exists(),
   ],
   async (req: Request, res: Response): Promise<any> => {
     let success = false;
     const otp = generateOTP(); // Generate OTP
-    console.log(`Generated OTP: ${otp}`);
+    console.log(`Generated OTP: ${otp}`);  
     try {
       const { email, password, userName, name, age, collegeName } = req.body;
 
