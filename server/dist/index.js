@@ -23,10 +23,13 @@ const prisma = new client_1.PrismaClient();
 const app = (0, express_1.default)();
 const PORT = Number(process.env.PORT) || 8000;
 console.log(`Server starting on port: ${PORT}`);
+const FRONTEND_URL = process.env.FRONTEND_URL;
+
 // Middleware to parse JSON
+
 app.use(express_1.default.json());
 const allowedOrigins = [
-    "https://codegalaxy1.vercel.app", // Production frontend
+    FRONTEND_URL, // Production frontend
     "http://localhost:5173", // Local development
 ];
 app.use((0, cors_1.default)({
