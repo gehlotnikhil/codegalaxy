@@ -19,6 +19,13 @@ const UserFunctions_1 = __importDefault(require("../lib/UserFunctions"));
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const router = (0, express_1.Router)();
+// Credentials from environment variables`
+const USERNAME = process.env.EMAIL_USER;
+const PASSWORD = process.env.EMAIL_PASS;
+const nodemailer_1 = __importDefault(require("nodemailer"));
+// SMTP configuration
+const SMTP_SERVER = "smtp.gmail.com";
+const PORT = 465;
 const sendEmail_1 = __importDefault(require("./sendEmail"));
 const ServerUrl = process.env.ServerUrl || "http://localhost:8000";
 console.log(ServerUrl);
@@ -35,8 +42,6 @@ router.get("/", (req, res) => {
     res.send({ success: "User Routing is on" });
 });
 let JWT_Secret = "Nikhil123";
-const googleapis_1 = require("googleapis");
-const nodemailer_1 = __importDefault(require("nodemailer"));
 function generateOTP(length = 6) {
     return Math.floor(100000 + Math.random() * 900000).toString(); // Generates a 6-digit OTP
 }
@@ -58,7 +63,9 @@ router.post("/registeruser", [
         // Check for validation errors
         const errors = (0, express_validator_1.validationResult)(req);
         if (!errors.isEmpty()) {
-            return res.status(400).send({ success, error: errors.array(), msg: "Parameter missing" });
+            return res
+                .status(400)
+                .send({ success, error: errors.array(), msg: "Parameter missing" });
         }
         // check User Exist or not
         let check1 = yield UserFunctions_1.default.isUserExist(email);
@@ -73,36 +80,17 @@ router.post("/registeruser", [
         //encrypt the password
         let salt = yield bcrypt.genSalt(10);
         let hashPassword = yield bcrypt.hash(password, salt);
-        console.log(process.env.CLIENT_ID);
-        console.log(process.env.CLIENT_SECRET);
-        console.log(process.env.REFRESH_TOKEN);
-        console.log("1");
-        const OAuth2 = googleapis_1.google.auth.OAuth2;
-        console.log("2");
-        const oauth2Client = new OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, "https://developers.google.com/oauthplayground");
-        console.log("3");
-        oauth2Client.setCredentials({
-            refresh_token: process.env.REFRESH_TOKEN,
-        });
-        console.log("4");
-        const accessToken = yield oauth2Client.getAccessToken();
-        console.log("5");
-        console.log("access token - ", accessToken.token);
-        console.log("6");
-        const transporter = nodemailer_1.default.createTransport({
-            service: "gmail",
+        let transporter = nodemailer_1.default.createTransport({
+            host: SMTP_SERVER,
+            port: PORT,
+            secure: true,
             auth: {
-                type: "OAuth2",
-                user: process.env.EMAIL,
-                clientId: process.env.CLIENT_ID,
-                clientSecret: process.env.CLIENT_SECRET,
-                refreshToken: process.env.REFRESH_TOKEN,
-                accessToken: accessToken.token,
+                user: USERNAME,
+                pass: PASSWORD,
             },
         });
-        console.log("7");
-        const mailOptions = {
-            from: process.env.EMAIL,
+        let info = yield transporter.sendMail({
+            from: USERNAME,
             to: email,
             subject: "CodeGalaxy Account OTP Code",
             html: `
@@ -117,52 +105,48 @@ router.post("/registeruser", [
                 <p>Thanks, <br> The CodeGalaxy account team</p>
               </div>
                 `,
-        };
-        transporter.sendMail(mailOptions, (err, info) => __awaiter(void 0, void 0, void 0, function* () {
-            if (err) {
-                console.error("Error:", err);
-                res.send({ success, msg: "Internal server Error" });
-            }
-            else {
-                console.log("Email sent-:", info.response);
-                // Delete Previous OTP Data if exist
-                const r = yield prisma.emailOtpService.deleteMany({ where: { email } });
-                const result = yield prisma.emailOtpService.create({
-                    data: {
-                        name: name,
-                        age: age,
-                        collegeName: collegeName,
-                        email: email,
-                        password: hashPassword,
-                        userName: userName,
-                        code: Number(otp)
-                    },
-                });
-                const date = new Date(result.createdAt);
-                const seconds = date.getUTCHours() * 3600 + date.getUTCMinutes() * 60 + date.getUTCSeconds() + date.getUTCMilliseconds() / 1000;
-                console.log(result.createdAt);
-                console.log((Date.now() - new Date(result.createdAt).getTime()) / (1000));
-                console.log((Date.now(), " ", new Date(result.createdAt).getTime()));
-                console.log(Math.floor((Date.now(), " ", new Date(result.createdAt).getTime())) / (1000 * 60));
-                console.log("OTP Sended:", result);
-                success = true;
-                res.send({ success, result: Object.assign({}, result), msg: "OTP Sended" }); // Sending the user object as response
-            }
-        }));
+        });
+        console.log(`✅ Email sent to ${email}: ${info.messageId}`);
+        // Delete Previous OTP Data if exist
+        const r = yield prisma.emailOtpService.deleteMany({ where: { email } });
+        const result = yield prisma.emailOtpService.create({
+            data: {
+                name: name,
+                age: age,
+                collegeName: collegeName,
+                email: email,
+                password: hashPassword,
+                userName: userName,
+                code: Number(otp),
+            },
+        });
+        const date = new Date(result.createdAt);
+        const seconds = date.getUTCHours() * 3600 +
+            date.getUTCMinutes() * 60 +
+            date.getUTCSeconds() +
+            date.getUTCMilliseconds() / 1000;
+        console.log(result.createdAt);
+        console.log((Date.now() - new Date(result.createdAt).getTime()) / 1000);
+        console.log((Date.now(), " ", new Date(result.createdAt).getTime()));
+        console.log(Math.floor((Date.now(), " ", new Date(result.createdAt).getTime())) /
+            (1000 * 60));
+        console.log("OTP Sended:", result);
+        success = true;
+        res.send({ success, result: Object.assign({}, result), msg: "OTP Sended" }); // Sending the user object as response
     }
     catch (error) {
         console.error("Error during otp operation:", error);
         res.status(500).send({ success, error, msg: "Internal Server Error-" });
     }
 }));
-router.post("/resendotpcode", [
-    (0, express_validator_1.body)("email", "Please Enter Your email").exists(),
-], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/resendotpcode", [(0, express_validator_1.body)("email", "Please Enter Your email").exists()], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
         const { email } = req.body;
         console.log("resend code -- -  ", email);
-        const result1 = yield prisma.emailOtpService.findFirst({ where: { email } });
+        const result1 = yield prisma.emailOtpService.findFirst({
+            where: { email },
+        });
         if (!result1) {
             return res.send({ success, msg: "Register Again..." });
         }
@@ -178,12 +162,15 @@ router.post("/resendotpcode", [
                 userName: result1.userName,
                 name: result1.name,
                 collegeName: result1.collegeName,
-                age: result1.age
-            })
+                age: result1.age,
+            }),
         });
         const getresult = yield response.json();
         if (!getresult.success) {
-            return res.send({ success, msg: "Internal Server Error in Creating OTP" });
+            return res.send({
+                success,
+                msg: "Internal Server Error in Creating OTP",
+            });
         }
         const data = getresult.result;
         console.log(data);
@@ -192,7 +179,9 @@ router.post("/resendotpcode", [
     }
     catch (error) {
         console.error("Error during user creation:", error);
-        return res.status(500).send({ success, error, msg: "Internal Server Error" });
+        return res
+            .status(500)
+            .send({ success, error, msg: "Internal Server Error" });
     }
 }));
 router.post("/verify", [
@@ -205,10 +194,14 @@ router.post("/verify", [
         // Check for validation errors
         const errors = (0, express_validator_1.validationResult)(req);
         if (!errors.isEmpty()) {
-            return res.status(400).send({ success, error: errors.array(), msg: "Missing Parameter" });
+            return res
+                .status(400)
+                .send({ success, error: errors.array(), msg: "Missing Parameter" });
         }
         let name = generateRandomName();
-        const r = yield prisma.emailOtpService.findFirst({ where: { code: code, email: verifyemail } });
+        const r = yield prisma.emailOtpService.findFirst({
+            where: { code: code, email: verifyemail },
+        });
         console.log("hh----", r);
         // if code not found
         if (!r) {
@@ -216,12 +209,16 @@ router.post("/verify", [
         }
         console.log(r === null || r === void 0 ? void 0 : r.createdAt);
         console.log(Math.abs(Date.now() - new Date((r === null || r === void 0 ? void 0 : r.createdAt) || "2025-02-03T16:30:00").getTime()) / 1000);
-        // delete otp   
-        if ((Math.abs(Date.now() - new Date((r === null || r === void 0 ? void 0 : r.createdAt) || "2025-02-03T16:30:00").getTime()) / 1000) > 60) {
+        // delete otp
+        if (Math.abs(Date.now() - new Date((r === null || r === void 0 ? void 0 : r.createdAt) || "2025-02-03T16:30:00").getTime()) /
+            1000 >
+            60) {
             return res.send({ success, msg: "OTP is Expired" });
         }
         else if (r && r.email && r.password && r.userName) {
-            const k = yield prisma.emailOtpService.deleteMany({ where: { code, email: verifyemail } });
+            const k = yield prisma.emailOtpService.deleteMany({
+                where: { code, email: verifyemail },
+            });
             // creating user
             const result = yield prisma.user.create({
                 data: {
@@ -244,31 +241,31 @@ router.post("/verify", [
                         c: {
                             solvedProblemDetails: [],
                             participated: false,
-                            review: 0
+                            review: 0,
                         },
                         cpp: {
                             solvedProblemDetails: [],
                             participated: false,
-                            review: 0
+                            review: 0,
                         },
                         java: {
                             solvedProblemDetails: [],
                             participated: false,
-                            review: 0
+                            review: 0,
                         },
                         go: {
                             solvedProblemDetails: [],
                             participated: false,
-                            review: 0
+                            review: 0,
                         },
-                    }
+                    },
                 },
             });
             //create access token
             let data = {
                 id: result.id,
             };
-            const expiresIn = '1m';
+            const expiresIn = "1m";
             const token = jwt.sign(data, JWT_Secret, { expiresIn });
             console.log("User created:", result);
             success = true;
@@ -389,7 +386,7 @@ router.put("/update/", [
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ token: req.body.token })
+            body: JSON.stringify({ token: req.body.token }),
         });
         const userDetails = yield response.json();
         if (userDetails.success === false) {
@@ -480,7 +477,10 @@ router.put("/update/", [
             data: Object.assign({}, query),
         });
         success = true;
-        return res.send({ success, result: Object.assign(Object.assign({}, result), { token: req.body.token }) }); // Sending the user object as response
+        return res.send({
+            success,
+            result: Object.assign(Object.assign({}, result), { token: req.body.token }),
+        }); // Sending the user object as response
     }
     catch (error) {
         console.log(error);
@@ -585,7 +585,9 @@ router.post("/getalluser", [
         if (req.body.profilePictureUrl) {
             query.profilePictureUrl = 1;
         }
-        let r = yield prisma.user.findMany({ select: Object.assign({ id: 1 }, query) });
+        let r = yield prisma.user.findMany({
+            select: Object.assign({ id: 1 }, query),
+        });
         success = true;
         return res.send({ success, result: r });
     }
@@ -640,13 +642,15 @@ router.post("/usernametodata", [(0, express_validator_1.body)("userName", "Pleas
 }));
 router.post("/changepassword", [
     (0, express_validator_1.body)("email", "please enter the email").exists(),
-    (0, express_validator_1.body)("password", "please enter the password").exists()
+    (0, express_validator_1.body)("password", "please enter the password").exists(),
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
         const error = (0, express_validator_1.validationResult)(req);
         if (!error.isEmpty()) {
-            return res.status(404).send({ success, error: error.array(), msg: "Parameter is missing" });
+            return res
+                .status(404)
+                .send({ success, error: error.array(), msg: "Parameter is missing" });
         }
         const { password, email } = req.body;
         const result = yield prisma.user.findFirst({ where: { email } });
@@ -655,28 +659,35 @@ router.post("/changepassword", [
         let salt = yield bcrypt.genSalt(10);
         console.log("-------password-", req.body.password);
         let hashPassword = yield bcrypt.hash(req.body.password, salt);
-        let result2 = yield prisma.user.update({ where: { email }, data: { password: hashPassword } });
+        let result2 = yield prisma.user.update({
+            where: { email },
+            data: { password: hashPassword },
+        });
         let data = {
             id: result2 === null || result2 === void 0 ? void 0 : result2.id,
         };
         console.log("c6");
         let token = yield jwt.sign(data, JWT_Secret);
         success = true;
-        return res.send({ success, result: Object.assign(Object.assign({}, result2), { token }), msg: "Password Changed" });
+        return res.send({
+            success,
+            result: Object.assign(Object.assign({}, result2), { token }),
+            msg: "Password Changed",
+        });
     }
     catch (error) {
         console.log(error);
         res.send({ success, msg: "Internal Server Error" });
     }
 }));
-router.post("/checkemailandsendotp", [
-    (0, express_validator_1.body)("email", "Enter your email address").exists()
-], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/checkemailandsendotp", [(0, express_validator_1.body)("email", "Enter your email address").exists()], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
         const error = (0, express_validator_1.validationResult)(req);
         if (!error.isEmpty()) {
-            return res.status(404).send({ success, error: error.array(), msg: "Parameter is missing" });
+            return res
+                .status(404)
+                .send({ success, error: error.array(), msg: "Parameter is missing" });
         }
         let { email } = req.body;
         console.log("email--", email);
@@ -686,38 +697,21 @@ router.post("/checkemailandsendotp", [
             return res.send({ success, msg: "User Not Exist" });
         }
         const otp = Number(generateOTP());
-        console.log(process.env.CLIENT_ID);
-        console.log(process.env.CLIENT_SECRET);
-        console.log(process.env.REFRESH_TOKEN);
-        console.log("1");
-        const OAuth2 = googleapis_1.google.auth.OAuth2;
-        console.log("2");
-        const oauth2Client = new OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, "https://developers.google.com/oauthplayground");
-        console.log("3");
-        oauth2Client.setCredentials({
-            refresh_token: process.env.REFRESH_TOKEN,
-        });
-        console.log("4");
-        const accessToken = yield oauth2Client.getAccessToken();
-        console.log("5");
-        console.log("access token - ", accessToken.token);
-        console.log("6");
-        const transporter = nodemailer_1.default.createTransport({
-            service: "gmail",
-            auth: {
-                type: "OAuth2",
-                user: process.env.EMAIL,
-                clientId: process.env.CLIENT_ID,
-                clientSecret: process.env.CLIENT_SECRET,
-                refreshToken: process.env.REFRESH_TOKEN,
-                accessToken: accessToken.token,
-            },
-        });
-        const mailOptions = {
-            from: process.env.EMAIL,
-            to: email,
-            subject: "CodeGalaxy Account OTP Code",
-            html: `
+        try {
+            let transporter = nodemailer_1.default.createTransport({
+                host: SMTP_SERVER,
+                port: PORT,
+                secure: true,
+                auth: {
+                    user: USERNAME,
+                    pass: PASSWORD,
+                },
+            });
+            let info = yield transporter.sendMail({
+                from: USERNAME,
+                to: email,
+                subject: "CodeGalaxy Account OTP Code",
+                html: `
                  <div style="font-family: Arial, sans-serif; padding: 20px;">
                 <h2 style="color: #000;">CodeGalaxy account</h2>
                 <h1 style="color: #0078D4;">OTP code</h1>
@@ -729,58 +723,67 @@ router.post("/checkemailandsendotp", [
                 <p>Thanks, <br> The CodeGalaxy account team</p>
               </div>
                 `,
-        };
-        transporter.sendMail(mailOptions, (err, info) => __awaiter(void 0, void 0, void 0, function* () {
-            if (err) {
-                console.error("Error:", err);
-                return res.send({ success, msg: "Internal server Error" });
-            }
-            else {
-                console.log("Email sent-:", info.response);
-                // Delete Previous OTP Data if exist
-                const r = yield prisma.normalOtpService.deleteMany({ where: { email } });
-                const result = yield prisma.normalOtpService.create({
-                    data: {
-                        email: email,
-                        code: Number(otp)
-                    },
-                });
-                const date = new Date(result.createdAt);
-                const seconds = date.getUTCHours() * 3600 + date.getUTCMinutes() * 60 + date.getUTCSeconds() + date.getUTCMilliseconds() / 1000;
-                console.log(result.createdAt);
-                console.log((Date.now() - new Date(result.createdAt).getTime()) / (1000));
-                console.log((Date.now(), " ", new Date(result.createdAt).getTime()));
-                console.log(Math.floor((Date.now(), " ", new Date(result.createdAt).getTime())) / (1000 * 60));
-                console.log("OTP Sended:", result);
-                success = true;
-                res.send({ success, result: Object.assign({}, result), msg: "OTP Sended" }); // Sending the user object as response
-            }
-        }));
+            });
+            console.log(`✅ Email sent to ${email}: ${info.messageId}`);
+            console.log("Email sent-:", info.response);
+            // Delete Previous OTP Data if exist
+            const r = yield prisma.normalOtpService.deleteMany({
+                where: { email },
+            });
+            const result = yield prisma.normalOtpService.create({
+                data: {
+                    email: email,
+                    code: Number(otp),
+                },
+            });
+            const date = new Date(result.createdAt);
+            const seconds = date.getUTCHours() * 3600 +
+                date.getUTCMinutes() * 60 +
+                date.getUTCSeconds() +
+                date.getUTCMilliseconds() / 1000;
+            console.log(result.createdAt);
+            console.log((Date.now() - new Date(result.createdAt).getTime()) / 1000);
+            console.log((Date.now(), " ", new Date(result.createdAt).getTime()));
+            console.log(Math.floor((Date.now(), " ", new Date(result.createdAt).getTime())) /
+                (1000 * 60));
+            console.log("OTP Sended:", result);
+            success = true;
+            res.send({ success, result: Object.assign({}, result), msg: "OTP Sended" }); // Sending the user object as response
+        }
+        catch (error) {
+            console.log("Error in checkemailandsendotp---", error);
+            res.send({ success, msg: `checkemailandsendotp- ${error}` });
+        }
     }
     catch (error) {
-        console.log("Error in checkemailandsendotp---", error);
-        res.send({ success, msg: `checkemailandsendotp- ${error}` });
+        console.log("checkemailandsendotp--", error);
     }
 }));
 router.post("/verifyotptoresetpassword", [
     (0, express_validator_1.body)("email", "Please Enter your Email").exists(),
-    (0, express_validator_1.body)("code", "Please Enter your code").exists()
+    (0, express_validator_1.body)("code", "Please Enter your code").exists(),
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let success = false;
     try {
         const error = (0, express_validator_1.validationResult)(req);
         if (!error.isEmpty()) {
-            return res.status(404).send({ success, error: error.array(), msg: "Parameter is missing" });
+            return res
+                .status(404)
+                .send({ success, error: error.array(), msg: "Parameter is missing" });
         }
         const { email, code } = req.body;
-        const r = yield prisma.normalOtpService.findFirst({ where: { email, code } });
+        const r = yield prisma.normalOtpService.findFirst({
+            where: { email, code },
+        });
         if (!r) {
             return res.send({ success, msg: "Invaild OTP" });
         }
         console.log(r === null || r === void 0 ? void 0 : r.createdAt);
         console.log(Math.abs(Date.now() - new Date((r === null || r === void 0 ? void 0 : r.createdAt) || "2025-02-03T16:30:00").getTime()) / 1000);
-        // delete otp   
-        if ((Math.abs(Date.now() - new Date((r === null || r === void 0 ? void 0 : r.createdAt) || "2025-02-03T16:30:00").getTime()) / 1000) > 60) {
+        // delete otp
+        if (Math.abs(Date.now() - new Date((r === null || r === void 0 ? void 0 : r.createdAt) || "2025-02-03T16:30:00").getTime()) /
+            1000 >
+            60) {
             return res.send({ success, msg: "OTP is Expired" });
         }
         else {
@@ -799,7 +802,9 @@ router.get("/getuserbyid/:id", (req, res) => __awaiter(void 0, void 0, void 0, f
     try {
         if (!req.params.id)
             return res.send({ success, msg: "Parameter missing: ID" });
-        let result = yield prisma.user.findFirst({ where: { id: req.params.id } });
+        let result = yield prisma.user.findFirst({
+            where: { id: req.params.id },
+        });
         success = true;
         return res.send({ success, result });
     }

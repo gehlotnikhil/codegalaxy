@@ -115,7 +115,7 @@ const SignUp: React.FC = () => {
       console.log(jsondata.result);
       if (jsondata.success) {
         sessionStorage.setItem("verifyemail", jsondata.result.email);
-        navigate("/verify");
+        // navigate("/verify");
         toast.success(jsondata.msg);
       } else {
         toast.error(jsondata.msg);

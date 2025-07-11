@@ -15,8 +15,7 @@ const FRONTEND_URL = process.env.FRONTEND_URL;
 app.use(express.json());
 
 const allowedOrigins = [ 
-  FRONTEND_URL, // Production frontend
-  "http://localhost:5173", // Local development
+  FRONTEND_URL
 ];
 
 app.use(

@@ -84,18 +84,7 @@ enum Language {
   go
 }
 
-// type Test_Type{
-//   input String
-//   output String
-// }
 
-// model Problem_Set{
-//   id       String    @id @default(auto()) @map("_id") @db.ObjectId
-//   problem_no Int 
-//   like Int
-//   dislike Int
-
-// }
 type InputOutputType {
   input  String
   output String

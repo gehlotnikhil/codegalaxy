@@ -92,7 +92,7 @@ const OTPVerification: React.FC = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Failed to resend OTP");
+      toast.error("Failed to resend OTP"); 
     }
   };
 
@@ -108,7 +108,7 @@ const OTPVerification: React.FC = () => {
       <div className="card p-4 shadow" style={{ width: "350px" }}>
         <h4 className="text-center mb-3">OTP Verification</h4>
         <p className="text-muted text-center">
-          Enter OTP Code sent to {verifyemail.substring(0, 3)}*****@gmail.com
+          Enter OTP Code sent to {verifyemail.substring(0, 3)}*****{verifyemail.substring((verifyemail.indexOf("@") ))}
         </p>
         <form onSubmit={handleVerifyOtp}>
           <div className="d-flex justify-content-between">
