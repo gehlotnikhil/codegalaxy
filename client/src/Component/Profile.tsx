@@ -3,6 +3,8 @@ import { faEdit } from "@fortawesome/free-solid-svg-icons";
 // import Button from "react-bootstrap/Button";
 import { useContext, useEffect, useState } from "react";
 import MainContext from "../context/main";
+import { apiFetch } from '../utils/api';
+
 // import ProgressCircle from "./ProgressData";
 // import MultiSegmentCircle from "./MultiSegmentCircle";
 import ProgressCircle2 from "./ProgressCircle2";
@@ -54,7 +56,7 @@ function Profile() {
   const { defaultProfilePicture } = context;
 
   const loadProfileDetailFromUserName = async (userName: string) => {
-    const result = await fetch(`${SERVER_URL}/api/user/usernametodata`, {
+    const result = await apiFetch(`/api/user/usernametodata`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -63,11 +65,11 @@ function Profile() {
         userName: userName,
       }),
     });
-    const jsondata = await result.json();
+    const jsondata = await result;
     console.log("loadProfileDetailFromUserName-", jsondata);
     if (jsondata.success) {
-      const result2 = await fetch(
-        `${SERVER_URL}/api/problemset/getallproblem/`,
+      const result2 = await apiFetch(
+        `/api/problemset/getallproblem/`,
         {
           method: "POST",
           headers: {
@@ -83,7 +85,7 @@ function Profile() {
       let easy = 0;
       let medium = 0;
       let hard = 0;
-      const jsondata2 = await result2.json();
+      const jsondata2 = await result2;
       console.log(jsondata2);
       if (jsondata2.success) {
         let problems = jsondata2.result;
@@ -107,13 +109,13 @@ function Profile() {
 
       const id = jsondata.result.id
       console.log("id - - ",id);
-      const response2 = await fetch(`${SERVER_URL}/api/contest/getcontestrank/${userDetail.id}`,{
+      const response2 = await apiFetch(`/api/contest/getcontestrank/${userDetail.id}`,{
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
       })
-      const jsondata3 = await response2.json()
+      const jsondata3 = await response2
       if(jsondata3.success){
         setProfileData({...ProfileData,totalRank:jsondata3.result})
       }

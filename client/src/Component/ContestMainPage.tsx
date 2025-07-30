@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Card, Button, Container, Row, Col } from "react-bootstrap";
 import MainContext from "../context/main";
 import { useNavigate } from "react-router";
+import { apiFetch } from '../utils/api';
 
 
 interface ContestType{
@@ -68,13 +69,13 @@ const ContestMainPage: React.FC = () => {
     try {
       
     
-      const result1 = await fetch(`${SERVER_URL}/api/contest/getallcontest`,{
+      const result1 = await apiFetch(`/api/contest/getallcontest`,{
         method:"POST",
         headers: {
           "Content-Type": "application/json",
         }
       });
-      const jsondata = await result1.json()
+      const jsondata = await result1
       if(jsondata.success){
         console.log("Contest - - - ",jsondata);
         sessionStorage.setItem("hi",JSON.stringify(jsondata.result))

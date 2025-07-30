@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 import { RootStateType } from "../store";
 import { useDispatch } from "react-redux";
 import { setUserDetail } from "../store/slice/UserDetailSlice";
+import { apiFetch } from "../utils/api";
 const ContestCodingArena: React.FC = () => {
   const dispatch = useDispatch();
   const userDetail = useSelector((state: RootStateType) => state.userDetail);
@@ -55,8 +56,8 @@ const ContestCodingArena: React.FC = () => {
   const navigate = useNavigate();
 
   const loadMainQuestion = async (id: string) => {
-    const response = await fetch(
-      `${SERVER_URL}/api/contestproblem/getspecificproblem?id=${id}`,
+    const response = await apiFetch(
+      `/api/contestproblem/getspecificproblem?id=${id}`,
       {
         method: "POST",
         headers: {
@@ -65,7 +66,7 @@ const ContestCodingArena: React.FC = () => {
         body: JSON.stringify({ token: userDetail.token }),
       }
     );
-    const jsondata = await response.json();
+    const jsondata = await response;
     console.log("jsondata--------------------", jsondata);
     if (jsondata.success) {
       console.log(jsondata.result);
@@ -86,13 +87,13 @@ const ContestCodingArena: React.FC = () => {
   }
   const [Contest, setContest] = useState<ContestType | null>(null)
   const loadContest = async(contestid:string)=>{
-    const result = await fetch(`${SERVER_URL}/api/contest/getspecificcontest?id=${contestid}`,{
+    const result = await apiFetch(`/api/contest/getspecificcontest?id=${contestid}`,{
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
     })
-    const jsondata = await result.json()
+    const jsondata = await result
     if(jsondata.success){
       console.log("contest done - ",jsondata.result);
       
@@ -208,7 +209,7 @@ console.log("problemid - ",problemid);
 console.log("contestid - ",contestid);
 
 if(status ==="PASS"){
-  const response1 = await fetch(`${SERVER_URL}/api/contest/leaderboard/update/${contestid}`,{
+  const response1 = await apiFetch(`/api/contest/leaderboard/update/${contestid}`,{
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -220,7 +221,7 @@ if(status ==="PASS"){
       duration:Contest?.duration
   })
 })
-const res1 = await response1.json()
+const res1 = await response1
 if(res1.success){
   console.log("All Done");
   
@@ -239,7 +240,7 @@ console.log("problemid - ",problemid);
 console.log("contestid - ",contestid);
 
 if(status ==="PASS"){
-  const response1 = await fetch(`${SERVER_URL}/api/contest/usercontestdetail/update/${contestid}`,{
+  const response1 = await apiFetch(`/api/contest/usercontestdetail/update/${contestid}`,{
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -249,7 +250,7 @@ if(status ==="PASS"){
       problemid:problemid
   })
 })
-const res1 = await response1.json()
+const res1 = await response1
 if(res1.success){
   console.log("All Done");
   
@@ -313,7 +314,7 @@ console.log("Let see - ");
       let jsondata = await handleCodeExecution(data);
       let updateresult: any = "";
       if (!userDetail.activeDays.includes(getDayOfYear())) {
-        updateresult = await fetch(`${SERVER_URL}/api/user/update/`, {
+        updateresult = await apiFetch(`/api/user/update/`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -323,7 +324,7 @@ console.log("Let see - ");
             activeDays: [...userDetail.activeDays, getDayOfYear()],
           }),
         });
-        const jsondata2 = await updateresult.json();
+        const jsondata2 = await updateresult;
         if (jsondata2.success) {
           dispatch(
             setUserDetail({
@@ -472,7 +473,7 @@ console.log("Let see - ");
       let jsondata_user = await handleCodeExecution(userResultData);
       let updateresult: any = "";
       if (!userDetail.activeDays.includes(getDayOfYear())) {
-        updateresult = await fetch(`${SERVER_URL}/api/user/update/`, {
+        updateresult = await apiFetch(`/api/user/update/`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -482,7 +483,7 @@ console.log("Let see - ");
             activeDays: [...userDetail.activeDays, getDayOfYear()],
           }),
         });
-        const jsondata2 = await updateresult.json();
+        const jsondata2 = await updateresult;
         if (jsondata2.success) {
           dispatch(
             setUserDetail({

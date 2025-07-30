@@ -6,6 +6,7 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom"; // Ensure this is `react-router-dom`
+import {apiFetch} from "./utils/api";
 import Login from "./Component/Login";
 import AppNavbar from "./Component/Navbar";
 import SignUp from "./Component/SignUp";
@@ -40,12 +41,11 @@ import OneToOneCodeEditor from "./Component/OneToOneCodeEditor";
 interface ProtectedRouteProps {
   children: React.ReactNode;
 } 
-// const SERVER_URL = "http://localhost:8000";   
-const SERVER_URL = "https://codegalaxy-server.onrender.com";
-const WEBSOCKET_URL = "wss://codegalaxy-onetoonecompete-ws.onrender.com"
-// const WEBSOCKET_URL = "ws://localhost:8081" 
+const SERVER_URL = import.meta.env.VITE_SERVER_URL ||"http://localhost:8000";   
+
+const WEBSOCKET_URL = import.meta.env.VITE_WEBSOCKET_URL  || "ws://localhost:8081" 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
   const dispatch = useDispatch();    
   const location = useLocation();
   const userDetail = useSelector((state: RootStateType) => state.userDetail); 
@@ -62,7 +62,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     token: string | null
   ): Promise<boolean> => { 
     try {
-      const response = await fetch(`${SERVER_URL}/api/user/tokentodata`, {
+      const response = await apiFetch(`/api/user/tokentodata`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -70,7 +70,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
         body: JSON.stringify({ token }),
       });
 
-      const jsonData = await response.json();
+      const jsonData = await response;
       console.log("Token validation response:", jsonData);
 
       if (jsonData.success) {
@@ -173,7 +173,7 @@ function App() {
     console.log("updateProfileInformation-", data);
     console.log("token -", userDetail.token);
 
-    const result = await fetch(`${SERVER_URL}/api/user/update/`, {
+    const result = await apiFetch(`/api/user/update/`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -183,7 +183,7 @@ function App() {
         ...data,
       }),
     });
-    const jsondata = await result.json();
+    const jsondata = await result;
     console.log(jsondata);
     if (jsondata.success) {
       console.log("go--------------------------", jsondata);
@@ -195,7 +195,7 @@ function App() {
     }
   };
   const handleCodeExecution = async (data: any) => {
-    const result = await fetch(`${SERVER_URL}/api/problemset/executeproblem`, {
+    const result = await apiFetch(`/api/problemset/executeproblem`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -204,7 +204,7 @@ function App() {
         ...data,
       }),
     });
-    const jsondata = await result.json();
+    const jsondata = await result;
     return jsondata;
   };
 

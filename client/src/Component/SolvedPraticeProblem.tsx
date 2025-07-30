@@ -10,6 +10,7 @@ import { RootStateType } from "../store";
 import { useDispatch } from "react-redux";
 import { setUserDetail } from "../store/slice/UserDetailSlice";
 
+import { apiFetch } from '../utils/api';
 
 const SolvedPraticeProblem: React.FC = () => {
     const dispatch = useDispatch();
@@ -48,8 +49,8 @@ const SolvedPraticeProblem: React.FC = () => {
   }
   const loadMainQuestion =  async(id: string) => {
     
-    const response = await fetch(
-      `${SERVER_URL}/api/problemset/getspecificpraticeproblem?id=${id}`,
+    const response = await apiFetch(
+      `/api/problemset/getspecificpraticeproblem?id=${id}`,
       {
         method: "POST",
         headers: {
@@ -58,7 +59,7 @@ const SolvedPraticeProblem: React.FC = () => {
         body: JSON.stringify({ token: userDetail.token }),
       }
     );
-    const jsondata = await response.json();
+    const jsondata = await response;
     console.log("jsondata--------------------", jsondata);
     if (jsondata.success) {
     
@@ -152,7 +153,7 @@ const SolvedPraticeProblem: React.FC = () => {
         praticeCourseDetail[MainQuestion.language as keyof praticeCourseDetailType].solvedProblemDetails = [...praticeCourseDetail[MainQuestion.language as keyof praticeCourseDetailType].solvedProblemDetails,(MainQuestion?.id as string )]
       }
       console.log("aqswdefkkkkk------",praticeCourseDetail[MainQuestion.language as keyof praticeCourseDetailType].solvedProblemDetails,"--",typeof praticeCourseDetail[MainQuestion.language as keyof praticeCourseDetailType].solvedProblemDetails);
-      const response = await fetch(`${SERVER_URL}/api/user/update/`, {
+      const response = await apiFetch(`/api/user/update/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -163,7 +164,7 @@ const SolvedPraticeProblem: React.FC = () => {
         }),
       });
 
-      const jsondata = await response.json();
+      const jsondata = await response;
       console.log("updatedUser------", jsondata);
 
       if (jsondata.success) {
@@ -214,7 +215,7 @@ const SolvedPraticeProblem: React.FC = () => {
 
       
             if (!userDetail.activeDays.includes(getDayOfYear())) {
-              const updateresult = await fetch(`${SERVER_URL}/api/user/update/`, {
+              const updateresult = await apiFetch(`/api/user/update/`, {
                 method: "PUT",
                 headers: {
                   "Content-Type": "application/json",
@@ -224,7 +225,7 @@ const SolvedPraticeProblem: React.FC = () => {
                   activeDays: [...userDetail.activeDays, getDayOfYear()],
                 }),
               });
-              const jsondata2 = await updateresult.json();
+              const jsondata2 = await updateresult;
               console.log("ppppppp-----", jsondata2);
       
               if (jsondata2.success) {

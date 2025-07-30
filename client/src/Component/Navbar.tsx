@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { RootStateType } from "../store";
 import logo from "../assets/logo.png";
 import { useClerk } from "@clerk/clerk-react";
+import { apiFetch } from '../utils/api';
 
 function AppNavbar() {
   const { signOut } = useClerk();
@@ -218,13 +219,13 @@ function AppNavbar() {
                 }`}
               >
                 <Link className="white nav-link  new-problem-link" onClick={async()=>{
-                  const result = await fetch(`${SERVER_URL}/api/problemset/getdailynewproblem`,{
+                  const result = await apiFetch(`/api/problemset/getdailynewproblem`,{
                     method: "GET",
                     headers: {
                       "Content-Type": "application/json",
                     }
                   })
-                  const jsondata1 = await result.json()
+                  const jsondata1 = await result
                   console.log("jsondata1----",jsondata1);
                   if(jsondata1.success){
                     navigate(`/problem/${jsondata1.result.id}`)

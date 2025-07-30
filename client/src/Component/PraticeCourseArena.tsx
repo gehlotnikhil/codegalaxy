@@ -6,6 +6,7 @@ import { RootStateType } from "../store";
 import { useParams } from "react-router";
 import MainContext from "../context/main";
 import { useRef } from "react";
+import { apiFetch } from '../utils/api';
 
 // import { UseDispatch } from "react-redux";
 // import {setUserDetail} from "../store/slice/UserDetailSlice";
@@ -83,8 +84,8 @@ useEffect(() => {
 }, [PraticeCourseDetailFromSpecificUser])
 const loadProblemDetail = async (language: string) => {
   try {
-    const result = await fetch(
-      `${SERVER_URL}/api/problemset/getpraticeproblemdetails`,
+    const result = await apiFetch(
+      `/api/problemset/getpraticeproblemdetails`,
       {
         method: "POST",
         headers: {
@@ -101,7 +102,7 @@ const loadProblemDetail = async (language: string) => {
       throw new Error(`Error ${result.status}: ${result.statusText}`);
     }
 
-    const jsondata = await result.json();
+    const jsondata = await result;
     console.log("jsondata--", jsondata);
     if (jsondata.success) {
       setPraticeQuestion(jsondata.result);
@@ -118,7 +119,7 @@ const loadProblemDetail = async (language: string) => {
 
   const handleRegisterCourse = async () => {
     try {
-      const result = await fetch(`${SERVER_URL}/api/user/update/`, {
+      const result = await apiFetch(`/api/user/update/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -136,7 +137,7 @@ const loadProblemDetail = async (language: string) => {
           },
         }),
       });
-      const jsondata = await result.json();
+      const jsondata = await result;
 
       console.log(jsondata);
       if (jsondata.success) {
@@ -191,7 +192,7 @@ const loadProblemDetail = async (language: string) => {
 
   const updateValueOfPraticeCourse = async(e:any)=>{
     try {
-      const result = await fetch(`${SERVER_URL}/api/user/update/`, {
+      const result = await apiFetch(`/api/user/update/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -201,7 +202,7 @@ const loadProblemDetail = async (language: string) => {
           ...e
         }),
       });
-      const jsondata = await result.json();
+      const jsondata = await result;
 
       console.log(jsondata);
       if (jsondata.success) {

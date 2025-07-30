@@ -10,6 +10,8 @@ import MainContext from "../context/main";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router";
 import { useSelector } from "react-redux";
+import { apiFetch } from '../utils/api';
+
 import { RootStateType } from "../store";
 import { useDispatch } from "react-redux";
 import { setUserDetail } from "../store/slice/UserDetailSlice";
@@ -84,8 +86,8 @@ const ProblemPage: React.FC = () => {
     );
   }, [LikeChoice]);
   const loadMainQuestion = async (id: string) => {
-    const response = await fetch(
-      `${SERVER_URL}/api/problemset/getspecificproblem?id=${id}`,
+    const response = await apiFetch(
+      `/api/problemset/getspecificproblem?id=${id}`,
       {
         method: "POST",
         headers: {
@@ -94,7 +96,7 @@ const ProblemPage: React.FC = () => {
         body: JSON.stringify({ token: userDetail.token }),
       }
     );
-    const jsondata = await response.json();
+    const jsondata = await response;
     console.log("jsondata--------------------", jsondata);
     if (jsondata.success) {
       console.log(jsondata.result);
@@ -144,15 +146,15 @@ const ProblemPage: React.FC = () => {
     };
 
     try {
-      const response = await fetch(
-        `${SERVER_URL}/api/problemset/update/${MainQuestion.problemNo}`,
+      const response = await apiFetch(
+        `/api/problemset/update/${MainQuestion.problemNo}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(bodyData),
         }
       );
-      const jsondata = await response.json();
+      const jsondata = await response;
       console.log(jsondata);
 
       if (jsondata.success) {
@@ -299,7 +301,7 @@ const ProblemPage: React.FC = () => {
         updatedSolvedProblems.push(MainQuestion.id);
       }
 
-      const response = await fetch(`${SERVER_URL}/api/user/update/`, {
+      const response = await apiFetch(`/api/user/update/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -310,15 +312,15 @@ const ProblemPage: React.FC = () => {
         }),
       });
 
-      const jsondata = await response.json();
+      const jsondata = await response;
       console.log("updatedUser------", jsondata);
 
       if (jsondata.success) {
         // Update local state with correct values
       }
 
-      const response2 = await fetch(
-        `${SERVER_URL}/api/problemset/update/${MainQuestion.problemNo}`,
+      const response2 = await apiFetch(
+        `/api/problemset/update/${MainQuestion.problemNo}`,
         {
           method: "PUT",
           headers: {
@@ -331,7 +333,7 @@ const ProblemPage: React.FC = () => {
         }
       );
 
-      const jsondata2 = await response2.json();
+      const jsondata2 = await response2;
       console.log("updatedUser------", jsondata2);
       if (jsondata2.success) {
         setMainQuestion({
@@ -398,7 +400,7 @@ const ProblemPage: React.FC = () => {
       let jsondata = await handleCodeExecution(data);
       let updateresult: any = "";
       if (!userDetail.activeDays.includes(getDayOfYear())) {
-        updateresult = await fetch(`${SERVER_URL}/api/user/update/`, {
+        updateresult = await apiFetch(`/api/user/update/`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -408,7 +410,7 @@ const ProblemPage: React.FC = () => {
             activeDays: [...userDetail.activeDays, getDayOfYear()],
           }),
         });
-        const jsondata2 = await updateresult.json();
+        const jsondata2 = await updateresult;
         if (jsondata2.success) {
           dispatch(
             setUserDetail({
@@ -556,7 +558,7 @@ const ProblemPage: React.FC = () => {
       let jsondata_user = await handleCodeExecution(userResultData);
       let updateresult: any = "";
       if (!userDetail.activeDays.includes(getDayOfYear())) {
-        updateresult = await fetch(`${SERVER_URL}/api/user/update/`, {
+        updateresult = await apiFetch(`/api/user/update/`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -566,7 +568,7 @@ const ProblemPage: React.FC = () => {
             activeDays: [...userDetail.activeDays, getDayOfYear()],
           }),
         });
-        const jsondata2 = await updateresult.json();
+        const jsondata2 = await updateresult;
         if (jsondata2.success) {
           dispatch(
             setUserDetail({

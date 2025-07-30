@@ -7,6 +7,7 @@ import spinner from "../assets/tube-spinner.svg";
 import { SignedOut, SignInButton, useUser } from "@clerk/clerk-react";
 import logo from "../assets/logo.png";
 
+import { apiFetch } from '../utils/api';
 
 import { useDispatch } from "react-redux";
 import { setUserDetail } from "../store/slice/UserDetailSlice";
@@ -51,14 +52,14 @@ const SignUp: React.FC = () => {
       console.log("user-", user?.email);
   
       if (user) {
-        let result = await fetch(`${SERVER_URL}/api/user/thirdpartylogin`, {
+        let result = await apiFetch(`/api/user/thirdpartylogin`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ email: user.email }),
         });
-        let jsondata = await result.json();
+        let jsondata = await result;
         console.log("res---", jsondata);
         console.log(jsondata.result);
         if (jsondata.success) {
@@ -96,7 +97,7 @@ const SignUp: React.FC = () => {
   const handleCreateAccount = async (data: SignUpFormValues) => {
     setspinnerStatus(true);
     try {
-      let result = await fetch(`${SERVER_URL}/api/user/registeruser`, {
+      let result = await apiFetch(`/api/user/registeruser`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -110,7 +111,7 @@ const SignUp: React.FC = () => {
           password: data.password,
         }),
       });
-      const jsondata = await result.json();
+      const jsondata = await result;
       console.log("-a-a - ", jsondata);
       console.log(jsondata.result);
       if (jsondata.success) {
@@ -129,8 +130,8 @@ const SignUp: React.FC = () => {
   // const handleCreateAccount = async(data:SignUpFormValues)=>{
   //   setspinnerStatus(true)
   //   try {
-  //     let result = await fetch(
-  //       `${SERVER_URL}/api/user/registeruser`,
+  //     let result = await apiFetch(
+  //       `/api/user/registeruser`,
   //       {
   //         method: "POST",
   //         headers: {
@@ -139,7 +140,7 @@ const SignUp: React.FC = () => {
   //         body:JSON.stringify({"userName":data.username,"email":data.email,"password":data.password})
   //       }
   //     );
-  //     const jsondata = await result.json();
+  //     const jsondata = await result;
   //     console.log("Account Created - ",jsondata);
   //     console.log(jsondata.result);
   //     if(jsondata.success){
@@ -162,7 +163,7 @@ const SignUp: React.FC = () => {
     const handleThirdPartyLogin = async () => {
       if (!isSignedIn || !user) return;
       try {
-        const response = await fetch(`${SERVER_URL}/api/user/thirdpartylogin`, {
+        const response = await apiFetch(`/api/user/thirdpartylogin`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -172,7 +173,7 @@ const SignUp: React.FC = () => {
           }),
         });
 
-        const jsonData = await response.json();
+        const jsonData = await response;
 
         if (jsonData.success) {
           dispatch(setUserDetail(jsonData.result));

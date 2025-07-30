@@ -3,7 +3,7 @@ import CodeEditor from "./CodeEditor2";
 import MainContext from "../context/main";
 import { useContext, useEffect } from "react";
 import { toast } from "react-toastify";
-
+import {apiFetch} from "../utils/api";
 function Admin() {
   const context = useContext(MainContext);
   const [CodeValue, setCodeValue] = useState("");
@@ -14,7 +14,7 @@ function Admin() {
     console.log(CodeValue);
   }, [CodeValue]);
 
-  const { Demo, setDemo, SERVER_URL } = context;
+  const { Demo, setDemo } = context;
   useEffect(() => {
     console.log("demo-", Demo);
   }, [Demo]);
@@ -230,7 +230,7 @@ function Admin() {
       problemsData.map((value) => {
         return Number(value); 
       });
-      const response = await fetch(`${SERVER_URL}/api/contest/create`, {
+      const response = await apiFetch(`/api/contest/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -241,7 +241,7 @@ function Admin() {
           problems:problemsData,
         }),
       });
-      const jsondata = await response.json();
+      const jsondata = await response;
       if (jsondata.success) {
         console.log(jsondata);
         toast.success("Contest created successfully");
@@ -277,8 +277,8 @@ function Admin() {
 
     console.log(bodyData);
     try {
-      const response = await fetch(
-        `${SERVER_URL}/api/contest/update/${contestNo}`,
+      const response = await apiFetch(
+        `/api/contest/update/${contestNo}`,
         {
           method: "PUT",
           headers: {
@@ -287,7 +287,7 @@ function Admin() {
           body: JSON.stringify(bodyData),
         }
       );
-      const jsondata = await response.json();
+      const jsondata = await response;
       console.log(jsondata);
     } catch (error) {
       console.log(error);
@@ -299,8 +299,8 @@ function Admin() {
       return toast.error("Failed to delete contest");
     }
     try {
-      const response = await fetch(
-        `${SERVER_URL}/api/contest/delete/${contestNo}`,
+      const response = await apiFetch(
+        `/api/contest/delete/${contestNo}`,
         {
           method: "DELETE",
           headers: {
@@ -308,7 +308,7 @@ function Admin() {
           },
         }
       );
-      const jsondata = await response.json();
+      const jsondata = await response;
       console.log(jsondata);
     } catch (error) {
       console.log(error);
@@ -381,7 +381,7 @@ console.log(bodyData);
 
 
 
-      const response = await fetch(`${SERVER_URL}/api/problemset/create`, {
+      const response = await apiFetch(`/api/problemset/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -389,7 +389,7 @@ console.log(bodyData);
         body: JSON.stringify(bodyData),
       });
 
-      const jsondata = await response.json();
+      const jsondata = await response;
       if (jsondata.success) {
         toast.success("Problem created successfully");
       } else {
@@ -446,8 +446,8 @@ console.log(bodyData);
 
     console.log(bodyData);
     try {
-      const response = await fetch(
-        `${SERVER_URL}/api/problemset/update/${problemNo}`,
+      const response = await apiFetch(
+        `/api/problemset/update/${problemNo}`,
         {
           method: "PUT",
           headers: {
@@ -456,7 +456,7 @@ console.log(bodyData);
           body: JSON.stringify(bodyData),
         }
       );
-      const jsondata = await response.json();
+      const jsondata = await response;
       console.log(jsondata);
     } catch (error) {
       console.log(error);
@@ -468,8 +468,8 @@ console.log(bodyData);
       return toast.error("Failed to delete problem");
     }
     try {
-      const response = await fetch(
-        `${SERVER_URL}/api/problemset/delete/${problemNo}`,
+      const response = await apiFetch(
+        `/api/problemset/delete/${problemNo}`,
         {
           method: "DELETE",
           headers: {
@@ -477,7 +477,7 @@ console.log(bodyData);
           },
         }
       );
-      const jsondata = await response.json();
+      const jsondata = await response;
       console.log(jsondata);
     } catch (error) {
       console.log(error);
@@ -507,8 +507,8 @@ console.log(bodyData);
 
   const handleGetAllProblem = async () => {
     try {
-      const response = await fetch(
-        `${SERVER_URL}/api/problemset/getallproblem`,
+      const response = await apiFetch(
+        `/api/problemset/getallproblem`,
         {
           method: "POST",
           headers: {
@@ -516,7 +516,7 @@ console.log(bodyData);
           },
         }
       );
-      const jsondata = await response.json();
+      const jsondata = await response;
       console.log(jsondata);
       setCodeValue(JSON.stringify(jsondata, null, 2));
     } catch (error) {
@@ -529,8 +529,8 @@ console.log(bodyData);
       return toast.error("failed to fetch specific contest");
     }
     try {
-      const response = await fetch(
-        `${SERVER_URL}/api/problemset/getspecificproblem?no=${problemNo}`,
+      const response = await apiFetch(
+        `/api/problemset/getspecificproblem?no=${problemNo}`,
         {
           method: "POST",
           headers: {
@@ -538,7 +538,7 @@ console.log(bodyData);
           },
         }
       );
-      const jsondata = await response.json();
+      const jsondata = await response;
       console.log(jsondata);
       setCodeValue(JSON.stringify(jsondata, null, 2));
     } catch (error) {
@@ -547,13 +547,13 @@ console.log(bodyData);
   };
   const handleGetAllContest = async () => {
     try {
-      const response = await fetch(`${SERVER_URL}/api/contest/getallcontest`, {
+      const response = await apiFetch(`/api/contest/getallcontest`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
       });
-      const jsondata = await response.json();
+      const jsondata = await response;
       console.log(jsondata);
       setCodeValue(JSON.stringify(jsondata, null, 2));
     } catch (error) {
@@ -566,8 +566,8 @@ console.log(bodyData);
       return toast.error("failed to fetch specific contest");
     }
     try {
-      const response = await fetch(
-        `${SERVER_URL}/api/contest/getspecificcontest?no=${contestNo}`,
+      const response = await apiFetch(
+        `/api/contest/getspecificcontest?no=${contestNo}`,
         {
           method: "GET",
           headers: {
@@ -575,7 +575,7 @@ console.log(bodyData);
           },
         }
       );
-      const jsondata = await response.json();
+      const jsondata = await response;
       console.log(jsondata);
       setCodeValue(JSON.stringify(jsondata, null, 2));
     } catch (error) {

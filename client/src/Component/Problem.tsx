@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import MainContext from "../context/main";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../store";
+import { apiFetch } from '../utils/api';
 
 const Problem: React.FC = () => {
   const userDetail = useSelector((state:RootStateType)=>state.userDetail)
@@ -157,8 +158,8 @@ const Problem: React.FC = () => {
   const loadQuestionDetails = async (pageno?: number) => {
     const page = pageno || 1;
 
-    const response = await fetch(
-      `${SERVER_URL}/api/problemset/getproblemdetails/${page || 1}`,
+    const response = await apiFetch(
+      `/api/problemset/getproblemdetails/${page || 1}`,
       {
         method: "POST",
         headers: {
@@ -167,7 +168,7 @@ const Problem: React.FC = () => {
         body:JSON.stringify({token:userDetail.token})
       }
     );
-    const data = await response.json();
+    const data = await response;
     console.log("------", data.result);
     console.log("checking true -",data.success && Object.keys(data.result).length === 0);
     if (data.success && Object.keys(data.result).length === 0) {

@@ -28,14 +28,14 @@ const Testing1: React.FC = () => {
   //   console.log("user-", user?.email);
 
   //   if (user) {
-  //     let result = await fetch(`${SERVER_URL}/api/user/thirdpartylogin`, {
+  //     let result = await apiFetch(`/api/user/thirdpartylogin`, {
   //       method: "POST",
   //       headers: {
   //         "Content-Type": "application/json",
   //       },
   //       body: JSON.stringify({ email: user.email }),
   //     });
-  //     let jsondata = await result.json();
+  //     let jsondata = await result;
   //     console.log("res---", jsondata);
   //     console.log(jsondata.result);
   //     if (jsondata.success) {

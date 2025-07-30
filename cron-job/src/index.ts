@@ -104,7 +104,7 @@ app.post("/create", [
 app.get("/push", async (req: Request, res: Response): Promise<any> => {
   let success = false;
   try {
-    let result = await fetch(`${CronJobUrl1}/delete`, {
+    let result = await apiFetch(`${CronJobUrl1}/delete`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     })

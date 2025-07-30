@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import MainContext from "../context/main";
+import { apiFetch } from '../utils/api';
 
 function ContestProblemPage() {
   const param = useParams<{ contestId: string }>();
@@ -88,24 +89,24 @@ function ContestProblemPage() {
 
   const loadAllQuestions = async (id: string) => {
     try {
-      const res1 = await fetch(`${SERVER_URL}/api/contest/getcontestproblemfromcontestid/${id}`, {
+      const res1 = await apiFetch(`/api/contest/getcontestproblemfromcontestid/${id}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
 
-      const jsondata = await res1.json();
+      const jsondata = await res1;
       if (jsondata.success) {
         setProblems(jsondata.result);
       } else {
         setError(true);
       }
 
-      const res2 = await fetch(`${SERVER_URL}/api/contest/getspecificcontest?id=${id}`, {
+      const res2 = await apiFetch(`/api/contest/getspecificcontest?id=${id}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
 
-      const jsondata2 = await res2.json();
+      const jsondata2 = await res2;
       if (jsondata2.success) {
         setContest(jsondata2.result);
         setContestName(jsondata2.result.contestName || "Contest");
@@ -124,21 +125,21 @@ function ContestProblemPage() {
     try {
       console.log("Fetching leaderboard for contest:", id);
   
-      const leaderboardResponse = await fetch(`${SERVER_URL}/api/contest/leaderboard/${id}`, {
+      const leaderboardResponse = await apiFetch(`/api/contest/leaderboard/${id}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
       
-      const leaderboardData = await leaderboardResponse.json();
+      const leaderboardData = await leaderboardResponse;
       if (!leaderboardData.success) throw new Error("Failed to fetch leaderboard");
   
-      const usersResponse = await fetch(`${SERVER_URL}/api/user/getalluser`, {
+      const usersResponse = await apiFetch(`/api/user/getalluser`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: 1 }),
       });
   
-      const usersData = await usersResponse.json();
+      const usersData = await usersResponse;
       if (!usersData.success) throw new Error("Failed to fetch users");
   
       const userMap = new Map(usersData.result.map((user: any) => [user.id, user.name]));

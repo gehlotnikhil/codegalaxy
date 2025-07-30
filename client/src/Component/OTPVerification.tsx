@@ -6,6 +6,7 @@ import MainContext from "../context/main";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { setUserDetail } from "../store/slice/UserDetailSlice";
+import { apiFetch } from '../utils/api';
 
 const OTPVerification: React.FC = () => {
   const dispatch = useDispatch();
@@ -53,13 +54,13 @@ const OTPVerification: React.FC = () => {
      try {
 
       const code = Number(otp.join(""));
-      const response = await fetch(`${SERVER_URL}/api/user/verify`, {
+      const response = await apiFetch(`/api/user/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code, verifyemail }),
       });
 
-      const jsonData = await response.json();
+      const jsonData = await response;
       if (jsonData.success) {
         dispatch(setUserDetail(jsonData.result));
         sessionStorage.setItem("token",jsonData.result.token)
@@ -78,13 +79,13 @@ const OTPVerification: React.FC = () => {
     if (timeLimit > 0) return; // Prevent resending before timer ends
     try {
       setTimeLimit(60);
-      const response = await fetch(`${SERVER_URL}/api/user/resendotpcode`, {
+      const response = await apiFetch(`/api/user/resendotpcode`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email:verifyemail }),
       });
 
-      const jsonData = await response.json();
+      const jsonData = await response;
       if (jsonData.success) {
         toast.success("OTP Resent Successfully");
       } else {

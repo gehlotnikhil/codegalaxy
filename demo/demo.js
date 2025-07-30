@@ -252,7 +252,7 @@ vector<int> twoSum(vector<int>& nums, int target) {
   
   const createProblem = async () => {
 	try {
-	  const response = await fetch("http://localhost:8000/api/problemset/create", {
+	  const response = await apiFetch("http://localhost:8000/api/problemset/create", {
 		method: "POST",
 		headers: {
 		  "Content-Type": "application/json",

@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTag } from "@fortawesome/free-solid-svg-icons";
 import TopicTag from "./TopicTag";
 import MainContext from "../context/main";
+import { apiFetch } from '../utils/api';
+
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router";
 import { useSelector } from "react-redux";
@@ -74,8 +76,8 @@ const OneToOneCodeEditor: React.FC = () => {
   }, [Leaderboard]);
 
   const loadMainQuestion = async (id: string) => {
-    const response = await fetch(
-      `${SERVER_URL}/api/problemset/getspecificproblem?id=${id}`,
+    const response = await apiFetch(
+      `/api/problemset/getspecificproblem?id=${id}`,
       {
         method: "POST",
         headers: {
@@ -84,7 +86,7 @@ const OneToOneCodeEditor: React.FC = () => {
         body: JSON.stringify({ token: userDetail.token }),
       }
     );
-    const jsondata = await response.json();
+    const jsondata = await response;
     console.log("jsondata--------------------", jsondata);
     if (jsondata.success) {
       console.log(jsondata.result);
@@ -98,8 +100,8 @@ const OneToOneCodeEditor: React.FC = () => {
   };
 
   const loadLeaderboard = async () => {
-    const result = await fetch(
-      `${SERVER_URL}/api/onetoonecompete/getspecficleaderboardbyid/${param.leaderboardid}/${userDetail.id}`,
+    const result = await apiFetch(
+      `/api/onetoonecompete/getspecficleaderboardbyid/${param.leaderboardid}/${userDetail.id}`,
       {
         method: "GET",
         headers: {
@@ -107,7 +109,7 @@ const OneToOneCodeEditor: React.FC = () => {
         },
       }
     );
-    const jsondata = await result.json();
+    const jsondata = await result;
     if (jsondata.success) {
       console.log("Leaderboard done - ", jsondata.result);
 
@@ -221,7 +223,7 @@ const OneToOneCodeEditor: React.FC = () => {
 
   const updateLeaderBoard = async (
     status: "PASS" | "FAIL",
-    problemid = Leaderboard?.problemId,
+    problemid = Leaderboard?.problemId, 
     leaderboardid = Leaderboard?.id
   ) => {
     console.log("status - ", status);
@@ -229,8 +231,8 @@ const OneToOneCodeEditor: React.FC = () => {
     console.log("leaderboardid - ", leaderboardid);
 
     if (status === "PASS") {
-      const response1 = await fetch(
-        `${SERVER_URL}/api/onetoonecompete/updateonetoonecompeteleaderboard`,
+      const response1 = await apiFetch(
+        `/api/onetoonecompete/updateonetoonecompeteleaderboard`,
         {
           method: "PUT",
           headers: {
@@ -242,7 +244,7 @@ const OneToOneCodeEditor: React.FC = () => {
           }),
         }
       );
-      const res1 = await response1.json();
+      const res1 = await response1;
       if (res1.success) {
         toast.success("You Won")
         console.log("All Done");
@@ -304,7 +306,7 @@ const OneToOneCodeEditor: React.FC = () => {
       let jsondata = await handleCodeExecution(data);
       let updateresult: any = "";
       if (!userDetail.activeDays.includes(getDayOfYear())) {
-        updateresult = await fetch(`${SERVER_URL}/api/user/update/`, {
+        updateresult = await apiFetch(`/api/user/update/`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -314,7 +316,7 @@ const OneToOneCodeEditor: React.FC = () => {
             activeDays: [...userDetail.activeDays, getDayOfYear()],
           }),
         });
-        const jsondata2 = await updateresult.json();
+        const jsondata2 = await updateresult;
         if (jsondata2.success) {
           dispatch(
             setUserDetail({
@@ -461,7 +463,7 @@ const OneToOneCodeEditor: React.FC = () => {
       let jsondata_user = await handleCodeExecution(userResultData);
       let updateresult: any = "";
       if (!userDetail.activeDays.includes(getDayOfYear())) {
-        updateresult = await fetch(`${SERVER_URL}/api/user/update/`, {
+        updateresult = await apiFetch(`/api/user/update/`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -471,7 +473,7 @@ const OneToOneCodeEditor: React.FC = () => {
             activeDays: [...userDetail.activeDays, getDayOfYear()],
           }),
         });
-        const jsondata2 = await updateresult.json();
+        const jsondata2 = await updateresult;
         if (jsondata2.success) {
           dispatch(
             setUserDetail({

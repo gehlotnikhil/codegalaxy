@@ -3,8 +3,13 @@ client/node_modules
 server/node_modules
 .vercel
 .vscode
+*.env
+*.env.local
+
+client/.env.local
 server/.env
 server/prisma/.env
 server2/node_modules
 cron-job/node_modules
 ws2/node_modules
+

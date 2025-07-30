@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import { AxiosResponse } from 'axios';
 
 import MainContext from "../context/main";
 // import { yupResolver } from "@hookform/resolvers/yup";
@@ -7,8 +8,8 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../store";
 import { EntireUserDetailType } from "../store/slice/UserDetailSlice";
-import axios from "axios";
 import {  useNavigate } from "react-router";
+import axios from 'axios';
 
 
 interface ProfileFieldValueType {
@@ -102,7 +103,7 @@ const EditProfile: React.FC = () => {
     formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
 
     try {
-      const response = await axios.post(
+      const response :AxiosResponse = await axios.post(
         `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
         formData
       );

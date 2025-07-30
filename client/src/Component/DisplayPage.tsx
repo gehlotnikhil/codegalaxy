@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
 const CLOUDINARY_FETCH_URL = `https://api.cloudinary.com/v1_1/diqpelkm9/resources/image`;
 
 const DisplayPage: React.FC = () => {

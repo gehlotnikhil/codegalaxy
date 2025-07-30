@@ -6,6 +6,7 @@ import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../store";
 import MainContext from "../context/main";
+import { apiFetch } from '../utils/api';
 
 const ContestPage: React.FC = () => {
   const navigate = useNavigate();
@@ -46,8 +47,8 @@ const ContestPage: React.FC = () => {
 
   const loadUserBattleDetail = async () => {
     try {
-      const result1 = await fetch(
-        `${SERVER_URL}/api/onetoonecompete/getonetoonecompeteleaderboard/${userDetail.id}`,
+      const result1 = await apiFetch(
+        `/api/onetoonecompete/getonetoonecompeteleaderboard/${userDetail.id}`,
         {
           method: "GET",
           headers: {
@@ -55,7 +56,7 @@ const ContestPage: React.FC = () => {
           },
         }
       );
-      const jsondata = await result1.json();
+      const jsondata = await result1;
       if (jsondata.success) {
         setLeaderBoard(jsondata.result);
         setBtnJoin(() => {

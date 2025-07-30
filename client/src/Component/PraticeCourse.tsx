@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { RootStateType } from "../store";
 import MainContext from "../context/main";
+import { apiFetch } from '../utils/api';
 
 type CardProps = {
   headerColor: string;
@@ -60,7 +61,7 @@ const PraticeCourse: React.FC = () => {
   }, [])
  const loadProblemDetail = async(language:string)=>{
    try {
-     const result = await fetch(`${SERVER_URL}/api/problemset/getpraticeproblemdetails`,{
+     const result = await apiFetch(`/api/problemset/getpraticeproblemdetails`,{
        method: "POST",
        headers: {
          "Content-Type": "application/json",
@@ -70,7 +71,7 @@ const PraticeCourse: React.FC = () => {
          language:language
        }),
      })
-     const jsondata  = await result.json()
+     const jsondata  = await result
      console.log("jsondata--",jsondata);
      if(jsondata.success){
        setEntireLanguageCount(jsondata.entireCount)

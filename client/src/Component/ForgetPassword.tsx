@@ -6,6 +6,7 @@ import MainContext from "../context/main";
 import { setUserDetail } from "../store/slice/UserDetailSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
+import { apiFetch } from '../utils/api';
 
 function ForgetPassword() {
   const context = useContext(MainContext);
@@ -38,8 +39,8 @@ function ForgetPassword() {
         setSubmitActive(true);
         return toast.error("Email not Provided");
       }
-      const result = await fetch(
-        `${SERVER_URL}/api/user/checkemailandsendotp`,
+      const result = await apiFetch(
+        `/api/user/checkemailandsendotp`,
         {
           method: "POST",
           headers: {
@@ -48,7 +49,7 @@ function ForgetPassword() {
           body: JSON.stringify({ email: FieldData.email }),
         }
       );
-      const jsondata = await result.json();
+      const jsondata = await result;
       if (jsondata.success) {
         setShowPromptField(2);
         toast.success(jsondata.msg);
@@ -85,8 +86,8 @@ function ForgetPassword() {
         return toast.error("OTP not Provided");
       }
 
-      const result = await fetch(
-        `${SERVER_URL}/api/user/verifyotptoresetpassword`,
+      const result = await apiFetch(
+        `/api/user/verifyotptoresetpassword`,
         {
           method: "POST",
           headers: {
@@ -98,7 +99,7 @@ function ForgetPassword() {
           }),
         }
       );
-      const jsondata = await result.json();
+      const jsondata = await result;
       if (jsondata.success) {
         setShowPromptField(3);
         toast.success(jsondata.msg);
@@ -124,7 +125,7 @@ function ForgetPassword() {
         return toast.error("Password not Provided");
       }
 
-      const result = await fetch(`${SERVER_URL}/api/user/changepassword`, {
+      const result = await apiFetch(`/api/user/changepassword`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -134,7 +135,7 @@ function ForgetPassword() {
           password: FieldData.password,
         }),
       });
-      const jsondata = await result.json();
+      const jsondata = await result;
       if (jsondata.success) {
         dispatch(setUserDetail(jsondata.result));
         sessionStorage.setItem("token-", jsondata.result.token);

@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import spinner from "../assets/tube-spinner.svg";
 import { useForm, SubmitHandler } from "react-hook-form";
+import {apiFetch} from "../utils/api";
+
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";
@@ -37,14 +39,14 @@ function Login() {
     console.log("user-", user?.email);
 
     if (user) {
-      let result = await fetch(`${SERVER_URL}/api/user/thirdpartylogin`, {
+      let result = await apiFetch(`/api/user/thirdpartylogin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email: user.email }),
       });
-      let jsondata = await result.json();
+      let jsondata = await result;
       console.log("res---", jsondata);
       console.log(jsondata.result);
       if (jsondata.success) {
@@ -81,14 +83,14 @@ function Login() {
   const handleLoginAccount = async (data: LoginFormValues) => {
     setspinnerStatus(true);
     try {
-      const result = await fetch(`${SERVER_URL}/api/user/login`, {
+      const result = await apiFetch(`/api/user/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email: data.email, password: data.password }),
       });
-      const jsondata = await result.json();
+      const jsondata = await result;
       console.log(jsondata);
       if (jsondata.success) {
         dispatch(setUserDetail(jsondata.result));
@@ -114,7 +116,7 @@ function Login() {
       const handleThirdPartyLogin = async () => {
         if (!isSignedIn || !user) return;
         try {
-          const response = await fetch(`${SERVER_URL}/api/user/thirdpartylogin`, {
+          const response = await apiFetch(`/api/user/thirdpartylogin`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -124,7 +126,7 @@ function Login() {
             }),
           });
   
-          const jsonData = await response.json();
+          const jsonData = await response;
   
           if (jsonData.success) {
             dispatch(setUserDetail(jsonData.result));

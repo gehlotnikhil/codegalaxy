@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { RootStateType } from "../store";
 import MainContext from "../context/main";
 import { useNavigate } from "react-router";
+import { apiFetch } from '../utils/api';
 
 
 
@@ -75,14 +76,14 @@ function OneToOneCompeteSpinner() {
   const loadAllUser = async()=>{
     console.log("111-1-1");
     
-    const result = await fetch(`${SERVER_URL}/api/user/getalluser`,{
+    const result = await apiFetch(`/api/user/getalluser`,{
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ name:1,profilePictureUrl:1 }),      
     })
-    const jsondata = await result.json();
+    const jsondata = await result;
     console.log("111-1-1",jsondata);
     if(jsondata.success){
       setAllUsers(jsondata.result)
