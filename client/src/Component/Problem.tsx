@@ -1,19 +1,16 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, {  useEffect, useMemo, useState } from "react";
 import { FaCode } from "react-icons/fa";
 import { BsFillGridFill } from "react-icons/bs";
 import { GiConvergenceTarget } from "react-icons/gi";
 import { AiOutlineRobot } from "react-icons/ai";
 import { useLocation, useSearchParams } from "react-router";
 import { Link } from "react-router-dom";
-import MainContext from "../context/main";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../store";
 import { apiFetch } from '../utils/api';
 
 const Problem: React.FC = () => {
   const userDetail = useSelector((state:RootStateType)=>state.userDetail)
-  const context = useContext(MainContext);
-  const {SERVER_URL} = context;
   type Question = {
     id?: string;
     problemNo?: number;

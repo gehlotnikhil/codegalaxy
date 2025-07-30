@@ -40,7 +40,6 @@ const ContestCodingArena: React.FC = () => {
   const [MainQuestion, setMainQuestion] = useState<MainQuestionType>({});
 
   const context = useContext(MainContext);
-  const { SERVER_URL } = context;
   const param = useParams<{ problemid: string,contestid:string }>();
   const [showCustomTestCase, setshowCustomTestCase] = useState(false);
   useEffect(() => {

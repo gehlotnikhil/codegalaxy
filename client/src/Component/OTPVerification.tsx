@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {  useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import img from "../assets/img7.jfif";
 import { useNavigate } from "react-router";
-import MainContext from "../context/main";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { setUserDetail } from "../store/slice/UserDetailSlice";
@@ -10,8 +9,6 @@ import { apiFetch } from '../utils/api';
 
 const OTPVerification: React.FC = () => {
   const dispatch = useDispatch();
-  const context = useContext(MainContext);
-  const { SERVER_URL } = context;
   const navigate = useNavigate();
   
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);

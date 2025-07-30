@@ -1,18 +1,15 @@
-import { useContext, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import img from "../assets/img7.jfif";
 import img2 from "../assets/logo.png";
 import { toast } from "react-toastify";
-import MainContext from "../context/main";
 import { setUserDetail } from "../store/slice/UserDetailSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { apiFetch } from '../utils/api';
 
 function ForgetPassword() {
-  const context = useContext(MainContext);
   const navigate = useNavigate()
   const dispatch = useDispatch();
-  const { SERVER_URL } = context;
   const [showPromptField, setShowPromptField] = useState(1);
   useEffect(() => {
     console.log("showPromptField---", showPromptField);

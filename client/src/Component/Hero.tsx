@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion ,easeInOut} from "framer-motion";
 
 export default function Hero() {
 
@@ -27,12 +27,12 @@ export default function Hero() {
       transition: {
         y: {
           duration: 3,
-          ease: "easeInOut",
+          ease: easeInOut,
           repeat: Infinity,
         },
         opacity: {
           duration: 0.8,
-          ease: "easeInOut",
+          ease: easeInOut,
         },
       },
     },

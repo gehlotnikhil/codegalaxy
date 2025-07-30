@@ -1,22 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useContext } from "react";
 import img from "../assets/compete.jfif";
 import { Row, Col, Form, Button, Card, Table } from "react-bootstrap";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../store";
-import MainContext from "../context/main";
 import { apiFetch } from '../utils/api';
 
 const ContestPage: React.FC = () => {
   const navigate = useNavigate();
-  const context = useContext(MainContext);
   const [BtnJoin, setBtnJoin] = useState(false);
   const [ActiveBattle, setActiveBattle] = useState<LeaderBoardType | null>(
     null
   );
 
-  const { SERVER_URL } = context;
   const userDetail = useSelector((state: RootStateType) => state.userDetail);
   interface OpponentType {
     id: string;

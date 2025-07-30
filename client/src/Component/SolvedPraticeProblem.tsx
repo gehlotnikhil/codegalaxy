@@ -32,7 +32,6 @@ const SolvedPraticeProblem: React.FC = () => {
   const userDetail = useSelector((state:RootStateType)=>state.userDetail)
   const [MainQuestion, setMainQuestion] = useState<MainQuestionType>({});
   const context = useContext(MainContext);
-  const { SERVER_URL } = context;
   const param = useParams<{ problemid: string }>();
   const navigate = useNavigate();
   interface praticeCourseDetailType{

@@ -41,7 +41,6 @@ const OneToOneCodeEditor: React.FC = () => {
   const [MainQuestion, setMainQuestion] = useState<MainQuestionType>({});
 
   const context = useContext(MainContext);
-  const { SERVER_URL } = context;
   const param = useParams<{ leaderboardid: string }>();
   const [showCustomTestCase, setshowCustomTestCase] = useState(false);
   useEffect(() => {

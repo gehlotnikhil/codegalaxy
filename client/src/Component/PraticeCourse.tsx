@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {  useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { RootStateType } from "../store";
-import MainContext from "../context/main";
 import { apiFetch } from '../utils/api';
 
 type CardProps = {
@@ -48,8 +47,6 @@ const Card: React.FC<CardProps> = ({ headerColor, icon, title, description, prob
 
 const PraticeCourse: React.FC = () => {
   const userDetail = useSelector((state:RootStateType)=>state.userDetail)
-  const context = useContext(MainContext)
-  const {SERVER_URL} = context
   const [EntireLanguageCount, setEntireLanguageCount] = useState({c:0,cpp:0,java:0,go:0})
   useEffect(() => {
     console.log("EntireLanguageCount--",EntireLanguageCount);

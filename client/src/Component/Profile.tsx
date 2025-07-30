@@ -17,7 +17,6 @@ import { RootStateType } from "../store";
 function Profile() {
   const paramUsername = useParams();
   const context = useContext(MainContext);
-  const { SERVER_URL } = context;
   const userDetail = useSelector((state: RootStateType) => state.userDetail);
   const navigate = useNavigate();
   const locationHook = useLocation();

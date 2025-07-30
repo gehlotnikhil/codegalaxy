@@ -1,13 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import MainContext from "../context/main";
 import { apiFetch } from '../utils/api';
 
 function ContestProblemPage() {
   const param = useParams<{ contestId: string }>();
-  const context = useContext(MainContext);
   const navigate = useNavigate();
-  const { SERVER_URL } = context;
 
   interface CodeTemplate {
     c: string;

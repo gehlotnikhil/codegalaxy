@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {  useEffect, useState } from "react";
 import { Card, Button, Container, Row, Col } from "react-bootstrap";
-import MainContext from "../context/main";
 import { useNavigate } from "react-router";
 import { apiFetch } from '../utils/api';
 
@@ -62,8 +61,6 @@ const ContestCard: React.FC<{ contest: ContestType }> = ({ contest }) => {
 };
 
 const ContestMainPage: React.FC = () => {
-  const context = useContext(MainContext)
-  let {SERVER_URL} = context
   
   const loadContest = async()=>{
     try {

@@ -61,7 +61,6 @@ const ProblemPage: React.FC = () => {
   }, [MainQuestion]);
 
   const context = useContext(MainContext);
-  const { SERVER_URL } = context;
   const param = useParams<{ problemid: string }>();
   const [showCustomTestCase, setshowCustomTestCase] = useState(false);
   useEffect(() => {

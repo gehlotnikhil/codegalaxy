@@ -22,7 +22,7 @@ function OneToOneCompeteSpinner() {
   useEffect(() => {console.log(opponentDetail);}, [opponentDetail])
   useEffect(() => {console.log(ws);}, [ws])
   const context = useContext(MainContext)
-  const {SERVER_URL,WEBSOCKET_URL} = context
+  const {WEBSOCKET_URL} = context
 
   const navigate = useNavigate()
   useEffect(() => {

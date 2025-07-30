@@ -1,10 +1,9 @@
-import { useContext, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import styled from "styled-components";
 import PraticeProblem from "./PraticeProblem";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../store";
 import { useParams } from "react-router";
-import MainContext from "../context/main";
 import { useRef } from "react";
 import { apiFetch } from '../utils/api';
 
@@ -16,8 +15,6 @@ const PraticeCourseArena = () => {
   // const dispatch = useDispatch()
   const userDetail = useSelector((state: RootStateType) => state.userDetail);
   const params = useParams();
-  const context = useContext(MainContext);
-  const { SERVER_URL } = context;
   
   interface PraticeQuestionType {
     id?: string;

@@ -6,7 +6,7 @@ import { RootStateType } from "../store";
 import logo from "../assets/logo.png";
 import { useClerk } from "@clerk/clerk-react";
 import { apiFetch } from '../utils/api';
-
+ 
 function AppNavbar() {
   const { signOut } = useClerk();
   const locationHook = useLocation();
@@ -15,7 +15,6 @@ function AppNavbar() {
     console.log(ProfileName);
   }, [ProfileName]);
   const context = useContext(MainContext);
-  const {SERVER_URL} = context;
   const userDetails = useSelector((state: RootStateType) => {
     return state.userDetail;
   });
