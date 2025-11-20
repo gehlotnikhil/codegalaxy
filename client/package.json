@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview --host 0.0.0.0"
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.22.11",
@@ -21,6 +21,7 @@
     "@react-oauth/google": "^0.12.1",
     "@reduxjs/toolkit": "^2.5.0",
     "@shadcn/ui": "^0.0.4",
+    "boostrap": "^2.0.0",
     "bootstrap": "^5.3.3",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.5.1",
