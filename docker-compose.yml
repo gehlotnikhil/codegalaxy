@@ -12,6 +12,10 @@ services:
       - "443:443"
     networks:
       - coding-nw
+    depends_on: 
+      - codegalaxy-client
+    restart: always
+
   codegalaxy-client:
     build:
       context: ./client
@@ -20,6 +24,8 @@ services:
       - ./client/dist:/app/dist
     networks:
       - coding-nw
+    restart: always
+    
 
   codegalaxy-server:
     build:
@@ -29,6 +35,13 @@ services:
       - "8000:8000"
     networks:
       - coding-nw
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/api/user || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   codegalaxy-ws2:
     build:
@@ -38,6 +51,8 @@ services:
       - "8081:8081"
     networks:
       - coding-nw
+    restart: always
+    
 
 networks:
   coding-nw:
