@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsc-watch --onSuccess \" npm run start \"  ",
     "start": "node ./public/index.js"
@@ -13,7 +14,8 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^6.3.1",
-    "dotenv": "^16.4.7",
+    "chalk": "^5.6.2",
+    "dotenv": "^16.6.1",
     "http": "^0.0.1-security",
     "node-fetch": "^3.3.2",
     "nodemon": "^3.1.9",

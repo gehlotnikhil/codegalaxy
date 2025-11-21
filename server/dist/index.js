@@ -37,6 +37,6 @@ app.use("/api/dailynewproblem", require("./router/DailyNewProblem"));
 app.use("/api/contestproblem", require("./router/ContestProblem"));
 app.use("/api/onetoonecompete", require("./router/OneToOneCompete"));
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
     console.log(`--> Server running at port ${PORT}`);
 });

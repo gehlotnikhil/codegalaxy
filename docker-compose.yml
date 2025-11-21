@@ -1,24 +1,44 @@
 version: "3.8"
 
 services:
-  client:
+  nginx:
+    build: 
+      context: ./nginx
+    container_name: "code_nginx"
+    volumes: 
+      - ./client/dist:/usr/share/nginx/html:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - coding-nw
+  codegalaxy-client:
     build:
       context: ./client
     container_name: "code_frontend"
-    ports:
-      - "4173:4173"
+    volumes:
+      - ./client/dist:/app/dist
     networks:
-      - codegalaxy_net
+      - coding-nw
 
-  server:
+  codegalaxy-server:
     build:
       context: ./server
     container_name: "code_backend"
     ports:
       - "8000:8000"
     networks:
-      - codegalaxy_net
+      - coding-nw
+
+  codegalaxy-ws2:
+    build:
+      context: ./ws2
+    container_name: "code_ws2"
+    ports: 
+      - "8081:8081"
+    networks:
+      - coding-nw
 
 networks:
-  codegalaxy_net:
+  coding-nw:
 

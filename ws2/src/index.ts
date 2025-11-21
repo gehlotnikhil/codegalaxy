@@ -1,15 +1,24 @@
+import dotenv from "dotenv";
+dotenv.config();
 import WebSocket, { WebSocketServer } from "ws";
 import http from "http";
 
-// Create HTTP server
-const server = http.createServer((req, res) => {
-  res.writeHead(200, { "Content-Type": "text/plain" });
-  res.end("WebSocket server is running");
-});
 const SERVER_URL = process.env.SERVER_URL||"http://localhost:8000";
+const server = http.createServer();
 
-// Create WebSocket server
-const wss = new WebSocketServer({ server });
+const wss = new WebSocketServer({ noServer: true });
+
+server.on("upgrade", (request, socket, head) => {
+  if (request.url === "/ws") {
+    wss.handleUpgrade(request, socket, head, (ws) => {
+      wss.emit("connection", ws, request);
+    });
+  } else {
+    socket.destroy();
+  }
+});
+
+
 const waitingClients = new Map<string, { socket: WebSocket; user: any }>(); // Store unmatched clients
 const clientPairs = new Map<WebSocket, WebSocket>(); // Store matched pairs
 
