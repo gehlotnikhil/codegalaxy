@@ -3,7 +3,8 @@ dotenv.config();
 import WebSocket, { WebSocketServer } from "ws";
 import http from "http";
 
-const SERVER_URL = process.env.SERVER_URL||"http://localhost:8000";
+const SERVER_URL = process.env.SERVER_URL
+// const SERVER_URL = process.env.SERVER_URL||"http://localhost:8000";
 const server = http.createServer();
 
 const wss = new WebSocketServer({ noServer: true });
@@ -75,7 +76,7 @@ wss.on("connection", (ws: WebSocket) => {
         }
       }
     } catch (error) {
-      console.error("Error processing message:", error);
+      console.error("Error processing message:"+`--${SERVER_URL}/api/onetoonecompete/createonetoonecompeteleaderboard`, error);
       ws.send(JSON.stringify({ type: "error", message: "Invalid message format." }));
     }
   });
