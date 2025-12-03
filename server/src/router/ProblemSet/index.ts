@@ -1,8 +1,7 @@
 import { Request, Response, Router } from "express";
 import { body, validationResult } from "express-validator";
 import executeproblem from "./ExecuteProblem";
-import {getPrisma} from "../../lib/prisma.js"
-const prisma =  getPrisma();
+import { withPrisma } from "../../lib/prisma_callback";
 const ServerUrl = process.env.ServerUrl || "http://localhost:8000"
 console.log(ServerUrl);
 
@@ -30,8 +29,9 @@ router.post(
     body("createdAt", "Please Enter a createdAt"),
 
   ],
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
     let success = false;
+
 
     try {
       let error = validationResult(req.body);
@@ -91,10 +91,8 @@ router.post(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }finally{
-    await prisma.$disconnect()
-  }
-  }
+    }
+  })
 );
 
 
@@ -113,8 +111,9 @@ router.post(
     body("belowCodeTemplate", "Please Enter a belowCodeTemplate").exists(),
 
   ],
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
     let success = false;
+
 
     try {
       let error = validationResult(req.body);
@@ -153,10 +152,8 @@ router.post(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }finally{
-    await prisma.$disconnect()
-  }
-  }
+    }
+  })
 );
 
 
@@ -181,8 +178,10 @@ router.put(
     body("middleCode", "Please Enter a middleCode").exists(),
     body("correctMiddleCode", "Please Enter a correctMiddleCode").exists(),
   ],
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
     let success = false;
+    
+
     try {
       let error = validationResult(req.body);
       if (!error.isEmpty()) {
@@ -253,16 +252,16 @@ router.put(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }finally{
-    await prisma.$disconnect()
-  }
-  }
+    }
+  })
 );
 
 router.delete(
   "/delete/:problemno",
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
     let success = false;
+    
+
     try {
       let check1 = await prisma.problemSet.findFirst({ where: { problemNo: Number.parseInt(req.params.problemno) } })
       if (!check1) {
@@ -289,10 +288,8 @@ router.delete(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }finally{
-    await prisma.$disconnect()
-  }
-  }
+    }
+  })
 );
 
 router.post(
@@ -315,8 +312,10 @@ router.post(
   body("middleCode", "Please Enter a middleCode"),
   body("correctMiddleCode", "Please Enter a correctMiddleCode")
 ],
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
     let success = false;
+    
+
     try {
       let result = {};
       console.log(req.params.pageno, "----", typeof req.params.pageno);
@@ -403,14 +402,14 @@ router.post(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }finally{
-    await prisma.$disconnect()
-  }
-  }
+    }
+  })
 );
 // Get problem details
-router.post("/getproblemdetails/:pageno?", async (req: Request, res: Response): Promise<any> => {
+router.post("/getproblemdetails/:pageno?", withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
   let success = false;
+  
+
   try {
     const { pageno } = req.params;
     const token = req.body.token;
@@ -470,12 +469,12 @@ router.post("/getproblemdetails/:pageno?", async (req: Request, res: Response): 
   } catch (error) {
     console.error(error);
     return res.status(500).send({ success, error: error });
-  }finally{
-    await prisma.$disconnect()
   }
-}
+})
 );
-router.post("/getpraticeproblemdetails", async (req: Request, res: Response): Promise<any> => {
+router.post("/getpraticeproblemdetails", withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
+  
+
   try {
     const { token, language } = req.body;
     if (!token) {
@@ -539,16 +538,16 @@ router.post("/getpraticeproblemdetails", async (req: Request, res: Response): Pr
   } catch (error) {
     console.error("Error fetching practice problem details:", error);
     res.status(500).json({ success: false, error: (error as Error).message || "Internal Server Error" });
-  }finally{
-    await prisma.$disconnect()
   }
-});
+}));
 
 
 router.post(
   "/getspecificproblem",
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
     let success = false;
+    
+
     try {
       const { id, no } = req.query;
       if (!id && !no) {
@@ -610,16 +609,16 @@ router.post(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }finally{
-    await prisma.$disconnect()
-  }
-  }
+    }
+  })
 );
 
 router.post(
   "/getspecificpraticeproblem",
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
     let success = false;
+    
+
     try {
       const token = req.body.token || "";
       if (!token) {
@@ -665,10 +664,8 @@ router.post(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }finally{
-    await prisma.$disconnect()
-  }
-  }
+    }
+  })
 );
 
 router.post("/executeproblem", [
@@ -677,8 +674,9 @@ router.post("/executeproblem", [
   body("code", "Please enter a code").exists(),
 ], executeproblem.execute);
 
-router.get("/getdailynewproblem",async(req:Request,res:Response):Promise<any>=>{
+router.get("/getdailynewproblem",withPrisma(async(req:Request,res:Response,prisma:any):Promise<any>=>{
   let success = false;
+  
   try{
     const today = new Date();
     const startday = new Date()
@@ -703,9 +701,7 @@ router.get("/getdailynewproblem",async(req:Request,res:Response):Promise<any>=>{
   }catch(error){
     console.log(error);
     return res.send({success,msg:"Internal Server Error "});
-  }finally{
-    await prisma.$disconnect()
   }
-})
+}))
 
 module.exports = router;

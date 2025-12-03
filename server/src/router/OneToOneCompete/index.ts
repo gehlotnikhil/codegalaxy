@@ -1,8 +1,7 @@
 import { Request, Response, Router } from "express";
-import { getPrisma } from "../../lib/prisma.js"
-const prisma = getPrisma();
 import { body, check, Result, validationResult } from "express-validator";
 import UserFunctions from "../lib/UserFunctions";
+import { withPrisma } from "../../lib/prisma_callback";
 
 const router = Router();
 const ServerUrl = process.env.ServerUrl || "http://localhost:8000"
@@ -19,8 +18,9 @@ router.post(
     body("user", "Please Enter a both user id").exists()
 
   ],
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response, prisma: any): Promise<any> => {
     let success = false;
+
     try {
       let error = validationResult(req);
       if (!error.isEmpty()) {
@@ -62,10 +62,8 @@ router.post(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error, msg: "Internal Server Error" });
-    } finally {
-      await prisma.$disconnect()
-    }
-  }
+    } 
+  })
 );
 
 router.put(
@@ -74,8 +72,9 @@ router.put(
     body("Result", "Please enter a result").exists(),
     body("leaderboardId", "Please enter a leaderboardId").exists()
   ],
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response, prisma: any): Promise<any> => {
     let success = false;
+
     try {
       let error = validationResult(req);
       if (!error.isEmpty()) {
@@ -129,15 +128,14 @@ router.put(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error, msg: "Internal Server Error" });
-    } finally {
-      await prisma.$disconnect()
-    }
-  }
+    } 
+  })
 );
 router.get(
   "/getonetoonecompeteleaderboard/:userid",
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response, prisma: any): Promise<any> => {
     let success = false;
+
     try {
       let error = validationResult(req);
       if (!error.isEmpty()) {
@@ -185,15 +183,14 @@ router.get(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error, msg: "Internal Server Error" });
-    } finally {
-      await prisma.$disconnect()
-    }
-  }
+    } 
+  })
 );
 router.get(
   "/getspecficleaderboardbyid/:leaderboardid/:userid",
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response, prisma: any): Promise<any> => {
     let success = false;
+
     try {
       let error = validationResult(req);
       if (!error.isEmpty()) {
@@ -242,10 +239,8 @@ router.get(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error, msg: "Internal Server Error" });
-    } finally {
-      await prisma.$disconnect()
-    }
-  }
+    } 
+  })
 );
 
 

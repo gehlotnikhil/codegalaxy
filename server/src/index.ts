@@ -3,8 +3,6 @@ dotenv.config();
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
-import {getPrisma} from "./lib/prisma.js"
-const prisma =  getPrisma();
 
 const app = express();
 const PORT = Number(process.env.PORT) || 8000;

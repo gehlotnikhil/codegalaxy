@@ -4,11 +4,10 @@ import { google } from "googleapis";
 
 import { Request, Response, Router } from "express";
 import UserFunctions from "../lib/UserFunctions";
-import {getPrisma} from "../../lib/prisma.js"
-const prisma =  getPrisma();
 const jwt = require("jsonwebtoken")
 let JWT_Secret = "Nikhil123"
 import nodemailer from "nodemailer";
+import { withPrisma } from "../../lib/prisma_callback";
 
 function generateOTP(length: number = 6): string {
     return Math.floor(100000 + Math.random() * 900000).toString(); // Generates a 6-digit OTP
@@ -18,12 +17,14 @@ function generateOTP(length: number = 6): string {
 const hello = () => {
     console.log("Hello");
 };
-const sendEmail = async (req: Request, res: Response): Promise<any> => {
+const sendEmail = withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
     let success = false;
     let { email } = req.body;
     console.log("g-", email);
     const otp = generateOTP(); // Generate OTP
     console.log(`Generated OTP: ${otp}`);
+    
+
     try {
         console.log(process.env.CLIENT_ID);
         console.log(process.env.CLIENT_SECRET);
@@ -115,9 +116,8 @@ const sendEmail = async (req: Request, res: Response): Promise<any> => {
     } catch (error) {
         console.log(" Error - ", error);
         res.send({ success, error, msg: " Error" });
-    }finally{
-    await prisma.$disconnect()
-  }
-};
+    }
+
+});
 const sendingEmail = { sendEmail, hello };
 export default sendingEmail;

@@ -3,3 +3,5 @@ node_modules
 prisma/.env
 .env.local
 *.env
+.vercel
+.env*.local

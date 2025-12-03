@@ -1,6 +1,5 @@
 import { Request, Response, Router } from "express";
 import {getPrisma} from "../../lib/prisma.js"
-const prisma =  getPrisma();
 import { body, Result, validationResult } from "express-validator";
 import UserFunctions from "../lib/UserFunctions";
 const bcrypt = require("bcryptjs");
@@ -23,6 +22,7 @@ console.log(ServerUrl);
 
 import ThirdPartyLogin from "./ThirdPartyLogin";
 import { faker } from "@faker-js/faker";
+import { withPrisma } from "../../lib/prisma_callback.js";
 function generateRandomName() {
   // Generate a random name using faker
   const firstName = faker.person.firstName(); // Random first name
@@ -51,10 +51,12 @@ router.post(
     body("password", "Please Enter Your Password").exists(),
     body("userName", "Please Enter Your Username").exists(),
   ],
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
     let success = false;
     const otp = generateOTP(); // Generate OTP
     console.log(`Generated OTP: ${otp}`);
+    
+
     try {
       const { email, password, userName, name, age, collegeName } = req.body;
 
@@ -146,17 +148,16 @@ router.post(
     } catch (error) {
       console.error("Error during otp operation:", error);
       res.status(500).send({ success, error, msg: "Internal Server Error-" });
-    }finally{
-    await prisma.$disconnect()
-  }
-  }
+    }
+  })
 );
 
 router.post(
   "/resendotpcode",
   [body("email", "Please Enter Your email").exists()],
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
     let success = false;
+
 
     try {
       const { email } = req.body;
@@ -206,10 +207,8 @@ router.post(
       return res
         .status(500)
         .send({ success, error, msg: "Internal Server Error" });
-    }finally{
-    await prisma.$disconnect()
-  }
-  }
+    }
+  })
 );
 
 router.post(
@@ -218,8 +217,9 @@ router.post(
     body("code", "Please Enter Your OTP Code").exists(),
     body("verifyemail", "Please Enter Your email").exists(),
   ],
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
     let success = false;
+
 
     try {
       const { code, verifyemail } = req.body;
@@ -321,10 +321,8 @@ router.post(
     } catch (error) {
       console.error("Error during user creation:", error);
       return res.status(500).send({ success, error });
-    }finally{
-    await prisma.$disconnect()
-  }
-  }
+    }
+  })
 );
 // router.post(
 //   "/registeruser",
@@ -334,7 +332,7 @@ router.post(
 //     body("password", "Please Enter Your Password").exists(),
 //     body("userName", "Please Enter Your Username").exists(),
 //   ],
-//   async (req: Request, res: Response): Promise<any> => {
+//   withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
 //     let success = false;
 //     try {
 //       const { email, password, userName } = req.body;
@@ -447,8 +445,10 @@ router.put(
     body("profilePictureUrl", "Please fill profilePictureUrl field").exists(),
     body("activeDays", "Please fill activeDays field").exists(),
   ],
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
     let success = false;
+    
+
     try {
       const response = await fetch(`${ServerUrl}/api/user/tokentodata`, {
         method: "POST",
@@ -561,10 +561,8 @@ router.put(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }finally{
-    await prisma.$disconnect()
-  }
-  }
+    }
+  })
 );
 
 router.post(
@@ -573,8 +571,10 @@ router.post(
     body("email", "Please enter your email").exists(),
     body("password", "Please enter your password"),
   ],
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
     let success = false;
+    
+
     try {
       console.log("1");
       console.log("1");
@@ -619,10 +619,8 @@ router.post(
     } catch (error) {
       console.log(error);
       res.status(500).send({ success, error });
-    }finally{
-    await prisma.$disconnect()
-  }
-  }
+    }
+  })
 );
 
 router.get(
@@ -631,8 +629,10 @@ router.get(
     body("email", "Please enter your email").exists(),
     body("email", "Please enter correct email format").isEmail(),
   ],
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
     let success = false;
+    
+
     try {
       let error = validationResult(req.body);
       if (!error.isEmpty()) {
@@ -649,10 +649,8 @@ router.get(
     } catch (error) {
       console.log(error);
       return res.status(505).send({ success, error });
-    }finally{
-    await prisma.$disconnect()
-  }
-  }
+    }
+  })
 );
 
 router.post(
@@ -661,8 +659,10 @@ router.post(
     body("name", "Please fill Name field"),
     body("ContestDetail", "Please fill ContestDetail field"),
   ],
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
     let success = false;
+    
+
     try {
       let error = validationResult(req);
       if (!error.isEmpty()) {
@@ -699,17 +699,17 @@ router.post(
     } catch (error) {
       console.log(error);
       return res.status(505).send({ success, error });
-    }finally{
-    await prisma.$disconnect()
-  }
-  }
+    }
+  })
 );
 
 router.post(
   "/tokentodata",
   [body("token", "Please enter a token").exists()],
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
     let success = false;
+    
+
     try {
       let error = validationResult(req);
       if (!error.isEmpty()) {
@@ -728,17 +728,17 @@ router.post(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }finally{
-    await prisma.$disconnect()
-  }
-  }
+    }
+  })
 );
 
 router.post(
   "/usernametodata",
   [body("userName", "Please enter a username").exists()],
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
     let success = false;
+    
+
     try {
       let error = validationResult(req.body);
       if (!error.isEmpty()) {
@@ -757,10 +757,8 @@ router.post(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }finally{
-    await prisma.$disconnect()
-  }
-  }
+    }
+  })
 );
 
 router.post(
@@ -769,8 +767,10 @@ router.post(
     body("email", "please enter the email").exists(),
     body("password", "please enter the password").exists(),
   ],
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
     let success = false;
+    
+
     try {
       const error = validationResult(req);
       if (!error.isEmpty()) {
@@ -803,17 +803,17 @@ router.post(
     } catch (error) {
       console.log(error);
       res.send({ success, msg: "Internal Server Error" });
-    }finally{
-    await prisma.$disconnect()
-  }
-  }
+    }
+  })
 );
 
 router.post(
   "/checkemailandsendotp",
   [body("email", "Enter your email address").exists()],
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
     let success = false;
+    
+
     try {
       const error = validationResult(req);
       if (!error.isEmpty()) {
@@ -900,10 +900,8 @@ router.post(
       }
     } catch (error) {
       console.log("checkemailandsendotp--", error);
-    }finally{
-    await prisma.$disconnect()
-  }
-  }
+    }
+  })
 );
 
 router.post(
@@ -912,8 +910,10 @@ router.post(
     body("email", "Please Enter your Email").exists(),
     body("code", "Please Enter your code").exists(),
   ],
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
     let success = false;
+    
+
     try {
       const error = validationResult(req);
       if (!error.isEmpty()) {
@@ -954,16 +954,16 @@ router.post(
     } catch (error) {
       console.log("verifyotptoresetpassword--", error);
       res.send({ success, msg: `verifyotptoresetpassword - ${error}` });
-    }finally{
-    await prisma.$disconnect()
-  }
-  }
+    }
+  })
 );
 
 router.get(
   "/getuserbyid/:id",
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
     let success = false;
+    
+
     try {
       if (!req.params.id)
         return res.send({ success, msg: "Parameter missing: ID" });
@@ -975,10 +975,8 @@ router.get(
     } catch (error) {
       console.log(error);
       return res.send({ success, error: error });
-    }finally{
-    await prisma.$disconnect()
-  }
-  }
+    }
+  })
 );
 
 router.post("/sendemail", sendEmail.sendEmail);

@@ -1,10 +1,9 @@
 import { Request, Response, Router } from "express";
 import UserFunctions from "../lib/UserFunctions";
-import {getPrisma} from "../../lib/prisma.js"
-const prisma =  getPrisma();
 const jwt = require("jsonwebtoken")
 let JWT_Secret = "Nikhil123"
 import { faker } from "@faker-js/faker";
+import { withPrisma } from "../../lib/prisma_callback";
 
 function generateRandomName() {
   // Generate a random name using faker
@@ -29,10 +28,11 @@ function generateUsername(length = 8) {
 const hello = () => {
   console.log("Hello");
 };
-const googleLogin = async (req: Request, res: Response): Promise<any> => {
+const googleLogin = withPrisma(async (req: Request, res: Response,prisma:any): Promise<any> => {
   let success = false;
   let { email } = req.body;
   console.log("g-", email);
+
 
   try {
     console.log("1");
@@ -60,9 +60,9 @@ const googleLogin = async (req: Request, res: Response): Promise<any> => {
           solvedProblemDetails: [],
           activeDays: [],
           ThirdPartyLoginAccess: true,
-          isAdmin:false,
-          oneToOneCompeteLeaderboardId:[],
-          profilePictureUrl:"https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk",
+          isAdmin: false,
+          oneToOneCompeteLeaderboardId: [],
+          profilePictureUrl: "https://res.cloudinary.com/diqpelkm9/image/upload/f_auto,q_auto/k4s9mgdywuaasjuthfxk",
           praticeCourseDetail: {
             c: {
               solvedProblemDetails: [],
@@ -89,22 +89,22 @@ const googleLogin = async (req: Request, res: Response): Promise<any> => {
         },
       });
     }
-    result = await prisma.user.findFirst({where:{email}})
-    console.log("final-",result);
+    result = await prisma.user.findFirst({ where: { email } })
+    console.log("final-", result);
     let data = {
-      id : result.id
+      id: result.id
     }
     const expiresIn = '1m';
     const token = jwt.sign(data, JWT_Secret, { expiresIn });
-        console.log("4");
+    console.log("4");
     success = true;
-    res.send({ success,result:{...result,token:token}});
+    res.send({ success, result: { ...result, token: token } });
   } catch (error) {
     console.log("Google Login Error - ", error);
     res.send({ success, error, msg: "Google Login Error" });
-  }finally{
+  } finally {
     await prisma.$disconnect()
   }
-};
+});
 const GoogleLogin = { googleLogin, hello };
 export default GoogleLogin;

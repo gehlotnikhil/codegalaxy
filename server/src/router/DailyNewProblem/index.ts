@@ -1,7 +1,6 @@
-import { getPrisma } from "../../lib/prisma.js"
-const prisma = getPrisma();
 import { Request, Response, Router } from "express";
 import { body, validationResult } from "express-validator"
+import { withPrisma } from "../../lib/prisma_callback";
 const router = Router();
 const ServerUrl = process.env.ServerUrl || "http://localhost:8000"
 console.log(ServerUrl);
@@ -26,8 +25,10 @@ router.post("/create", [
   body("belowCodeTemplate", "Please Enter a belowCodeTemplate").exists(),
 
 
-], async (req: Request, res: Response): Promise<any> => {
+], withPrisma(async (req: Request, res: Response, prisma: any): Promise<any> => {
   let success = false
+
+
   try {
     let error = validationResult(req);
     if (!error.isEmpty()) {
@@ -82,18 +83,19 @@ router.post("/create", [
   } catch (error) {
     console.log(error);
     res.send({ success, msg: "Internal Server Error " })
-  } finally {
-    await prisma.$disconnect()
-  }
+  } 
 
 })
+)
 
 
 
 router.delete(
   "/delete",
-  async (req: Request, res: Response): Promise<any> => {
+  withPrisma(async (req: Request, res: Response, prisma: any): Promise<any> => {
     let success = false;
+
+
     try {
       let result = await prisma.dailyNewProblem.findFirst({ where: { problemNo: 1 } })
       if (!result) {
@@ -161,16 +163,16 @@ router.delete(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error, msg: "Internal Server Error" });
-    } finally {
-      await prisma.$disconnect()
-    }
-  }
+    } 
+  })
 );
 
 module.exports = router;
 
-router.post("/push", async (req: Request, res: Response): Promise<any> => {
+router.post("/push", withPrisma(async (req: Request, res: Response, prisma: any): Promise<any> => {
   let success = false
+
+
   try {
     const getfirst = await prisma.dailyNewProblem.findFirst({ where: { problemNo: 1 } })
     if (!getfirst) {
@@ -211,7 +213,5 @@ router.post("/push", async (req: Request, res: Response): Promise<any> => {
   } catch (error) {
     console.log(error);
     res.send({ success, msg: "Internal Server Error" })
-  } finally {
-    await prisma.$disconnect()
-  }
-})
+  } 
+}))
