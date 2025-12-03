@@ -41,9 +41,12 @@ import OneToOneCodeEditor from "./Component/OneToOneCodeEditor";
 interface ProtectedRouteProps {
   children: React.ReactNode;
 } 
-const SERVER_URL = import.meta.env.VITE_SERVER_URL ||"http://localhost:8000";   
+//const SERVER_URL = import.meta.env.VITE_SERVER_URL ||"http://localhost:8000";   
+// const WEBSOCKET_URL = import.meta.env.VITE_WEBSOCKET_URL  || "ws://localhost:8081" 
+const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 
-const WEBSOCKET_URL = import.meta.env.VITE_WEBSOCKET_URL  || "ws://localhost:8081" 
+const WEBSOCKET_URL = import.meta.env.VITE_WEBSOCKET_URL || `${protocol}//${window.location.host}/ws`;
+const SERVER_URL = import.meta.env.VITE_SERVER_URL || "";
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const navigate = useNavigate(); 
   const dispatch = useDispatch();    

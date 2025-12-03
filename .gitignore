@@ -1,17 +1,16 @@
-node_modules
-client/node_modules
-server/node_modules
+**/node_modules
+
 .vercel
 .vscode
 *.env
 *.env.local
+**/.env
+**/.env.local
 client/.env
 client/.env.local
 server/.env
 ws2/.env
 ws2/.env.local
 server/prisma/.env
-server2/node_modules
-cron-job/node_modules
-ws2/node_modules
+
 

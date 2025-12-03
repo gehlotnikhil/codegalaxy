@@ -32,7 +32,9 @@ app.get("/", (req, res) => {
   res.send({ success: true });
 });
 
-
+app.get("/hello",(req,res)=>{
+	res.send({msg:"hello"})
+})
 
 // Route definitions
 app.use("/api/user", require("./router/User/index"));
