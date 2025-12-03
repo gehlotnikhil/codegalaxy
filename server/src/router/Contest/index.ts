@@ -1,7 +1,7 @@
 import { Request, response, Response, Router } from "express";
 import nodemailer from "nodemailer";
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import {getPrisma} from "../../lib/prisma.js"
+const prisma =  getPrisma();
 const ServerUrl = process.env.ServerUrl || "http://localhost:8000"
 console.log(ServerUrl);
 const router = Router();
@@ -82,7 +82,9 @@ router.post(
     } catch (error) {
       console.error("Error:", error);
       return res.status(500).json({ success, error });
-    }
+   }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -157,7 +159,9 @@ router.post(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -199,7 +203,9 @@ router.put(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 router.delete(
@@ -231,7 +237,9 @@ router.delete(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -258,7 +266,9 @@ router.post(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 router.get(
@@ -295,7 +305,9 @@ router.get(
     } catch (error) {
       console.error(error);
       return res.status(500).send({ success, error: "Internal Server Error" });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -329,7 +341,9 @@ router.get(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -362,7 +376,9 @@ router.get(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -452,7 +468,9 @@ router.put(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -481,7 +499,9 @@ router.get(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -556,7 +576,9 @@ router.put(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -581,7 +603,9 @@ router.get(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 

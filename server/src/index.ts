@@ -3,8 +3,9 @@ dotenv.config();
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
-import { PrismaClient } from "@prisma/client";
-  const prisma = new PrismaClient();
+import {getPrisma} from "./lib/prisma.js"
+const prisma =  getPrisma();
+
 const app = express();
 const PORT = Number(process.env.PORT) || 8000;
 console.log(`Server starting on port: ${PORT}`);

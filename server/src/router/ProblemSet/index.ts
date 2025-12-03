@@ -1,8 +1,8 @@
 import { Request, Response, Router } from "express";
 import { body, validationResult } from "express-validator";
 import executeproblem from "./ExecuteProblem";
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import {getPrisma} from "../../lib/prisma.js"
+const prisma =  getPrisma();
 const ServerUrl = process.env.ServerUrl || "http://localhost:8000"
 console.log(ServerUrl);
 
@@ -91,7 +91,9 @@ router.post(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -151,7 +153,9 @@ router.post(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -249,7 +253,9 @@ router.put(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -283,7 +289,9 @@ router.delete(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -395,7 +403,9 @@ router.post(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 // Get problem details
@@ -460,6 +470,8 @@ router.post("/getproblemdetails/:pageno?", async (req: Request, res: Response): 
   } catch (error) {
     console.error(error);
     return res.status(500).send({ success, error: error });
+  }finally{
+    await prisma.$disconnect()
   }
 }
 );
@@ -527,6 +539,8 @@ router.post("/getpraticeproblemdetails", async (req: Request, res: Response): Pr
   } catch (error) {
     console.error("Error fetching practice problem details:", error);
     res.status(500).json({ success: false, error: (error as Error).message || "Internal Server Error" });
+  }finally{
+    await prisma.$disconnect()
   }
 });
 
@@ -596,7 +610,9 @@ router.post(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -649,7 +665,9 @@ router.post(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -685,6 +703,8 @@ router.get("/getdailynewproblem",async(req:Request,res:Response):Promise<any>=>{
   }catch(error){
     console.log(error);
     return res.send({success,msg:"Internal Server Error "});
+  }finally{
+    await prisma.$disconnect()
   }
 })
 

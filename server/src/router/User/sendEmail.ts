@@ -4,8 +4,8 @@ import { google } from "googleapis";
 
 import { Request, Response, Router } from "express";
 import UserFunctions from "../lib/UserFunctions";
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+import {getPrisma} from "../../lib/prisma.js"
+const prisma =  getPrisma();
 const jwt = require("jsonwebtoken")
 let JWT_Secret = "Nikhil123"
 import nodemailer from "nodemailer";
@@ -115,7 +115,9 @@ const sendEmail = async (req: Request, res: Response): Promise<any> => {
     } catch (error) {
         console.log(" Error - ", error);
         res.send({ success, error, msg: " Error" });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
 };
 const sendingEmail = { sendEmail, hello };
 export default sendingEmail;

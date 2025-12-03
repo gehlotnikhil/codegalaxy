@@ -1,6 +1,6 @@
 import { Request,Response } from "express"
-const {PrismaClient} = require("@prisma/client")
-const prisma = new PrismaClient()
+import {getPrisma} from "../../lib/prisma.js"
+const prisma =  getPrisma();
 const isUserExist = async(email:string)=>{
     let check1 = await prisma.user.findFirst({where:{email}})
     if(check1 === null){

@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { body, validationResult } from "express-validator";
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import { getPrisma } from "../../lib/prisma.js"
+const prisma = getPrisma();
 const ServerUrl = process.env.ServerUrl || "http://localhost:8000"
 console.log(ServerUrl);
 
@@ -81,6 +81,8 @@ router.post(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
+    } finally {
+      await prisma.$disconnect()
     }
   }
 );
@@ -128,7 +130,7 @@ router.put(
       if (req.body.topic) {
         query.topic = req.body.topic
       }
-     
+
       if (req.body.sampleInputOutput) {
         query.sampleInputOutput = req.body.sampleInputOutput
       }
@@ -159,6 +161,8 @@ router.put(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
+    } finally {
+      await prisma.$disconnect()
     }
   }
 );
@@ -193,6 +197,8 @@ router.delete(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
+    } finally {
+      await prisma.$disconnect()
     }
   }
 );
@@ -237,11 +243,11 @@ router.post(
       if (req.body.topic) {
         query.topic = 1
       }
-   
+
       if (req.body.category) {
         query.category = 1
       }
-     
+
       if (req.body.correctMiddleCode) {
         query.correctMiddleCode = 1
       }
@@ -267,6 +273,8 @@ router.post(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
+    } finally {
+      await prisma.$disconnect()
     }
   }
 );
@@ -311,6 +319,8 @@ router.post(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
+    } finally {
+      await prisma.$disconnect()
     }
   }
 );

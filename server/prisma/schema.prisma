@@ -4,7 +4,8 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 type ContestDetailType{
@@ -157,13 +158,13 @@ model PraticeProblem {
 
 model EmailOtpService {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  age         Int
-  collegeName String
   email       String
-  password    String
-  userName    String
   code        Int
+  name        String?
+  userName    String?
+  password    String?
+  age         Int?
+  collegeName String?
   createdAt   DateTime @default(now())
 }
 

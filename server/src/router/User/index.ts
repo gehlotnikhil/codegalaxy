@@ -1,5 +1,6 @@
 import { Request, Response, Router } from "express";
-import { PrismaClient } from "@prisma/client";
+import {getPrisma} from "../../lib/prisma.js"
+const prisma =  getPrisma();
 import { body, Result, validationResult } from "express-validator";
 import UserFunctions from "../lib/UserFunctions";
 const bcrypt = require("bcryptjs");
@@ -21,7 +22,6 @@ const ServerUrl = process.env.ServerUrl || "http://localhost:8000";
 console.log(ServerUrl);
 
 import ThirdPartyLogin from "./ThirdPartyLogin";
-const prisma = new PrismaClient();
 import { faker } from "@faker-js/faker";
 function generateRandomName() {
   // Generate a random name using faker
@@ -146,7 +146,9 @@ router.post(
     } catch (error) {
       console.error("Error during otp operation:", error);
       res.status(500).send({ success, error, msg: "Internal Server Error-" });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -204,7 +206,9 @@ router.post(
       return res
         .status(500)
         .send({ success, error, msg: "Internal Server Error" });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -317,7 +321,9 @@ router.post(
     } catch (error) {
       console.error("Error during user creation:", error);
       return res.status(500).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 // router.post(
@@ -555,7 +561,9 @@ router.put(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -611,7 +619,9 @@ router.post(
     } catch (error) {
       console.log(error);
       res.status(500).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -639,7 +649,9 @@ router.get(
     } catch (error) {
       console.log(error);
       return res.status(505).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -687,7 +699,9 @@ router.post(
     } catch (error) {
       console.log(error);
       return res.status(505).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -714,7 +728,9 @@ router.post(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -741,7 +757,9 @@ router.post(
     } catch (error) {
       console.log(error);
       return res.status(500).send({ success, error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -785,7 +803,9 @@ router.post(
     } catch (error) {
       console.log(error);
       res.send({ success, msg: "Internal Server Error" });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -880,7 +900,9 @@ router.post(
       }
     } catch (error) {
       console.log("checkemailandsendotp--", error);
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -932,7 +954,9 @@ router.post(
     } catch (error) {
       console.log("verifyotptoresetpassword--", error);
       res.send({ success, msg: `verifyotptoresetpassword - ${error}` });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
@@ -951,7 +975,9 @@ router.get(
     } catch (error) {
       console.log(error);
       return res.send({ success, error: error });
-    }
+    }finally{
+    await prisma.$disconnect()
+  }
   }
 );
 
