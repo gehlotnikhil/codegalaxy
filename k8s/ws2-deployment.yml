@@ -1,0 +1,31 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata: 
+  name: ws2-deployment
+  namespace: codegalaxy-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: code-ws2
+  template:
+    metadata:
+      labels: 
+        app: code-ws2
+    spec:
+      containers:
+      - name: code-ws2
+        image: gehlotnikhil38/codegalaxy-ws2:latest
+        ports:
+        - containerPort: 8081
+        env:
+        - name: SERVER_URL
+          value: "http://code-backend:8000"
+
+        resources: 
+          requests: 
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi

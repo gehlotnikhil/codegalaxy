@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: code-backend
+  namespace: codegalaxy-ns
+spec:
+  selector:
+    app: code_back
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: 
+  type: ClusterIP

@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: code-frontend
+  namespace: codegalaxy-ns
+spec:
+  selector:
+    app: code_front
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 
+  type: ClusterIP

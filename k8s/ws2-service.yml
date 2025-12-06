@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: code-ws2
+  namespace: codegalaxy-ns
+spec:
+  selector:
+    app: code-ws2
+  ports:
+  - protocol: TCP
+    port: 8081
+    targetPort: 
+  type: ClusterIP
