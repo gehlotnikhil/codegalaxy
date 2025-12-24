@@ -1,28 +1,13 @@
 version: "3.8"
 
 services:
-  #  nginx:
-  #  build: 
-  #   context: ./nginx
-  #  container_name: "code_nginx"
-  #  volumes: 
-  #    - ./client/dist:/usr/share/nginx/html:ro
-  #  ports:
-  #    - "80:80"
-  #    - "443:443"
-  #  networks:
-  #    - coding-nw
-  # depends_on: 
-  #   - codegalaxy-client
-  #   - codegalaxy-server
-  #   - codegalaxy-ws2
-  # restart: always
-
   code_frontend:
-    image: gehlotnikhil38/codegalaxy-frontend:latest
-    container_name: "code_frontend"
+    build: 
+      context: ./client
+    #image: gehlotnikhil38/codegalaxy-frontend:latest
+    container_name: "cont_frontend"
     ports:
-      - "80:80"
+      - "4173:4173"
     networks:
       - coding-nw
          
@@ -30,8 +15,10 @@ services:
     
 
   code_backend:
-    image: gehlotnikhil38/codegalaxy-server:latest
-    container_name: "code_backend"
+    build:
+      context: ./server
+    #image: gehlotnikhil38/codegalaxy-server:latest
+    container_name: "cont_backend"
     ports:
       - "8000:8000"
     networks:
@@ -45,8 +32,10 @@ services:
       start_period: 30s
 
   code_ws2:
-    image: gehlotnikhil38/codegalaxy-ws2:latest
-    container_name: "code_ws2"
+    build:
+      context: ./ws2
+    #image: gehlotnikhil38/codegalaxy-ws2:latest
+    container_name: "cont_ws2"
     ports: 
     - "8081:8081"
     environment:

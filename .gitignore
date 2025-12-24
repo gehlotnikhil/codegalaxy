@@ -13,4 +13,5 @@ ws2/.env
 ws2/.env.local
 server/prisma/.env
 
-
+server/dist
+ws2/public

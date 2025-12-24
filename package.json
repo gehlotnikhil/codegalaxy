@@ -9,7 +9,9 @@
     "server-install": "cd server && npm i",
     "client": "cd client && npm run dev ",
     "server": "cd server && npm run dev ",
-    "both": "concurrently \" npm run client \" \" npm run server \" "
+    "ws2":" cd ws2 && npm run dev",
+    "all": "concurrently \" npm run client \" \" npm run server \" \" npm run ws2 \" "
+
   },
   "keywords": [],
   "author": "",

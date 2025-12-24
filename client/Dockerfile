@@ -9,16 +9,19 @@ RUN npm install
 COPY . .
 RUN npm run build
 
+CMD ["npm","run","preview"]
+
+
 # ----- Stage 2: Nginx Serve -----
-FROM nginx:1.23.3-alpine
+#FROM nginx:1.23.3-alpine
 
 # Copy build output to Nginx html folder
-COPY --from=builder /app/dist /usr/share/nginx/html
+#COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Copy your nginx configuration
-COPY ./default.conf /etc/nginx/conf.d/default.conf
+#COPY ./default.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
+#EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+#CMD ["nginx", "-g", "daemon off;"]
 

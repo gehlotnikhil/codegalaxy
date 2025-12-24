@@ -7,4 +7,5 @@ export default defineConfig({
   optimizeDeps: {
     include: ["firebase/app", "firebase/auth"], // Ensure Vite optimizes these
   },
+ 
 });
