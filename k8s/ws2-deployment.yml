@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: code-ws2
-        image: gehlotnikhil38/codegalaxy-ws2:latest
+        image: gehlotnikhil38/code_ws2:v3 
         ports:
         - containerPort: 8081
         env:

@@ -7,7 +7,7 @@ import helmet from "helmet";
 const app = express();
 const PORT = Number(process.env.PORT) || 8000;
 console.log(`Server starting on port: ${PORT}`);
-const FRONTEND_URL = process.env.FRONTEND_URL;
+const FRONTEND = process.env.FRONTEND;
 // Middleware to parse JSON
 app.use(express.json());
 
@@ -18,9 +18,9 @@ app.use(
     crossOriginResourcePolicy: { policy: "cross-origin" },
   })
 );
-
+console.log("FRONTEND-",process.env.FRONTEND)
 app.use(cors({
-  origin:  FRONTEND_URL || "http://localhost:5173",
+  origin:  FRONTEND || "http://localhost:5173",
   credentials: true           
 }));
  

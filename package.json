@@ -10,7 +10,11 @@
     "client": "cd client && npm run dev ",
     "server": "cd server && npm run dev ",
     "ws2":" cd ws2 && npm run dev",
-    "all": "concurrently \" npm run client \" \" npm run server \" \" npm run ws2 \" "
+    "all": "concurrently \" npm run client \" \" npm run server \" \" npm run ws2 \" ",
+    "docker:client": "cd client && docker build  --no-cache -f Dockerfile.prod -t gehlotnikhil38/code_frontend:v3 .",
+    "docker:server": "cd server && docker build  --no-cache -f Dockerfile.prod -t gehlotnikhil38/code_backend:v3 .",
+    "docker:ws2": "cd ws2 && docker build  --no-cache -f Dockerfile.prod -t gehlotnikhil38/code_ws2:v3 .",
+    "docker:build-image": "concurrently \" npm run docker:client \" \" npm run docker:server \" \" npm run docker:ws2 \" "
 
   },
   "keywords": [],

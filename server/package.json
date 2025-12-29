@@ -7,8 +7,10 @@
     "dev": "tsc-watch --onSuccess \" npm run start \"",
     "start": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
-    
-    
+
+  },
+  "prisma":{
+    "seed": "ts-node prisma/seed.ts"
   },
   "author": "",
   "license": "ISC",
@@ -16,7 +18,6 @@
   "dependencies": {
     "@faker-js/faker": "^9.9.0",
     "@prisma/client": "^6.3.1",
-    "@types/node": "^22.10.1",
     "@types/nodemailer": "^6.4.17",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -24,23 +25,27 @@
     "emailjs-com": "^3.2.0",
     "express": "^4.21.2",
     "express-validator": "^7.2.0",
+    "fs": "^0.0.1-security",
     "googleapis": "^144.0.0",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.11.0",
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
+    "path": "^0.12.7",
     "resend": "^4.1.1",
     "tsc-watch": "^6.2.1",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.2",
     "vercel": "^39.2.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
+    "@types/node": "^25.0.3",
     "@types/node-fetch": "^2.6.12",
     "axios": "^1.7.9",
-    "prisma": "^6.3.1"
+    "prisma": "^6.3.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   }
 }

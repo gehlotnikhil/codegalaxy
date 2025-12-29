@@ -15,9 +15,12 @@ spec:
     spec:
       containers:
       - name: code-backend
-        image: gehlotnikhil38/codegalaxy-server:latest
+        image: gehlotnikhil38/code_backend:v3
         ports:
         - containerPort: 8000
+        env:
+          - name: FRONTEND
+            value: "http://13.126.60.207"
         resources: 
           requests: 
             cpu: 100m

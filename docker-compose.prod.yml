@@ -1,10 +1,11 @@
-
-
 version: "3.8"
 
 services:
   code_frontend:
-    build: ./client
+    # build: 
+    #   context: ./client
+    #   dockerfile: Dockerfile.prod
+    image: gehlotnikhil38/code_frontend:v2
     container_name: cont_frontend
     ports:
       - "80:80"
@@ -13,8 +14,13 @@ services:
     restart: always
 
   code_backend:
-    build: ./server
+    # build: 
+    #   context: ./server
+    #   dockerfile: Dockerfile.prod
+    image: gehlotnikhil38/code_backend:v2
     container_name: cont_backend
+    environment:
+      - FRONTEND=http://13.126.60.207
     ports:
       - "8000:8000"
     networks:
@@ -22,7 +28,10 @@ services:
     restart: always
 
   code_ws2:
-    build: ./ws2
+    # build: 
+    #   context: ./ws2
+    #   dockerfile: Dockerfile.prod
+    image: gehlotnikhil38/code_ws2:v2
     container_name: cont_ws2
     ports: 
       - "8081:8081"
